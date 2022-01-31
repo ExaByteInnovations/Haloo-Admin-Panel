@@ -8,13 +8,7 @@ import {ScrollTop} from './components/ScrollTop'
 import {Content} from './components/Content'
 import {PageDataProvider} from './core'
 import {useLocation} from 'react-router-dom'
-import {
-  DrawerMessenger,
-  ActivityDrawer,
-  Main,
-  InviteUsers,
-  UpgradePlan,
-} from '../partials'
+import {DrawerMessenger, ActivityDrawer, Main, InviteUsers, UpgradePlan} from '../partials'
 import {MenuComponent} from '../assets/ts/components'
 
 const MasterLayout: React.FC = ({children}) => {
@@ -50,7 +44,7 @@ const MasterLayout: React.FC = ({children}) => {
 
       {/* begin:: Drawers */}
       <ActivityDrawer />
-        <RightToolbar/>
+      {/* <RightToolbar/> */}
       <DrawerMessenger />
       {/* end:: Drawers */}
 

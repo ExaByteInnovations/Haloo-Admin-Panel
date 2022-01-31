@@ -4,16 +4,17 @@ import {useIntl} from 'react-intl'
 import {PageTitle} from '../../../_metronic/layout/core'
 import {
   MixedWidget2,
+  StatisticsWidget2,
+  ListsWidget5,
   MixedWidget10,
   MixedWidget11,
-  ListsWidget2,
   ListsWidget3,
-  ListsWidget4,
-  ListsWidget5,
-  ListsWidget6,
-  TablesWidget5,
   TablesWidget10,
+  ListsWidget2,
+  ListsWidget6,
+  ListsWidget4,
   MixedWidget8,
+  TablesWidget5,
 } from '../../../_metronic/partials/widgets'
 
 const DashboardPage: FC = () => (
@@ -28,6 +29,7 @@ const DashboardPage: FC = () => (
           strokeColor='#cb1e46'
         />
       </div>
+
       <div className='col-xxl-4'>
         <ListsWidget5 className='card-xxl-stretch' />
       </div>

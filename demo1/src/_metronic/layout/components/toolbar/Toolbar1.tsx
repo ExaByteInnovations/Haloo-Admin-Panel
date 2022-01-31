@@ -22,7 +22,7 @@ const Toolbar1: FC = () => {
           {/* begin::Wrapper */}
           <div className='me-4'>
             {/* begin::Menu */}
-            <a
+            {/* <a
               href='#'
               className='btn btn-sm btn-flex btn-light btn-active-primary fw-bolder'
               data-kt-menu-trigger='click'
@@ -34,7 +34,7 @@ const Toolbar1: FC = () => {
                 className='svg-icon-5 svg-icon-gray-500 me-1'
               />
               Filter
-            </a>
+            </a> */}
 
             {/* end::Menu */}
           </div>
@@ -42,7 +42,7 @@ const Toolbar1: FC = () => {
 
           {/* begin::Button */}
 
-          <a
+          {/* <a
             href='#'
             className='btn btn-sm btn-primary'
             data-bs-toggle='modal'
@@ -50,7 +50,7 @@ const Toolbar1: FC = () => {
             id='kt_toolbar_primary_button'
           >
             Create
-          </a>
+          </a> */}
           {/* end::Button */}
         </div>
         {/* end::Actions */}
