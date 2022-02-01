@@ -2,6 +2,8 @@ import React, {Suspense, lazy} from 'react'
 import {Redirect, Route, Switch} from 'react-router-dom'
 import {FallbackView} from '../../_metronic/partials'
 import {DashboardWrapper} from '../pages/dashboard/DashboardWrapper'
+import {Ratings} from '../pages/ratings/Ratings'
+
 // import {MenuTestPage} from '../pages/MenuTestPage'
 
 export function PrivateRoutes() {
@@ -16,6 +18,7 @@ export function PrivateRoutes() {
     <Suspense fallback={<FallbackView />}>
       <Switch>
         <Route path='/dashboard' component={DashboardWrapper} />
+        <Route path='/rating-reviews' component={Ratings} />
         {/* <Route path='/builder' component={BuilderPageWrapper} />
         <Route path='/crafted/pages/profile' component={ProfilePage} />
         <Route path='/crafted/pages/wizards' component={WizardsPage} />

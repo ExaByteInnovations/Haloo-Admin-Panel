@@ -17,6 +17,20 @@ export function AsideMenuMain() {
         fontIcon='bi-app-indicator'
       />
 
+      <AsideMenuItem
+        to='/rating-reviews'
+        icon='/media/icons/duotune/general/gen003.svg'
+        title={intl.formatMessage({id: 'MENU.RATING'})}
+        fontIcon='bi-app-indicator'
+      />
+
+      <AsideMenuItem
+        to='/jobs'
+        icon='/media/icons/duotune/communication/com006.svg'
+        title={intl.formatMessage({id: 'MENU.JOBS'})}
+        fontIcon='bi-app-indicator'
+      />
+
       {/* <AsideMenuItem
         to='/builder'
         icon='/media/icons/duotune/general/gen019.svg'
