@@ -24,12 +24,23 @@ export function AsideMenuMain() {
         fontIcon='bi-app-indicator'
       />
 
-      <AsideMenuItem
+      {/* <AsideMenuItem
         to='/jobs'
         icon='/media/icons/duotune/communication/com006.svg'
         title={intl.formatMessage({id: 'MENU.JOBS'})}
         fontIcon='bi-app-indicator'
-      />
+      /> */}
+
+      <AsideMenuItemWithSub
+        to='/jobs'
+        icon='/media/icons/duotune/communication/com006.svg'
+        title={intl.formatMessage({id: 'MENU.JOBS'})}
+        fontIcon='bi-app-indicator'
+      >
+        <AsideMenuItem to='/jobs/open-jobs' title='Open Jobs' hasBullet={true} />
+        <AsideMenuItem to='/jobs/completed-jobs' title='Completed Jobs' hasBullet={true} />
+        <AsideMenuItem to='/jobs/disputed-jobs' title='Disputed Jobs' hasBullet={true} />
+      </AsideMenuItemWithSub>
 
       {/* <AsideMenuItem
         to='/builder'

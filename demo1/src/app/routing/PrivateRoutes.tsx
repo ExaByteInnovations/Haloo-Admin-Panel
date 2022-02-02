@@ -3,6 +3,9 @@ import {Redirect, Route, Switch} from 'react-router-dom'
 import {FallbackView} from '../../_metronic/partials'
 import {DashboardWrapper} from '../pages/dashboard/DashboardWrapper'
 import {Ratings} from '../pages/ratings/Ratings'
+import {OpenJobs} from '../pages/jobs/OpenJobs'
+import {CompletedJobs} from '../pages/jobs/CompletedJobs'
+import {DisputedJobs} from '../pages/jobs/DisputedJobs'
 
 // import {MenuTestPage} from '../pages/MenuTestPage'
 
@@ -19,6 +22,9 @@ export function PrivateRoutes() {
       <Switch>
         <Route path='/dashboard' component={DashboardWrapper} />
         <Route path='/rating-reviews' component={Ratings} />
+        <Route path='/jobs/open-jobs' component={OpenJobs} />
+        <Route path='/jobs/completed-jobs' component={CompletedJobs} />
+        <Route path='/jobs/disputed-jobs' component={DisputedJobs} />
         {/* <Route path='/builder' component={BuilderPageWrapper} />
         <Route path='/crafted/pages/profile' component={ProfilePage} />
         <Route path='/crafted/pages/wizards' component={WizardsPage} />
