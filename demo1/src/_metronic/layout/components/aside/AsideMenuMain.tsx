@@ -10,12 +10,12 @@ export function AsideMenuMain() {
 
   return (
     <>
-      <AsideMenuItem
+      {/* <AsideMenuItem
         to='/dashboard'
         icon='/media/icons/duotune/art/art002.svg'
         title={intl.formatMessage({id: 'MENU.DASHBOARD'})}
         fontIcon='bi-app-indicator'
-      />
+      /> */}
 
       <AsideMenuItem
         to='/rating-reviews'
