@@ -8,8 +8,8 @@ import DataTable from 'react-data-table-component'
 import {ApiGet, ApiDelete, ApiPut} from '../../../helpers/API/ApiData'
 import '../../App.css'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Modal from '@mui/material/Modal'
+// import Button from '@mui/material/Button'
+// import Modal from '@mui/material/Modal'
 import {TextField} from '@mui/material'
 import {toast} from 'react-toastify'
 import Dialog from '@material-ui/core/Dialog'
@@ -18,23 +18,27 @@ import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Slide from '@material-ui/core/Slide'
+import {TransitionProps} from '@material-ui/core/transitions'
+import {Button} from 'react-bootstrap'
+import {Modal} from 'react-bootstrap'
 
 const Ratings: FC = () => {
   const intl = useIntl()
   const [ratings, setRatings] = useState([])
-  const [open, setOpen] = React.useState(false)
-  const [rowId, setRowId] = useState('')
+  const [open, setOpen] = useState(false)
+  const [rowId, setRowId] = useState('') // id of the row to be deleted
   const [inputValue, setInputValue] = useState({})
-  const [currentRow, setCurrentRow] = useState({})
-  const [rowIndex, setRowIndex] = useState(0)
+  const [currentRow, setCurrentRow] = useState({}) //
+  const [rowIndex, setRowIndex] = useState(0) //
   const [loading, setLoading] = useState(false)
+  const [idForDeleteRating, setIdForDeleteRating] = useState('')
+  const [show, setShow] = useState(false)
 
   const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
-
-  const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction='up' ref={ref} {...props} />
-  })
+  const handleClose = () => {
+    setOpen(false)
+    setShow(false)
+  }
 
   const style = {
     position: 'absolute',
@@ -70,23 +74,26 @@ const Ratings: FC = () => {
       })
   }
 
-  const handleDelete = async (rowId: string) => {
+  const handleDelete = async () => {
     setLoading(true)
-    await ApiDelete(`review?_id=${rowId}`)
+    await ApiDelete(`review?_id=${idForDeleteRating}`)
       .then((res) => {
         if (res.status === 200) {
           toast.success(res.data.message)
           getRatings()
           setLoading(false)
+          setShow(false)
           toast.success('Deleted Successfully')
         } else {
           toast.error(res.data.message)
           setLoading(false)
+          setShow(false)
         }
       })
       .catch((err) => {
         toast.error(err.message)
         setLoading(false)
+        setShow(false)
       })
   }
 
@@ -176,12 +183,19 @@ const Ratings: FC = () => {
               className='icon'
               onClick={() => {
                 handleOpen()
+                setInputValue({...row})
                 setRowId(row.id)
-                setRowIndex(index)
-                setCurrentRow(row)
               }}
             />
-            <Delete className='icon' color='error' onClick={() => handleDelete(row.id)} />
+            <Delete
+              className='icon'
+              color='error'
+              onClick={() => {
+                setShow(true)
+                // setOpen(true)
+                setIdForDeleteRating(row.id)
+              }}
+            />
           </>
         )
       },
@@ -219,8 +233,30 @@ const Ratings: FC = () => {
         striped
       />
 
+      <Modal show={show} onHide={handleClose}>
+        <>
+          <Modal.Header closeButton>
+            <Modal.Title className='text-danger'>Alert!</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Are You Sure To Want To delete this About Us</Modal.Body>
+          <Modal.Footer>
+            <Button variant='secondary' onClick={handleClose}>
+              cancel
+            </Button>
+            <Button
+              variant='danger'
+              onClick={() => {
+                handleDelete()
+              }}
+            >
+              Delete
+            </Button>
+          </Modal.Footer>
+        </>
+      </Modal>
+
       {open ? (
-        <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
+        <Dialog fullScreen open={open} onClose={handleClose}>
           <Toolbar>
             <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
               <CloseIcon />
@@ -260,7 +296,7 @@ const Ratings: FC = () => {
                 <div className='d-flex align-items-center justify-content-center'>
                   <button
                     onClick={(e) => {
-                      handleUpdate(e)
+                      handleUpdate(rowId)
                     }}
                     className='btn btn-success mr-2'
                   >

@@ -6,6 +6,7 @@ import AuthInit from './modules/auth/redux/AuthInit'
 import {Routes} from './routing/Routes'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 type Props = {
   basename: string
