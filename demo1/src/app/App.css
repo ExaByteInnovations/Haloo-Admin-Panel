@@ -1,0 +1,17 @@
+.icon {
+  cursor: pointer;
+}
+.icon:hover {
+  transform: scale(1.1, 1.1) !important;
+}
+
+.model {
+  align-self: center;
+  margin: 10px auto;
+  display: flex;
+  justify-content: center;
+}
+
+.button {
+  margin: 10px auto 0;
+}

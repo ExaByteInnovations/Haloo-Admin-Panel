@@ -1,11 +1,11 @@
 // const protocol = "http";
 // const host = "192.168.29.125:7001/api/v1";
 
-// const protocol = "https";
-// const host = "/api/v1";
+const protocol = 'http'
+const host = 'localhost'
 
-const port = ''
-const trailUrl = ''
+const port = '3000'
+const trailUrl = '/api'
 
 const hostUrl = `${protocol}://${host}${port ? ':' + port : ''}`
 const endpoint = `${protocol}://${host}${port ? ':' + port : ''}${trailUrl}`
