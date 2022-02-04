@@ -1,37 +1,29 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, {FC, useEffect, useState} from 'react'
+import {FC, useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
 import {ApiGet, ApiDelete, ApiPut} from '../../../helpers/API/ApiData'
-import '../../App.css'
-import Box from '@mui/material/Box'
-// import Button from '@mui/material/Button'
-// import Modal from '@mui/material/Modal'
-import {TextField} from '@mui/material'
 import {toast} from 'react-toastify'
 import Dialog from '@material-ui/core/Dialog'
-import List from '@material-ui/core/List'
 import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
-import Slide from '@material-ui/core/Slide'
-import {TransitionProps} from '@material-ui/core/transitions'
 import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
+import {Box, CircularProgress, DialogContent, MenuItem, TextField} from '@material-ui/core'
+import '../../App.css'
 
 const Ratings: FC = () => {
   const intl = useIntl()
   const [ratings, setRatings] = useState([])
   const [open, setOpen] = useState(false)
-  const [rowId, setRowId] = useState('') // id of the row to be deleted
+  const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
-  const [currentRow, setCurrentRow] = useState({}) //
-  const [rowIndex, setRowIndex] = useState(0) //
+  const [currentRow, setCurrentRow] = useState({})
   const [loading, setLoading] = useState(false)
-  const [idForDeleteRating, setIdForDeleteRating] = useState('')
   const [show, setShow] = useState(false)
 
   const handleOpen = () => setOpen(true)
@@ -40,79 +32,57 @@ const Ratings: FC = () => {
     setShow(false)
   }
 
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-  }
-
   useEffect(() => {
     getRatings()
   }, [])
 
   const getRatings = async () => {
-    setLoading(true)
-    await ApiGet(`review`)
-      .then((res) => {
-        if (res.status === 200) {
-          setRatings(res.data.data)
-          setLoading(false)
-        } else {
-          setLoading(false)
-        }
-      })
-      .catch((err) => {
-        console.log(err)
-        toast.error(err.message)
-        setLoading(false)
-      })
+    try {
+      setLoading(true)
+      const response = await ApiGet(`review`)
+      if (response.status === 200) {
+        setRatings(response.data.data)
+      }
+      setLoading(false)
+    } catch (err: any) {
+      toast.error(err.message)
+      setLoading(false)
+    }
   }
 
   const handleDelete = async () => {
-    setLoading(true)
-    await ApiDelete(`review?_id=${idForDeleteRating}`)
-      .then((res) => {
-        if (res.status === 200) {
-          toast.success(res.data.message)
-          getRatings()
-          setLoading(false)
-          setShow(false)
-          toast.success('Deleted Successfully')
-        } else {
-          toast.error(res.data.message)
-          setLoading(false)
-          setShow(false)
-        }
-      })
-      .catch((err) => {
-        toast.error(err.message)
-        setLoading(false)
-        setShow(false)
-      })
+    try {
+      setLoading(true)
+      const response = await ApiDelete(`review?_id=${rowId}`)
+
+      if (response.status === 200) {
+        getRatings()
+        toast.success('Deleted Successfully')
+      }
+      setLoading(false)
+      setShow(false)
+    } catch (err: any) {
+      toast.error(err.message)
+      setLoading(false)
+      setShow(false)
+    }
   }
 
   const handleUpdate = async (rowId: string) => {
-    setLoading(true)
-    await ApiPut(`review?_id=${rowId}`, {...currentRow, ...inputValue})
-      .then((res) => {
-        if (res?.status === 200) {
-          setInputValue({})
-          getRatings()
-          setLoading(false)
-        } else {
-          setLoading(false)
-        }
-      })
-      .catch((err) => {
-        toast.error(err.message)
-        setLoading(false)
-      })
+    try {
+      setLoading(true)
+      const response = await ApiPut(`review?_id=${rowId}`, {...currentRow, ...inputValue})
+
+      if (response.status === 200) {
+        toast.success('Updated Successfully')
+        setInputValue({})
+        getRatings()
+      }
+      setLoading(false)
+    } catch (err: any) {
+      toast.error(err.message)
+      setLoading(false)
+    }
   }
 
   const handleChange = (e: any) => {
@@ -176,7 +146,7 @@ const Ratings: FC = () => {
     },
     {
       name: 'Action',
-      cell: (row: any, index: number) => {
+      cell: (row: any) => {
         return (
           <>
             <Edit
@@ -185,6 +155,7 @@ const Ratings: FC = () => {
                 handleOpen()
                 setInputValue({...row})
                 setRowId(row.id)
+                setCurrentRow(row)
               }}
             />
             <Delete
@@ -192,14 +163,12 @@ const Ratings: FC = () => {
               color='error'
               onClick={() => {
                 setShow(true)
-                // setOpen(true)
-                setIdForDeleteRating(row.id)
+                setRowId(row.id)
               }}
             />
           </>
         )
       },
-      sortable: true,
     },
   ]
 
@@ -216,15 +185,20 @@ const Ratings: FC = () => {
     }
   })
 
+  if (loading) {
+    return (
+      <Box className='loader'>
+        <CircularProgress />
+      </Box>
+    )
+  }
+
   return (
     <>
       <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.RATING'})}</PageTitle>
       <DataTable
         columns={columns}
         data={data}
-        // selectableRows
-        // selectableRowsVisibleOnly
-        // dense
         fixedHeader
         fixedHeaderScrollHeight='300px'
         pagination
@@ -238,7 +212,7 @@ const Ratings: FC = () => {
           <Modal.Header closeButton>
             <Modal.Title className='text-danger'>Alert!</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Are You Sure To Want To delete this About Us</Modal.Body>
+          <Modal.Body>Are you sure you want to delete this row</Modal.Body>
           <Modal.Footer>
             <Button variant='secondary' onClick={handleClose}>
               cancel
@@ -256,57 +230,96 @@ const Ratings: FC = () => {
       </Modal>
 
       {open ? (
-        <Dialog fullScreen open={open} onClose={handleClose}>
+        <Dialog open={open} onClose={handleClose}>
           <Toolbar>
             <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
               <CloseIcon />
             </IconButton>
           </Toolbar>
-          <List>
-            {open === true ? (
-              <div className='form ml-30 '>
-                {/* Ameninties Name */}
-                <div className='form-group row'>
-                  <label className='col-xl-3 col-lg-3 col-form-label'>Enter Title</label>
-                  <div className='col-lg-9 col-xl-6'>
-                    <div>
-                      <input
-                        type='text'
-                        className={`form-control form-control-lg form-control-solid `}
-                        id='title'
-                        name='title'
-                        // value={inputValue.title}
-                        onChange={(e) => {
-                          // handleOnChnage(e);
-                        }}
-                      />
-                    </div>
-                    <span
-                      style={{
-                        color: 'red',
-                        top: '5px',
-                        fontSize: '12px',
-                      }}
-                    >
-                      {/* {errors["title"]} */}
-                    </span>
-                  </div>
-                </div>
-
-                <div className='d-flex align-items-center justify-content-center'>
-                  <button
-                    onClick={(e) => {
-                      handleUpdate(rowId)
-                    }}
-                    className='btn btn-success mr-2'
-                  >
-                    <span>Update Details</span>
-                    {loading && <span className='mx-3 spinner spinner-white'></span>}
-                  </button>
-                </div>
-              </div>
-            ) : null}
-          </List>
+          <DialogContent>
+            <TextField
+              label='Rating For'
+              type={'text'}
+              onChange={(e) => handleChange(e)}
+              name='ratingFor'
+              fullWidth
+              variant='standard'
+              margin='dense'
+            />
+            <TextField
+              label='Rating By'
+              type={'text'}
+              onChange={(e) => handleChange(e)}
+              name='ratingBy'
+              fullWidth
+              variant='standard'
+              margin='dense'
+            />
+            <TextField
+              label='Who Rated'
+              type={'text'}
+              onChange={(e) => handleChange(e)}
+              name='whoRated'
+              fullWidth
+              variant='standard'
+              margin='dense'
+            />
+            <TextField
+              label='Job Number'
+              type={'number'}
+              onChange={(e) => handleChange(e)}
+              name='jobNumber'
+              fullWidth
+              variant='standard'
+              margin='dense'
+            />
+            <TextField
+              label='Rating'
+              type={'number'}
+              onChange={(e) => handleChange(e)}
+              name='rating'
+              select
+              fullWidth
+              variant='standard'
+              margin='dense'
+            >
+              {[1, 2, 3, 4, 5].map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              label='Comment'
+              multiline
+              maxRows={3}
+              onChange={(e) => handleChange(e)}
+              name='comment'
+              fullWidth
+              variant='standard'
+              margin='dense'
+            />
+            <TextField
+              InputLabelProps={{shrink: true}}
+              label='Posted On'
+              type={'datetime-local'}
+              onChange={(e) => handleChange(e)}
+              name='postedOn'
+              variant='standard'
+              margin='dense'
+            />
+          </DialogContent>
+          <Button
+            className='button'
+            size='lg'
+            variant='success'
+            onClick={() => {
+              handleUpdate(rowId)
+              handleClose()
+            }}
+          >
+            Save
+          </Button>
         </Dialog>
       ) : null}
     </>
