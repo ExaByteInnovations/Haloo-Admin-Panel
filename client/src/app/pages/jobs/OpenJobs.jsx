@@ -16,7 +16,7 @@ import {Modal} from 'react-bootstrap'
 import {Box, CircularProgress, DialogContent, MenuItem, TextField} from '@material-ui/core'
 import '../../App.css'
 
-const CompletedJobs: FC = () => {
+const OpenJobs = () => {
   const intl = useIntl()
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(false)
@@ -39,12 +39,13 @@ const CompletedJobs: FC = () => {
   const getJobs = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`job?jobCategory=completed`)
+      const response = await ApiGet(`job?jobCategory=open&status=pending`)
       if (response.status === 200) {
         setJobs(response.data.data)
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
+      console.log(err)
       toast.error(err.message)
       setLoading(false)
     }
@@ -60,14 +61,14 @@ const CompletedJobs: FC = () => {
       }
       setLoading(false)
       setShow(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
       setShow(false)
     }
   }
 
-  const handleUpdate = async (rowId: string) => {
+  const handleUpdate = async (rowId) => {
     try {
       setLoading(true)
       const response = await ApiPut(`job?_id=${rowId}`, {...currentRow, ...inputValue})
@@ -77,13 +78,13 @@ const CompletedJobs: FC = () => {
         getJobs()
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
     }
   }
 
-  const handleChange = (e: any) => {
+  const handleChange = (e) => {
     const {name, value} = e.target
     setInputValue({...inputValue, [name]: value})
   }
@@ -91,64 +92,64 @@ const CompletedJobs: FC = () => {
   const columns = [
     {
       name: 'Job',
-      selector: (row: any) => row.job,
+      selector: (row) => row.job,
       sortable: true,
       width: '200px',
     },
     {
       name: 'Quote',
-      selector: (row: any) => row.quote,
+      selector: (row) => row.quote,
       sortable: true,
     },
     {
       name: 'City',
-      selector: (row: any) => row.city,
+      selector: (row) => row.city,
       sortable: true,
     },
     {
       name: 'Job Total',
-      selector: (row: any) => row.jobTotal,
+      selector: (row) => row.jobTotal,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Customer',
-      selector: (row: any) => row.customer,
+      selector: (row) => row.customer,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Property Name',
-      selector: (row: any) => row.propertyName,
+      selector: (row) => row.propertyName,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Category/Subcategory',
-      selector: (row: any) => row.categorySubcategory,
+      selector: (row) => row.categorySubcategory,
       sortable: true,
       width: '200px',
     },
     {
       name: 'Vendor',
-      selector: (row: any) => row.vendor,
+      selector: (row) => row.vendor,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Posted Date',
-      selector: (row: any) => row.postedDate,
+      selector: (row) => row.postedDate,
       sortable: true,
       width: '200px',
     },
     {
       name: 'Status',
-      selector: (row: any) => row.status,
+      selector: (row) => row.status,
       sortable: true,
     },
     {
       name: 'Action',
-      cell: (row: any) => {
+      cell: (row) => {
         return (
           <>
             <Edit
@@ -173,7 +174,7 @@ const CompletedJobs: FC = () => {
     },
   ]
 
-  const data = jobs?.map((job: any) => {
+  const data = jobs?.map((job) => {
     return {
       id: job._id,
       job: job.jobTitle,
@@ -205,7 +206,7 @@ const CompletedJobs: FC = () => {
 
   return (
     <>
-      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.JOBS.COMPLETED_JOBS'})}</PageTitle>
+      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.JOBS.OPEN_JOBS'})}</PageTitle>
       <DataTable
         columns={columns}
         data={data}
@@ -237,6 +238,7 @@ const CompletedJobs: FC = () => {
           </Modal.Footer>
         </>
       </Modal>
+
       <Dialog open={open} onClose={handleClose}>
         <Toolbar>
           <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
@@ -252,6 +254,7 @@ const CompletedJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.job}
           />
           <TextField
             label='Quote'
@@ -261,6 +264,7 @@ const CompletedJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.quote}
           />
           <TextField
             label='City'
@@ -270,6 +274,7 @@ const CompletedJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.city}
           />
           <TextField
             label='Job Total'
@@ -279,6 +284,7 @@ const CompletedJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.jobTotal}
           />
           <TextField
             label='Customer'
@@ -288,6 +294,7 @@ const CompletedJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.customer}
           />
           <TextField
             label='Property Name'
@@ -297,6 +304,7 @@ const CompletedJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.propertyName}
           />
           <TextField
             label='Category / Subcategory'
@@ -306,6 +314,7 @@ const CompletedJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.categorySubcategory}
           />
           <TextField
             label='Vendor'
@@ -315,6 +324,7 @@ const CompletedJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.vendor}
           />
           <TextField
             InputLabelProps={{shrink: true}}
@@ -324,6 +334,7 @@ const CompletedJobs: FC = () => {
             name='postedDate'
             variant='standard'
             margin='dense'
+            value={moment(currentRow.postedDate).format('YYYY-MM-DDTHH:mm')}
           />
           <TextField
             label='Status'
@@ -334,6 +345,7 @@ const CompletedJobs: FC = () => {
             variant='standard'
             margin='dense'
             select
+            value={currentRow.status}
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>
@@ -357,5 +369,4 @@ const CompletedJobs: FC = () => {
     </>
   )
 }
-
-export {CompletedJobs}
+export {OpenJobs}

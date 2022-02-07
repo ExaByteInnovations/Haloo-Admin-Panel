@@ -13,25 +13,14 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
-import {
-  Box,
-  CircularProgress,
-  DialogContent,
-  DialogTitle,
-  MenuItem,
-  TextField,
-} from '@material-ui/core'
+import {Box, CircularProgress, DialogContent, MenuItem, TextField} from '@material-ui/core'
 import '../../App.css'
-import {Image} from 'react-bootstrap-v5'
-import img from '../../../assets/teacher.jpg'
-// import hoverImg from 'clientpublicmediaavatars/300-7.jpg'
 
-const City: FC = () => {
+const DisputedJobs = () => {
   const intl = useIntl()
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
-  const [addOpen, setAddOpen] = useState(false)
   const [show, setShow] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
@@ -41,7 +30,6 @@ const City: FC = () => {
   const handleClose = () => {
     setOpen(false)
     setShow(false)
-    setAddOpen(false)
   }
 
   useEffect(() => {
@@ -51,13 +39,12 @@ const City: FC = () => {
   const getJobs = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`job?jobCategory=open&status=pending`)
+      const response = await ApiGet(`job?jobCategory=disputed`)
       if (response.status === 200) {
         setJobs(response.data.data)
       }
       setLoading(false)
-    } catch (err: any) {
-      console.log(err)
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
     }
@@ -73,14 +60,14 @@ const City: FC = () => {
       }
       setLoading(false)
       setShow(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
       setShow(false)
     }
   }
 
-  const handleUpdate = async (rowId: string) => {
+  const handleUpdate = async (rowId) => {
     try {
       setLoading(true)
       const response = await ApiPut(`job?_id=${rowId}`, {...currentRow, ...inputValue})
@@ -90,42 +77,78 @@ const City: FC = () => {
         getJobs()
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
     }
   }
 
-  const handleAdd = async () => {
-    console.log('added')
-  }
-
-  const handleChange = (e: any) => {
+  const handleChange = (e) => {
     const {name, value} = e.target
     setInputValue({...inputValue, [name]: value})
   }
 
   const columns = [
     {
-      name: 'City Name',
-      selector: (row: any) => row.cityName,
+      name: 'Job',
+      selector: (row) => row.job,
       sortable: true,
-      //   width: '200px',
+      width: '200px',
     },
     {
-      name: 'State Name',
-      selector: (row: any) => row.stateName,
+      name: 'Quote',
+      selector: (row) => row.quote,
       sortable: true,
-      //   width: '200px',
+    },
+    {
+      name: 'City',
+      selector: (row) => row.city,
+      sortable: true,
+    },
+    {
+      name: 'Job Total',
+      selector: (row) => row.jobTotal,
+      sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'Customer',
+      selector: (row) => row.customer,
+      sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'Property Name',
+      selector: (row) => row.propertyName,
+      sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'Category/Subcategory',
+      selector: (row) => row.categorySubcategory,
+      sortable: true,
+      width: '200px',
+    },
+    {
+      name: 'Vendor',
+      selector: (row) => row.vendor,
+      sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'Posted Date',
+      selector: (row) => row.postedDate,
+      sortable: true,
+      width: '200px',
     },
     {
       name: 'Status',
-      selector: (row: any) => row.status,
+      selector: (row) => row.status,
       sortable: true,
     },
     {
       name: 'Action',
-      cell: (row: any) => {
+      cell: (row) => {
         return (
           <>
             <Edit
@@ -150,40 +173,26 @@ const City: FC = () => {
     },
   ]
 
-  //   const data = jobs?.map((job: any) => {
-  //     return {
-  //       id: job._id,
-  //       job: job.jobTitle,
-  //       quote: job.quote,
-  //       city: job.city,
-  //       jobTotal: job.jobTotal,
-  //       customer: job.customer,
-  //       propertyName: job.propertyName,
-  //       categorySubcategory: job.category || job.subCategory,
-  //       vendor: job.vendor,
-  //       postedDate: moment(job.createdAt).format('DD MMM YY hh:mmA'),
-  //       status: job.status,
-  //     }
-  //   })
-
-  const data = [
-    {
-      id: 1,
-      cityName: 'Surat',
-      stateName: 'Gujarat',
-      status: 'Active',
-    },
-    {
-      id: 2,
-      cityName: 'Mumbai',
-      stateName: 'Maharastra',
-      status: 'Active',
-    },
-  ]
+  const data = jobs?.map((job) => {
+    return {
+      id: job._id,
+      job: job.jobTitle,
+      quote: job.quote,
+      city: job.city,
+      jobTotal: job.jobTotal,
+      customer: job.customer,
+      propertyName: job.propertyName,
+      categorySubcategory: job.category || job.subCategory,
+      vendor: job.vendor,
+      postedDate: moment(job.createdAt).format('DD MMM YY hh:mmA'),
+      status: job.status,
+    }
+  })
 
   const status = [
-    {label: 'Active', value: 'Active'},
-    {label: 'Inactive', value: 'Inactive'},
+    {label: 'Pending', value: 'Pending'},
+    {label: 'Completed', value: 'Completed'},
+    {label: 'Disputed', value: 'Disputed'},
   ]
 
   if (loading) {
@@ -196,12 +205,7 @@ const City: FC = () => {
 
   return (
     <>
-      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.SERVICE_INFO.CITY'})}</PageTitle>
-      <Box className='add-button-wrapper' onClick={() => setAddOpen(true)}>
-        <Button className='add-button' variant='success'>
-          Add New +
-        </Button>
-      </Box>
+      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.JOBS.DISPUTED_JOBS'})}</PageTitle>
       <DataTable
         columns={columns}
         data={data}
@@ -233,39 +237,102 @@ const City: FC = () => {
           </Modal.Footer>
         </>
       </Modal>
-
-      <Dialog open={open || addOpen} onClose={handleClose}>
-        <DialogTitle>
-          <Box sx={{display: 'flex'}}>
-            <Box flexGrow={1}>
-              {open && 'Edit Row'}
-              {addOpen && 'Add New Row'}
-            </Box>
-            <Box>
-              <IconButton color='inherit' onClick={handleClose} aria-label='close'>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-          </Box>
-        </DialogTitle>
+      <Dialog open={open} onClose={handleClose}>
+        <Toolbar>
+          <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
+            <CloseIcon />
+          </IconButton>
+        </Toolbar>
         <DialogContent>
           <TextField
-            label='City Name'
+            label='Job'
             type={'text'}
             onChange={(e) => handleChange(e)}
-            name='cityName'
+            name='job'
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.job}
           />
           <TextField
-            label='State Name'
+            label='Quote'
             type={'text'}
             onChange={(e) => handleChange(e)}
-            name='stateName'
+            name='quote'
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.quote}
+          />
+          <TextField
+            label='City'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='city'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow.city}
+          />
+          <TextField
+            label='Job Total'
+            type={'number'}
+            onChange={(e) => handleChange(e)}
+            name='jobTotal'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow.jobTotal}
+          />
+          <TextField
+            label='Customer'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='customer'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow.customer}
+          />
+          <TextField
+            label='Property Name'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='propertyName'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow.propertyName}
+          />
+          <TextField
+            label='Category / Subcategory'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='categorySubcategory'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow.categorySubcategory}
+          />
+          <TextField
+            label='Vendor'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='vendor'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow.vendor}
+          />
+          <TextField
+            InputLabelProps={{shrink: true}}
+            label='Posted Date'
+            type={'datetime-local'}
+            onChange={(e) => handleChange(e)}
+            name='postedDate'
+            variant='standard'
+            margin='dense'
+            value={moment(currentRow.postedDate).format('YYYY-MM-DDTHH:mm')}
           />
           <TextField
             label='Status'
@@ -276,6 +343,7 @@ const City: FC = () => {
             variant='standard'
             margin='dense'
             select
+            value={currentRow.status}
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>
@@ -289,8 +357,7 @@ const City: FC = () => {
           size='lg'
           variant='success'
           onClick={() => {
-            open && handleUpdate(rowId)
-            addOpen && handleAdd()
+            handleUpdate(rowId)
             handleClose()
           }}
         >
@@ -300,4 +367,5 @@ const City: FC = () => {
     </>
   )
 }
-export {City}
+
+export {DisputedJobs}

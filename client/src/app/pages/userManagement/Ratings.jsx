@@ -16,15 +16,15 @@ import {Modal} from 'react-bootstrap'
 import {Box, CircularProgress, DialogContent, MenuItem, TextField} from '@material-ui/core'
 import '../../App.css'
 
-const DisputedJobs: FC = () => {
+const Ratings = () => {
   const intl = useIntl()
-  const [jobs, setJobs] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [ratings, setRatings] = useState([])
   const [open, setOpen] = useState(false)
-  const [show, setShow] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
   const [currentRow, setCurrentRow] = useState({})
+  const [loading, setLoading] = useState(false)
+  const [show, setShow] = useState(false)
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
@@ -33,18 +33,18 @@ const DisputedJobs: FC = () => {
   }
 
   useEffect(() => {
-    getJobs()
+    getRatings()
   }, [])
 
-  const getJobs = async () => {
-    setLoading(true)
+  const getRatings = async () => {
     try {
-      const response = await ApiGet(`job?jobCategory=disputed`)
+      setLoading(true)
+      const response = await ApiGet(`review`)
       if (response.status === 200) {
-        setJobs(response.data.data)
+        setRatings(response.data.data)
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
     }
@@ -53,108 +53,107 @@ const DisputedJobs: FC = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`job?_id=${rowId}`)
+      const response = await ApiDelete(`review?_id=${rowId}`)
+
       if (response.status === 200) {
-        getJobs()
+        getRatings()
         toast.success('Deleted Successfully')
       }
       setLoading(false)
       setShow(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
       setShow(false)
     }
   }
 
-  const handleUpdate = async (rowId: string) => {
+  const handleUpdate = async (rowId) => {
     try {
       setLoading(true)
-      const response = await ApiPut(`job?_id=${rowId}`, {...currentRow, ...inputValue})
+      const response = await ApiPut(`review?_id=${rowId}`, {...currentRow, ...inputValue})
+
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
-        getJobs()
+        getRatings()
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
     }
   }
 
-  const handleChange = (e: any) => {
+  const handleChange = (e) => {
     const {name, value} = e.target
     setInputValue({...inputValue, [name]: value})
   }
 
   const columns = [
     {
-      name: 'Job',
-      selector: (row: any) => row.job,
+      name: 'Rating By',
+      selector: (row) => row.ratingBy,
       sortable: true,
       width: '200px',
     },
     {
-      name: 'Quote',
-      selector: (row: any) => row.quote,
-      sortable: true,
-    },
-    {
-      name: 'City',
-      selector: (row: any) => row.city,
-      sortable: true,
-    },
-    {
-      name: 'Job Total',
-      selector: (row: any) => row.jobTotal,
-      sortable: true,
-      width: '150px',
-    },
-    {
-      name: 'Customer',
-      selector: (row: any) => row.customer,
-      sortable: true,
-      width: '150px',
-    },
-    {
-      name: 'Property Name',
-      selector: (row: any) => row.propertyName,
-      sortable: true,
-      width: '150px',
-    },
-    {
-      name: 'Category/Subcategory',
-      selector: (row: any) => row.categorySubcategory,
+      name: 'Rating For',
+      selector: (row) => row.ratingFor,
       sortable: true,
       width: '200px',
     },
     {
-      name: 'Vendor',
-      selector: (row: any) => row.vendor,
+      name: 'Who Rated',
+      selector: (row) => row.whoRated,
       sortable: true,
       width: '150px',
     },
     {
-      name: 'Posted Date',
-      selector: (row: any) => row.postedDate,
+      name: 'Job Number',
+      selector: (row) => row.jobNumber,
       sortable: true,
-      width: '200px',
+      width: '150px',
     },
     {
-      name: 'Status',
-      selector: (row: any) => row.status,
+      name: 'Rating',
+      selector: (row) => row.rating,
+      cell: (row) => (
+        <>
+          {[...Array(row.rating)].map(() => (
+            <div className='rating'>
+              <div className='rating-label me-2 checked'>
+                <i className='bi bi-star-fill fs-5'></i>
+              </div>
+            </div>
+          ))}
+        </>
+      ),
       sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'Comment',
+      selector: (row) => row.comment,
+      sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'Posted On',
+      selector: (row) => row.postedOn,
+      sortable: true,
+      width: '200px',
     },
     {
       name: 'Action',
-      cell: (row: any) => {
+      cell: (row) => {
         return (
           <>
             <Edit
               className='icon'
               onClick={() => {
                 handleOpen()
+                setInputValue({...row})
                 setRowId(row.id)
                 setCurrentRow(row)
               }}
@@ -173,27 +172,18 @@ const DisputedJobs: FC = () => {
     },
   ]
 
-  const data = jobs?.map((job: any) => {
+  const data = ratings?.map((rating) => {
     return {
-      id: job._id,
-      job: job.jobTitle,
-      quote: job.quote,
-      city: job.city,
-      jobTotal: job.jobTotal,
-      customer: job.customer,
-      propertyName: job.propertyName,
-      categorySubcategory: job.category || job.subCategory,
-      vendor: job.vendor,
-      postedDate: moment(job.createdAt).format('DD MMM YY hh:mmA'),
-      status: job.status,
+      id: rating._id,
+      ratingBy: rating.ratingBy,
+      ratingFor: rating.ratingFor,
+      whoRated: rating.whoRated,
+      jobNumber: rating.jobNumber,
+      rating: rating.rating,
+      comment: rating.comment,
+      postedOn: moment(rating.createdAt).format('DD MMM YY hh:mmA'),
     }
   })
-
-  const status = [
-    {label: 'Pending', value: 'Pending'},
-    {label: 'Completed', value: 'Completed'},
-    {label: 'Disputed', value: 'Disputed'},
-  ]
 
   if (loading) {
     return (
@@ -205,7 +195,7 @@ const DisputedJobs: FC = () => {
 
   return (
     <>
-      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.JOBS.DISPUTED_JOBS'})}</PageTitle>
+      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.RATING'})}</PageTitle>
       <DataTable
         columns={columns}
         data={data}
@@ -216,6 +206,7 @@ const DisputedJobs: FC = () => {
         responsive
         striped
       />
+
       <Modal show={show} onHide={handleClose}>
         <>
           <Modal.Header closeButton>
@@ -237,6 +228,7 @@ const DisputedJobs: FC = () => {
           </Modal.Footer>
         </>
       </Modal>
+
       <Dialog open={open} onClose={handleClose}>
         <Toolbar>
           <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
@@ -245,102 +237,76 @@ const DisputedJobs: FC = () => {
         </Toolbar>
         <DialogContent>
           <TextField
-            label='Job'
+            label='Rating For'
             type={'text'}
             onChange={(e) => handleChange(e)}
-            name='job'
+            name='ratingFor'
             fullWidth
             variant='standard'
             margin='dense'
           />
           <TextField
-            label='Quote'
+            label='Rating By'
             type={'text'}
             onChange={(e) => handleChange(e)}
-            name='quote'
+            name='ratingBy'
             fullWidth
             variant='standard'
             margin='dense'
           />
           <TextField
-            label='City'
+            label='Who Rated'
             type={'text'}
             onChange={(e) => handleChange(e)}
-            name='city'
+            name='whoRated'
             fullWidth
             variant='standard'
             margin='dense'
           />
           <TextField
-            label='Job Total'
+            label='Job Number'
             type={'number'}
             onChange={(e) => handleChange(e)}
-            name='jobTotal'
+            name='jobNumber'
             fullWidth
             variant='standard'
             margin='dense'
           />
           <TextField
-            label='Customer'
-            type={'text'}
+            label='Rating'
+            type={'number'}
             onChange={(e) => handleChange(e)}
-            name='customer'
+            name='rating'
+            select
             fullWidth
             variant='standard'
             margin='dense'
-          />
+          >
+            {[1, 2, 3, 4, 5].map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
           <TextField
-            label='Property Name'
-            type={'text'}
+            label='Comment'
+            multiline
+            maxRows={3}
             onChange={(e) => handleChange(e)}
-            name='propertyName'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='Category / Subcategory'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='categorySubcategory'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='Vendor'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='vendor'
+            name='comment'
             fullWidth
             variant='standard'
             margin='dense'
           />
           <TextField
             InputLabelProps={{shrink: true}}
-            label='Posted Date'
+            label='Posted On'
             type={'datetime-local'}
             onChange={(e) => handleChange(e)}
-            name='postedDate'
+            name='postedOn'
             variant='standard'
             margin='dense'
           />
-          <TextField
-            label='Status'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='status'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            select
-          >
-            {status.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
         </DialogContent>
         <Button
           className='button'
@@ -358,4 +324,4 @@ const DisputedJobs: FC = () => {
   )
 }
 
-export {DisputedJobs}
+export {Ratings}

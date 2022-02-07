@@ -16,7 +16,7 @@ import {Modal} from 'react-bootstrap'
 import {Box, CircularProgress, DialogContent, MenuItem, TextField} from '@material-ui/core'
 import '../../App.css'
 
-const OpenJobs: FC = () => {
+const CompletedJobs = () => {
   const intl = useIntl()
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(false)
@@ -34,18 +34,18 @@ const OpenJobs: FC = () => {
 
   useEffect(() => {
     getJobs()
-  }, [])
+    console.log('currentRow', currentRow)
+  }, [currentRow])
 
   const getJobs = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`job?jobCategory=open&status=pending`)
+      const response = await ApiGet(`job?jobCategory=completed`)
       if (response.status === 200) {
         setJobs(response.data.data)
       }
       setLoading(false)
-    } catch (err: any) {
-      console.log(err)
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
     }
@@ -61,14 +61,14 @@ const OpenJobs: FC = () => {
       }
       setLoading(false)
       setShow(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
       setShow(false)
     }
   }
 
-  const handleUpdate = async (rowId: string) => {
+  const handleUpdate = async (rowId) => {
     try {
       setLoading(true)
       const response = await ApiPut(`job?_id=${rowId}`, {...currentRow, ...inputValue})
@@ -78,13 +78,13 @@ const OpenJobs: FC = () => {
         getJobs()
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
     }
   }
 
-  const handleChange = (e: any) => {
+  const handleChange = (e) => {
     const {name, value} = e.target
     setInputValue({...inputValue, [name]: value})
   }
@@ -92,64 +92,64 @@ const OpenJobs: FC = () => {
   const columns = [
     {
       name: 'Job',
-      selector: (row: any) => row.job,
+      selector: (row) => row.job,
       sortable: true,
       width: '200px',
     },
     {
       name: 'Quote',
-      selector: (row: any) => row.quote,
+      selector: (row) => row.quote,
       sortable: true,
     },
     {
       name: 'City',
-      selector: (row: any) => row.city,
+      selector: (row) => row.city,
       sortable: true,
     },
     {
       name: 'Job Total',
-      selector: (row: any) => row.jobTotal,
+      selector: (row) => row.jobTotal,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Customer',
-      selector: (row: any) => row.customer,
+      selector: (row) => row.customer,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Property Name',
-      selector: (row: any) => row.propertyName,
+      selector: (row) => row.propertyName,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Category/Subcategory',
-      selector: (row: any) => row.categorySubcategory,
+      selector: (row) => row.categorySubcategory,
       sortable: true,
       width: '200px',
     },
     {
       name: 'Vendor',
-      selector: (row: any) => row.vendor,
+      selector: (row) => row.vendor,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Posted Date',
-      selector: (row: any) => row.postedDate,
+      selector: (row) => row.postedDate,
       sortable: true,
       width: '200px',
     },
     {
       name: 'Status',
-      selector: (row: any) => row.status,
+      selector: (row) => row.status,
       sortable: true,
     },
     {
       name: 'Action',
-      cell: (row: any) => {
+      cell: (row) => {
         return (
           <>
             <Edit
@@ -174,7 +174,7 @@ const OpenJobs: FC = () => {
     },
   ]
 
-  const data = jobs?.map((job: any) => {
+  const data = jobs?.map((job) => {
     return {
       id: job._id,
       job: job.jobTitle,
@@ -206,7 +206,7 @@ const OpenJobs: FC = () => {
 
   return (
     <>
-      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.JOBS.OPEN_JOBS'})}</PageTitle>
+      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.JOBS.COMPLETED_JOBS'})}</PageTitle>
       <DataTable
         columns={columns}
         data={data}
@@ -238,7 +238,6 @@ const OpenJobs: FC = () => {
           </Modal.Footer>
         </>
       </Modal>
-
       <Dialog open={open} onClose={handleClose}>
         <Toolbar>
           <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
@@ -254,6 +253,7 @@ const OpenJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.job}
           />
           <TextField
             label='Quote'
@@ -263,6 +263,7 @@ const OpenJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.quote}
           />
           <TextField
             label='City'
@@ -272,6 +273,7 @@ const OpenJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.city}
           />
           <TextField
             label='Job Total'
@@ -281,6 +283,7 @@ const OpenJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.jobTotal}
           />
           <TextField
             label='Customer'
@@ -290,6 +293,7 @@ const OpenJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.customer}
           />
           <TextField
             label='Property Name'
@@ -299,6 +303,7 @@ const OpenJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.propertyName}
           />
           <TextField
             label='Category / Subcategory'
@@ -308,6 +313,7 @@ const OpenJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.categorySubcategory}
           />
           <TextField
             label='Vendor'
@@ -317,6 +323,7 @@ const OpenJobs: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow.vendor}
           />
           <TextField
             InputLabelProps={{shrink: true}}
@@ -326,6 +333,7 @@ const OpenJobs: FC = () => {
             name='postedDate'
             variant='standard'
             margin='dense'
+            value={moment(currentRow.postedDate).format('YYYY-MM-DDTHH:mm')}
           />
           <TextField
             label='Status'
@@ -336,6 +344,7 @@ const OpenJobs: FC = () => {
             variant='standard'
             margin='dense'
             select
+            value={currentRow.status}
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>
@@ -359,4 +368,5 @@ const OpenJobs: FC = () => {
     </>
   )
 }
-export {OpenJobs}
+
+export {CompletedJobs}

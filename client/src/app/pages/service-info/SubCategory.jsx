@@ -13,38 +13,51 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
-import {Box, CircularProgress, DialogContent, MenuItem, TextField} from '@material-ui/core'
+import {
+  Box,
+  CircularProgress,
+  DialogContent,
+  DialogTitle,
+  MenuItem,
+  TextField,
+} from '@material-ui/core'
 import '../../App.css'
+import {Image} from 'react-bootstrap-v5'
+import img from '../../../assets/teacher.jpg'
+// import hoverImg from 'clientpublicmediaavatars/300-7.jpg'
 
-const Ratings: FC = () => {
+const SubCategory = () => {
   const intl = useIntl()
-  const [ratings, setRatings] = useState([])
+  const [jobs, setJobs] = useState([])
+  const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
+  const [addOpen, setAddOpen] = useState(false)
+  const [show, setShow] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
   const [currentRow, setCurrentRow] = useState({})
-  const [loading, setLoading] = useState(false)
-  const [show, setShow] = useState(false)
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
     setShow(false)
+    setAddOpen(false)
   }
 
   useEffect(() => {
-    getRatings()
+    getJobs()
   }, [])
 
-  const getRatings = async () => {
+  const getJobs = async () => {
+    setLoading(true)
     try {
-      setLoading(true)
-      const response = await ApiGet(`review`)
+      const response = await ApiGet(`job?jobCategory=open&status=pending`)
       if (response.status === 200) {
-        setRatings(response.data.data)
+        setJobs(response.data.data)
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
+      console.log(err)
       toast.error(err.message)
       setLoading(false)
     }
@@ -53,107 +66,88 @@ const Ratings: FC = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`review?_id=${rowId}`)
-
+      const response = await ApiDelete(`job?_id=${rowId}`)
       if (response.status === 200) {
-        getRatings()
+        getJobs()
         toast.success('Deleted Successfully')
       }
       setLoading(false)
       setShow(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
       setShow(false)
     }
   }
 
-  const handleUpdate = async (rowId: string) => {
+  const handleUpdate = async (rowId) => {
     try {
       setLoading(true)
-      const response = await ApiPut(`review?_id=${rowId}`, {...currentRow, ...inputValue})
-
+      const response = await ApiPut(`job?_id=${rowId}`, {...currentRow, ...inputValue})
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
-        getRatings()
+        getJobs()
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
     }
   }
 
-  const handleChange = (e: any) => {
+  const handleAdd = async () => {
+    console.log('added')
+  }
+
+  const handleChange = (e) => {
     const {name, value} = e.target
     setInputValue({...inputValue, [name]: value})
   }
 
   const columns = [
     {
-      name: 'Rating By',
-      selector: (row: any) => row.ratingBy,
+      name: 'Category',
+      selector: (row) => row.category,
       sortable: true,
       width: '200px',
     },
     {
-      name: 'Rating For',
-      selector: (row: any) => row.ratingFor,
+      name: 'Parent Category',
+      selector: (row) => row.parentCategory,
       sortable: true,
       width: '200px',
     },
     {
-      name: 'Who Rated',
-      selector: (row: any) => row.whoRated,
-      sortable: true,
-      width: '150px',
+      name: 'Image',
+      cell: (row) => {
+        return <Image className='image' src={row.imageSrc} />
+      },
     },
     {
-      name: 'Job Number',
-      selector: (row: any) => row.jobNumber,
+      name: 'Sequence Number',
+      selector: (row) => row.sequenceNumber,
       sortable: true,
-      width: '150px',
     },
     {
-      name: 'Rating',
-      selector: (row: any) => row.rating,
-      cell: (row: any) => (
-        <>
-          {[...Array(row.rating)].map(() => (
-            <div className='rating'>
-              <div className='rating-label me-2 checked'>
-                <i className='bi bi-star-fill fs-5'></i>
-              </div>
-            </div>
-          ))}
-        </>
-      ),
+      name: 'Added On',
+      selector: (row) => row.addedOn,
       sortable: true,
-      width: '150px',
     },
     {
-      name: 'Comment',
-      selector: (row: any) => row.comment,
+      name: 'Status',
+      selector: (row) => row.status,
       sortable: true,
-      width: '150px',
-    },
-    {
-      name: 'Posted On',
-      selector: (row: any) => row.postedOn,
-      sortable: true,
-      width: '200px',
     },
     {
       name: 'Action',
-      cell: (row: any) => {
+      cell: (row) => {
         return (
           <>
             <Edit
               className='icon'
               onClick={() => {
                 handleOpen()
-                setInputValue({...row})
                 setRowId(row.id)
                 setCurrentRow(row)
               }}
@@ -172,18 +166,46 @@ const Ratings: FC = () => {
     },
   ]
 
-  const data = ratings?.map((rating: any) => {
-    return {
-      id: rating._id,
-      ratingBy: rating.ratingBy,
-      ratingFor: rating.ratingFor,
-      whoRated: rating.whoRated,
-      jobNumber: rating.jobNumber,
-      rating: rating.rating,
-      comment: rating.comment,
-      postedOn: moment(rating.createdAt).format('DD MMM YY hh:mmA'),
-    }
-  })
+  //   const data = jobs?.map((job) => {
+  //     return {
+  //       id: job._id,
+  //       job: job.jobTitle,
+  //       quote: job.quote,
+  //       city: job.city,
+  //       jobTotal: job.jobTotal,
+  //       customer: job.customer,
+  //       propertyName: job.propertyName,
+  //       categorySubcategory: job.category || job.subCategory,
+  //       vendor: job.vendor,
+  //       postedDate: moment(job.createdAt).format('DD MMM YY hh:mmA'),
+  //       status: job.status,
+  //     }
+  //   })
+
+  const data = [
+    {
+      id: 1,
+      category: 'Teacher',
+      parentCategory: 'school',
+      imageSrc: img,
+      sequenceNumber: 123,
+      addedOn: '',
+      status: 'Active',
+    },
+    {
+      id: 2,
+      category: 'Plumber',
+      parentCategory: 'Housing Service',
+      imageSrc: img,
+      sequenceNumber: 1234,
+      status: 'Active',
+    },
+  ]
+
+  const status = [
+    {label: 'Active', value: 'Active'},
+    {label: 'Inactive', value: 'Inactive'},
+  ]
 
   if (loading) {
     return (
@@ -195,7 +217,14 @@ const Ratings: FC = () => {
 
   return (
     <>
-      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.RATING'})}</PageTitle>
+      <PageTitle breadcrumbs={[]}>
+        {intl.formatMessage({id: 'MENU.SERVICE_INFO.SUB_CATEGORY'})}
+      </PageTitle>
+      <Box className='add-button-wrapper' onClick={() => setAddOpen(true)}>
+        <Button className='add-button' variant='success'>
+          Add New +
+        </Button>
+      </Box>
       <DataTable
         columns={columns}
         data={data}
@@ -206,7 +235,6 @@ const Ratings: FC = () => {
         responsive
         striped
       />
-
       <Modal show={show} onHide={handleClose}>
         <>
           <Modal.Header closeButton>
@@ -229,91 +257,91 @@ const Ratings: FC = () => {
         </>
       </Modal>
 
-      <Dialog open={open} onClose={handleClose}>
-        <Toolbar>
-          <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
-            <CloseIcon />
-          </IconButton>
-        </Toolbar>
+      <Dialog open={open || addOpen} onClose={handleClose}>
+        <DialogTitle>
+          <Box sx={{display: 'flex'}}>
+            <Box flexGrow={1}>
+              {open && 'Edit Row'}
+              {addOpen && 'Add New Row'}
+            </Box>
+            <Box>
+              <IconButton color='inherit' onClick={handleClose} aria-label='close'>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          </Box>
+        </DialogTitle>
         <DialogContent>
           <TextField
-            label='Rating For'
+            label='Category'
             type={'text'}
             onChange={(e) => handleChange(e)}
-            name='ratingFor'
+            name='category'
             fullWidth
             variant='standard'
             margin='dense'
           />
           <TextField
-            label='Rating By'
+            label='Parent Category'
             type={'text'}
             onChange={(e) => handleChange(e)}
-            name='ratingBy'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='Who Rated'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='whoRated'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='Job Number'
-            type={'number'}
-            onChange={(e) => handleChange(e)}
-            name='jobNumber'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='Rating'
-            type={'number'}
-            onChange={(e) => handleChange(e)}
-            name='rating'
-            select
-            fullWidth
-            variant='standard'
-            margin='dense'
-          >
-            {[1, 2, 3, 4, 5].map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            label='Comment'
-            multiline
-            maxRows={3}
-            onChange={(e) => handleChange(e)}
-            name='comment'
+            name='parentCategory'
             fullWidth
             variant='standard'
             margin='dense'
           />
           <TextField
             InputLabelProps={{shrink: true}}
-            label='Posted On'
-            type={'datetime-local'}
+            label='Image'
+            type={'file'}
             onChange={(e) => handleChange(e)}
-            name='postedOn'
+            name='image'
+            fullWidth
             variant='standard'
             margin='dense'
           />
+          <TextField
+            label='Sequence Number'
+            type={'number'}
+            onChange={(e) => handleChange(e)}
+            name='sequenceNumber'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            InputLabelProps={{shrink: true}}
+            label='Added On'
+            type={'datetime-local'}
+            onChange={(e) => handleChange(e)}
+            name='addedOn'
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Status'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='status'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            select
+          >
+            {status.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
         </DialogContent>
         <Button
           className='button'
           size='lg'
           variant='success'
           onClick={() => {
-            handleUpdate(rowId)
+            open && handleUpdate(rowId)
+            addOpen && handleAdd()
             handleClose()
           }}
         >
@@ -323,5 +351,4 @@ const Ratings: FC = () => {
     </>
   )
 }
-
-export {Ratings}
+export {SubCategory}

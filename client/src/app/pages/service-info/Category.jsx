@@ -17,22 +17,23 @@ import {
   Box,
   CircularProgress,
   DialogContent,
-  DialogTitle,
   MenuItem,
   TextField,
+  Button as MuiButton,
+  DialogTitle,
 } from '@material-ui/core'
 import '../../App.css'
 import {Image} from 'react-bootstrap-v5'
 import img from '../../../assets/teacher.jpg'
 // import hoverImg from 'clientpublicmediaavatars/300-7.jpg'
 
-const State: FC = () => {
+const Category = () => {
   const intl = useIntl()
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
-  const [addOpen, setAddOpen] = useState(false)
   const [show, setShow] = useState(false)
+  const [addOpen, setAddOpen] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
   const [currentRow, setCurrentRow] = useState({})
@@ -56,7 +57,7 @@ const State: FC = () => {
         setJobs(response.data.data)
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
       console.log(err)
       toast.error(err.message)
       setLoading(false)
@@ -73,14 +74,14 @@ const State: FC = () => {
       }
       setLoading(false)
       setShow(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
       setShow(false)
     }
   }
 
-  const handleUpdate = async (rowId: string) => {
+  const handleUpdate = async (rowId) => {
     try {
       setLoading(true)
       const response = await ApiPut(`job?_id=${rowId}`, {...currentRow, ...inputValue})
@@ -90,7 +91,7 @@ const State: FC = () => {
         getJobs()
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
     }
@@ -100,32 +101,47 @@ const State: FC = () => {
     console.log('added')
   }
 
-  const handleChange = (e: any) => {
+  const handleChange = (e) => {
     const {name, value} = e.target
     setInputValue({...inputValue, [name]: value})
   }
 
   const columns = [
     {
-      name: 'State Name',
-      selector: (row: any) => row.stateName,
+      name: 'Category Name',
+      selector: (row) => row.categoryName,
       sortable: true,
-      //   width: '200px',
+      width: '200px',
     },
     {
-      name: 'country Name',
-      selector: (row: any) => row.countryName,
+      name: 'Sequence Number',
+      selector: (row) => row.sequenceNumber,
       sortable: true,
-      //   width: '200px',
+    },
+    {
+      name: 'Image',
+      cell: (row) => {
+        return <Image className='image' src={row.imageSrc} />
+      },
+    },
+    {
+      name: 'Hover Image',
+      cell: (row) => {
+        return (
+          <Box>
+            <Image fluid src={row.hoverImageSrc} />
+          </Box>
+        )
+      },
     },
     {
       name: 'Status',
-      selector: (row: any) => row.status,
+      selector: (row) => row.status,
       sortable: true,
     },
     {
       name: 'Action',
-      cell: (row: any) => {
+      cell: (row) => {
         return (
           <>
             <Edit
@@ -150,7 +166,7 @@ const State: FC = () => {
     },
   ]
 
-  //   const data = jobs?.map((job: any) => {
+  //   const data = jobs?.map((job) => {
   //     return {
   //       id: job._id,
   //       job: job.jobTitle,
@@ -169,14 +185,18 @@ const State: FC = () => {
   const data = [
     {
       id: 1,
-      stateName: 'Gujarat',
-      countryName: 'Surat',
+      categoryName: 'Teacher',
+      sequenceNumber: 123,
+      imageSrc: img,
+      //   hoverImageSrc: hoverImg,
       status: 'Active',
     },
     {
       id: 2,
-      stateName: 'Maharastra',
-      countryName: 'Mumbai',
+      categoryName: 'Plumber',
+      sequenceNumber: 1234,
+      imageSrc: img,
+      //   hoverImageSrc: hoverImg,
       status: 'Active',
     },
   ]
@@ -196,7 +216,9 @@ const State: FC = () => {
 
   return (
     <>
-      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.SERVICE_INFO.STATE'})}</PageTitle>
+      <PageTitle breadcrumbs={[]}>
+        {intl.formatMessage({id: 'MENU.SERVICE_INFO.CATEGORY'})}
+      </PageTitle>
       <Box className='add-button-wrapper' onClick={() => setAddOpen(true)}>
         <Button className='add-button' variant='success'>
           Add New +
@@ -250,22 +272,56 @@ const State: FC = () => {
         </DialogTitle>
         <DialogContent>
           <TextField
-            label='State Name'
+            label='Category Name'
             type={'text'}
             onChange={(e) => handleChange(e)}
-            name='stateName'
+            name='categoryName'
             fullWidth
             variant='standard'
             margin='dense'
+            required={addOpen && true}
           />
           <TextField
-            label='Country Name'
-            type={'text'}
+            label='Sequence Number'
+            type={'number'}
             onChange={(e) => handleChange(e)}
-            name='countryName'
+            name='sequenceNumber'
             fullWidth
             variant='standard'
             margin='dense'
+            required={addOpen && true}
+          />
+          <TextField
+            InputLabelProps={{shrink: true}}
+            label='Image'
+            type={'file'}
+            onChange={(e) => handleChange(e)}
+            name='image'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            required={addOpen && true}
+          />
+          <TextField
+            InputLabelProps={{shrink: true}}
+            label='Hover Image'
+            type={'file'}
+            onChange={(e) => handleChange(e)}
+            name='hoverImage'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            required={addOpen && true}
+          />
+          <TextField
+            InputLabelProps={{shrink: true}}
+            label='Added On'
+            type={'datetime-local'}
+            onChange={(e) => handleChange(e)}
+            name='addedOn'
+            variant='standard'
+            margin='dense'
+            required={addOpen && true}
           />
           <TextField
             label='Status'
@@ -275,6 +331,7 @@ const State: FC = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            required={addOpen && true}
             select
           >
             {status.map((option) => (
@@ -300,4 +357,4 @@ const State: FC = () => {
     </>
   )
 }
-export {State}
+export {Category}

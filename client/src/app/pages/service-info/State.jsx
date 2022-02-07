@@ -26,7 +26,7 @@ import {Image} from 'react-bootstrap-v5'
 import img from '../../../assets/teacher.jpg'
 // import hoverImg from 'clientpublicmediaavatars/300-7.jpg'
 
-const SubCategory: FC = () => {
+const State = () => {
   const intl = useIntl()
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(false)
@@ -56,7 +56,7 @@ const SubCategory: FC = () => {
         setJobs(response.data.data)
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
       console.log(err)
       toast.error(err.message)
       setLoading(false)
@@ -73,14 +73,14 @@ const SubCategory: FC = () => {
       }
       setLoading(false)
       setShow(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
       setShow(false)
     }
   }
 
-  const handleUpdate = async (rowId: string) => {
+  const handleUpdate = async (rowId) => {
     try {
       setLoading(true)
       const response = await ApiPut(`job?_id=${rowId}`, {...currentRow, ...inputValue})
@@ -90,7 +90,7 @@ const SubCategory: FC = () => {
         getJobs()
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
     }
@@ -100,48 +100,32 @@ const SubCategory: FC = () => {
     console.log('added')
   }
 
-  const handleChange = (e: any) => {
+  const handleChange = (e) => {
     const {name, value} = e.target
     setInputValue({...inputValue, [name]: value})
   }
 
   const columns = [
     {
-      name: 'Category',
-      selector: (row: any) => row.category,
+      name: 'State Name',
+      selector: (row) => row.stateName,
       sortable: true,
-      width: '200px',
+      //   width: '200px',
     },
     {
-      name: 'Parent Category',
-      selector: (row: any) => row.parentCategory,
+      name: 'country Name',
+      selector: (row) => row.countryName,
       sortable: true,
-      width: '200px',
-    },
-    {
-      name: 'Image',
-      cell: (row: any) => {
-        return <Image className='image' src={row.imageSrc} />
-      },
-    },
-    {
-      name: 'Sequence Number',
-      selector: (row: any) => row.sequenceNumber,
-      sortable: true,
-    },
-    {
-      name: 'Added On',
-      selector: (row: any) => row.addedOn,
-      sortable: true,
+      //   width: '200px',
     },
     {
       name: 'Status',
-      selector: (row: any) => row.status,
+      selector: (row) => row.status,
       sortable: true,
     },
     {
       name: 'Action',
-      cell: (row: any) => {
+      cell: (row) => {
         return (
           <>
             <Edit
@@ -166,7 +150,7 @@ const SubCategory: FC = () => {
     },
   ]
 
-  //   const data = jobs?.map((job: any) => {
+  //   const data = jobs?.map((job) => {
   //     return {
   //       id: job._id,
   //       job: job.jobTitle,
@@ -185,19 +169,14 @@ const SubCategory: FC = () => {
   const data = [
     {
       id: 1,
-      category: 'Teacher',
-      parentCategory: 'school',
-      imageSrc: img,
-      sequenceNumber: 123,
-      addedOn: '',
+      stateName: 'Gujarat',
+      countryName: 'Surat',
       status: 'Active',
     },
     {
       id: 2,
-      category: 'Plumber',
-      parentCategory: 'Housing Service',
-      imageSrc: img,
-      sequenceNumber: 1234,
+      stateName: 'Maharastra',
+      countryName: 'Mumbai',
       status: 'Active',
     },
   ]
@@ -217,9 +196,7 @@ const SubCategory: FC = () => {
 
   return (
     <>
-      <PageTitle breadcrumbs={[]}>
-        {intl.formatMessage({id: 'MENU.SERVICE_INFO.SUB_CATEGORY'})}
-      </PageTitle>
+      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.SERVICE_INFO.STATE'})}</PageTitle>
       <Box className='add-button-wrapper' onClick={() => setAddOpen(true)}>
         <Button className='add-button' variant='success'>
           Add New +
@@ -273,48 +250,20 @@ const SubCategory: FC = () => {
         </DialogTitle>
         <DialogContent>
           <TextField
-            label='Category'
+            label='State Name'
             type={'text'}
             onChange={(e) => handleChange(e)}
-            name='category'
+            name='stateName'
             fullWidth
             variant='standard'
             margin='dense'
           />
           <TextField
-            label='Parent Category'
+            label='Country Name'
             type={'text'}
             onChange={(e) => handleChange(e)}
-            name='parentCategory'
+            name='countryName'
             fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            InputLabelProps={{shrink: true}}
-            label='Image'
-            type={'file'}
-            onChange={(e) => handleChange(e)}
-            name='image'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='Sequence Number'
-            type={'number'}
-            onChange={(e) => handleChange(e)}
-            name='sequenceNumber'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            InputLabelProps={{shrink: true}}
-            label='Added On'
-            type={'datetime-local'}
-            onChange={(e) => handleChange(e)}
-            name='addedOn'
             variant='standard'
             margin='dense'
           />
@@ -351,4 +300,4 @@ const SubCategory: FC = () => {
     </>
   )
 }
-export {SubCategory}
+export {State}
