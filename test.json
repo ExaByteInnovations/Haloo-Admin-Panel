@@ -1,0 +1,995 @@
+[{
+  "_id": {
+    "$oid": "61fbb1f8bc478f1c0ec93ac9"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "close",
+  "createdAt": {
+    "$date": "2022-02-03T10:44:08.855Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-03T10:44:08.855Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fbb34ebc478f1c0ec93ae2"
+  },
+  "quote": null,
+  "city": "london",
+  "jobTitle": "Plumbing Services",
+  "customer": "Test Labs",
+  "propertyName": "Avadh Complex",
+  "category": "Housing Service",
+  "subCategory": "IT",
+  "status": "done",
+  "jobCategory": "open",
+  "createdAt": {
+    "$date": "2022-02-03T10:49:50.129Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-04T12:04:53.227Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fbb8eabc478f1c0ec93afe"
+  },
+  "quote": null,
+  "city": "pune",
+  "jobTitle": "Plumbing Services",
+  "customer": "Test Labs",
+  "propertyName": "Atlanta Complex",
+  "category": "Housing Service",
+  "subCategory": "IT",
+  "status": "done",
+  "jobCategory": "disputed",
+  "createdAt": {
+    "$date": "2022-02-03T11:13:46.036Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-03T11:16:34.126Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fbb909bc478f1c0ec93b00"
+  },
+  "quote": null,
+  "city": "Delhi",
+  "jobTitle": "Electric Services",
+  "customer": "Test Labs",
+  "propertyName": "Demo Complex",
+  "category": "Housing Service",
+  "subCategory": "IT",
+  "status": "done",
+  "jobCategory": "disputed",
+  "createdAt": {
+    "$date": "2022-02-03T11:14:17.832Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-03T11:14:17.832Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fbb93bbc478f1c0ec93b03"
+  },
+  "quote": null,
+  "city": "london",
+  "jobTitle": "Car Wash Services",
+  "customer": "Test Labs",
+  "propertyName": "Avadh Complex",
+  "category": "Housing Service",
+  "subCategory": "IT",
+  "status": "done",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-03T11:15:07.694Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-04T12:55:00.401Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fbb963bc478f1c0ec93b05"
+  },
+  "quote": null,
+  "city": "Surat",
+  "jobTitle": "IT Services",
+  "customer": "Ivvy Labs",
+  "propertyName": "citadel Complex",
+  "category": "IT Solution",
+  "subCategory": "IT",
+  "status": "done",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-03T11:15:47.017Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-03T11:15:47.017Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5539301ec60bc0660e48"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "close",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:14.108Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:14.108Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe553c301ec60bc0660e4a"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "close",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:16.031Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:16.031Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe553c301ec60bc0660e4c"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "close",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:16.878Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:16.878Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5541301ec60bc0660e4e"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "close",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:21.897Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:21.897Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5543301ec60bc0660e50"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "close",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:23.064Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:23.064Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5543301ec60bc0660e52"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "close",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:23.974Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:23.974Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5544301ec60bc0660e54"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "close",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:24.822Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:24.822Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5545301ec60bc0660e56"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "close",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:25.775Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:25.775Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5546301ec60bc0660e58"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "close",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:26.606Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:26.606Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5547301ec60bc0660e5a"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "close",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:27.388Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:27.388Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5548301ec60bc0660e5c"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "close",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:28.291Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:28.291Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5557301ec60bc0660e5e"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:43.479Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:43.479Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5558301ec60bc0660e60"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:44.064Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:44.064Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5558301ec60bc0660e62"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:44.947Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:44.947Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5559301ec60bc0660e64"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:45.631Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:45.631Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe555a301ec60bc0660e66"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:46.278Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:46.278Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe555a301ec60bc0660e68"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:46.946Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:46.946Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe555b301ec60bc0660e6a"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:47.546Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:47.546Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe555c301ec60bc0660e6c"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:48.130Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:48.130Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe555c301ec60bc0660e6e"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:48.632Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:48.632Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe555d301ec60bc0660e70"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:49.115Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:49.115Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe555d301ec60bc0660e72"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:49.512Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:49.512Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe555d301ec60bc0660e74"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:49.998Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:49.998Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe555e301ec60bc0660e76"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:50.427Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:50.427Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe555e301ec60bc0660e78"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:50.878Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:50.878Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe555f301ec60bc0660e7a"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:51.349Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:51.349Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe555f301ec60bc0660e7c"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:51.761Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:51.761Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5560301ec60bc0660e7e"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:52.198Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:52.198Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5560301ec60bc0660e80"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:52.608Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:52.608Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5560301ec60bc0660e82"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:52.974Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:52.974Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5561301ec60bc0660e84"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:53.350Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:53.350Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5561301ec60bc0660e86"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:53.743Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:53.743Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5562301ec60bc0660e88"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:54.093Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:54.093Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5562301ec60bc0660e8a"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:54.469Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:54.469Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61fe5562301ec60bc0660e8c"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "completed",
+  "createdAt": {
+    "$date": "2022-02-05T10:45:54.877Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-05T10:45:54.877Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61ff7bd9915f67550437df6b"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "Completed",
+  "jobCategory": "open",
+  "createdAt": {
+    "$date": "2022-02-06T07:42:18.035Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-06T07:46:08.547Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61ff7cf0915f67550437df81"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "Completed",
+  "jobCategory": "open",
+  "createdAt": {
+    "$date": "2022-02-06T07:46:56.554Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-06T07:47:42.708Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61ff7cf1915f67550437df83"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "open",
+  "createdAt": {
+    "$date": "2022-02-06T07:46:57.067Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-06T07:46:57.067Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61ff7cf1915f67550437df85"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "open",
+  "createdAt": {
+    "$date": "2022-02-06T07:46:57.620Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-06T07:46:57.620Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61ff7cf2915f67550437df87"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "open",
+  "createdAt": {
+    "$date": "2022-02-06T07:46:58.032Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-06T07:46:58.032Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61ff7cf2915f67550437df89"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "open",
+  "createdAt": {
+    "$date": "2022-02-06T07:46:58.391Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-06T07:46:58.391Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "61ff7cf2915f67550437df8b"
+  },
+  "quote": null,
+  "city": "Mumbai",
+  "jobTitle": "IT Services",
+  "customer": "Test Labs",
+  "propertyName": "Citadel Complex",
+  "category": "IT Solutions",
+  "subCategory": "IT",
+  "status": "pending",
+  "jobCategory": "open",
+  "createdAt": {
+    "$date": "2022-02-06T07:46:58.896Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-06T07:46:58.896Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "6201583352199ab1e8261a34"
+  },
+  "propertyName": "test",
+  "category": "ac",
+  "status": "active",
+  "createdAt": {
+    "$date": "2022-02-07T17:34:43.386Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-07T17:34:43.386Z"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "620158d8ddaa44f6f43a9934"
+  },
+  "customerId": {
+    "$oid": "620156b552199ab1e8261a2c"
+  },
+  "propertyName": "test",
+  "category": "ac",
+  "status": "active",
+  "vendorId": {
+    "$oid": "6201574052199ab1e8261a30"
+  },
+  "createdAt": {
+    "$date": "2022-02-07T17:37:28.605Z"
+  },
+  "updatedAt": {
+    "$date": "2022-02-07T17:37:28.605Z"
+  },
+  "__v": 0
+}]
