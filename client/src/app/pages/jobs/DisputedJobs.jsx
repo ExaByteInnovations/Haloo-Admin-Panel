@@ -16,7 +16,7 @@ import {Modal} from 'react-bootstrap'
 import {Box, CircularProgress, DialogContent, MenuItem, TextField} from '@material-ui/core'
 import '../../App.css'
 
-const CompletedJobs: FC = () => {
+const DisputedJobs = () => {
   const intl = useIntl()
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(false)
@@ -39,12 +39,12 @@ const CompletedJobs: FC = () => {
   const getJobs = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`job?jobCategory=completed`)
+      const response = await ApiGet(`job?jobCategory=disputed`)
       if (response.status === 200) {
         setJobs(response.data.data)
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
     }
@@ -60,14 +60,14 @@ const CompletedJobs: FC = () => {
       }
       setLoading(false)
       setShow(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
       setShow(false)
     }
   }
 
-  const handleUpdate = async (rowId: string) => {
+  const handleUpdate = async (rowId) => {
     try {
       setLoading(true)
       const response = await ApiPut(`job?_id=${rowId}`, {...currentRow, ...inputValue})
@@ -77,13 +77,13 @@ const CompletedJobs: FC = () => {
         getJobs()
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
     }
   }
 
-  const handleChange = (e: any) => {
+  const handleChange = (e) => {
     const {name, value} = e.target
     setInputValue({...inputValue, [name]: value})
   }
@@ -91,64 +91,64 @@ const CompletedJobs: FC = () => {
   const columns = [
     {
       name: 'Job',
-      selector: (row: any) => row.job,
+      selector: (row) => row.job,
       sortable: true,
       width: '200px',
     },
     {
       name: 'Quote',
-      selector: (row: any) => row.quote,
+      selector: (row) => row.quote,
       sortable: true,
     },
     {
       name: 'City',
-      selector: (row: any) => row.city,
+      selector: (row) => row.city,
       sortable: true,
     },
     {
       name: 'Job Total',
-      selector: (row: any) => row.jobTotal,
+      selector: (row) => row.jobTotal,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Customer',
-      selector: (row: any) => row.customer,
+      selector: (row) => row.customer,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Property Name',
-      selector: (row: any) => row.propertyName,
+      selector: (row) => row.propertyName,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Category/Subcategory',
-      selector: (row: any) => row.categorySubcategory,
+      selector: (row) => row.categorySubcategory,
       sortable: true,
       width: '200px',
     },
     {
       name: 'Vendor',
-      selector: (row: any) => row.vendor,
+      selector: (row) => row.vendor,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Posted Date',
-      selector: (row: any) => row.postedDate,
+      selector: (row) => row.postedDate,
       sortable: true,
       width: '200px',
     },
     {
       name: 'Status',
-      selector: (row: any) => row.status,
+      selector: (row) => row.status,
       sortable: true,
     },
     {
       name: 'Action',
-      cell: (row: any) => {
+      cell: (row) => {
         return (
           <>
             <Edit
@@ -173,7 +173,7 @@ const CompletedJobs: FC = () => {
     },
   ]
 
-  const data = jobs?.map((job: any) => {
+  const data = jobs?.map((job) => {
     return {
       id: job._id,
       job: job.jobTitle,
@@ -189,6 +189,12 @@ const CompletedJobs: FC = () => {
     }
   })
 
+  const status = [
+    {label: 'Pending', value: 'Pending'},
+    {label: 'Completed', value: 'Completed'},
+    {label: 'Disputed', value: 'Disputed'},
+  ]
+
   if (loading) {
     return (
       <Box className='loader'>
@@ -199,12 +205,12 @@ const CompletedJobs: FC = () => {
 
   return (
     <>
-      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.JOBS.COMPLETED_JOBS'})}</PageTitle>
+      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.JOBS.DISPUTED_JOBS'})}</PageTitle>
       <DataTable
         columns={columns}
         data={data}
         fixedHeader
-        fixedHeaderScrollHeight='300px'
+        fixedHeaderScrollHeight='61vh'
         pagination
         highlightOnHover
         responsive
@@ -231,120 +237,135 @@ const CompletedJobs: FC = () => {
           </Modal.Footer>
         </>
       </Modal>
-      {open ? (
-        <Dialog open={open} onClose={handleClose}>
-          <Toolbar>
-            <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
-              <CloseIcon />
-            </IconButton>
-          </Toolbar>
-          <DialogContent>
-            <TextField
-              label='Job'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='job'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Quote'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='quote'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='City'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='city'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Job Total'
-              type={'number'}
-              onChange={(e) => handleChange(e)}
-              name='jobTotal'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Customer'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='customer'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Property Name'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='propertyName'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Category / Subcategory'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='categorySubcategory'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Vendor'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='vendor'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              InputLabelProps={{shrink: true}}
-              label='Posted Date'
-              type={'datetime-local'}
-              onChange={(e) => handleChange(e)}
-              name='postedDate'
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Status'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='status'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-          </DialogContent>
-          <Button
-            className='button'
-            size='lg'
-            variant='success'
-            onClick={() => {
-              handleUpdate(rowId)
-              handleClose()
-            }}
+      <Dialog open={open} onClose={handleClose}>
+        <Toolbar>
+          <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
+            <CloseIcon />
+          </IconButton>
+        </Toolbar>
+        <DialogContent>
+          <TextField
+            label='Job'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='job'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow.job}
+          />
+          <TextField
+            label='Quote'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='quote'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow.quote}
+          />
+          <TextField
+            label='City'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='city'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow.city}
+          />
+          <TextField
+            label='Job Total'
+            type={'number'}
+            onChange={(e) => handleChange(e)}
+            name='jobTotal'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow.jobTotal}
+          />
+          <TextField
+            label='Customer'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='customer'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow.customer}
+          />
+          <TextField
+            label='Property Name'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='propertyName'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow.propertyName}
+          />
+          <TextField
+            label='Category / Subcategory'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='categorySubcategory'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow.categorySubcategory}
+          />
+          <TextField
+            label='Vendor'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='vendor'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow.vendor}
+          />
+          <TextField
+            InputLabelProps={{shrink: true}}
+            label='Posted Date'
+            type={'datetime-local'}
+            onChange={(e) => handleChange(e)}
+            name='postedDate'
+            variant='standard'
+            margin='dense'
+            value={moment(currentRow.postedDate).format('YYYY-MM-DDTHH:mm')}
+          />
+          <TextField
+            label='Status'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='status'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            select
+            value={currentRow.status}
           >
-            Save
-          </Button>
-        </Dialog>
-      ) : null}
+            {status.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </DialogContent>
+        <Button
+          className='button'
+          size='lg'
+          variant='success'
+          onClick={() => {
+            handleUpdate(rowId)
+            handleClose()
+          }}
+        >
+          Save
+        </Button>
+      </Dialog>
     </>
   )
 }
 
-export {CompletedJobs}
+export {DisputedJobs}

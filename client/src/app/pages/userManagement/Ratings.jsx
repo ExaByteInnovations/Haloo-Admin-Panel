@@ -16,7 +16,7 @@ import {Modal} from 'react-bootstrap'
 import {Box, CircularProgress, DialogContent, MenuItem, TextField} from '@material-ui/core'
 import '../../App.css'
 
-const Ratings: FC = () => {
+const Ratings = () => {
   const intl = useIntl()
   const [ratings, setRatings] = useState([])
   const [open, setOpen] = useState(false)
@@ -44,7 +44,7 @@ const Ratings: FC = () => {
         setRatings(response.data.data)
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
     }
@@ -61,14 +61,14 @@ const Ratings: FC = () => {
       }
       setLoading(false)
       setShow(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
       setShow(false)
     }
   }
 
-  const handleUpdate = async (rowId: string) => {
+  const handleUpdate = async (rowId) => {
     try {
       setLoading(true)
       const response = await ApiPut(`review?_id=${rowId}`, {...currentRow, ...inputValue})
@@ -79,13 +79,13 @@ const Ratings: FC = () => {
         getRatings()
       }
       setLoading(false)
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err.message)
       setLoading(false)
     }
   }
 
-  const handleChange = (e: any) => {
+  const handleChange = (e) => {
     const {name, value} = e.target
     setInputValue({...inputValue, [name]: value})
   }
@@ -93,32 +93,32 @@ const Ratings: FC = () => {
   const columns = [
     {
       name: 'Rating By',
-      selector: (row: any) => row.ratingBy,
+      selector: (row) => row.ratingBy,
       sortable: true,
       width: '200px',
     },
     {
       name: 'Rating For',
-      selector: (row: any) => row.ratingFor,
+      selector: (row) => row.ratingFor,
       sortable: true,
       width: '200px',
     },
     {
       name: 'Who Rated',
-      selector: (row: any) => row.whoRated,
+      selector: (row) => row.whoRated,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Job Number',
-      selector: (row: any) => row.jobNumber,
+      selector: (row) => row.jobNumber,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Rating',
-      selector: (row: any) => row.rating,
-      cell: (row: any) => (
+      selector: (row) => row.rating,
+      cell: (row) => (
         <>
           {[...Array(row.rating)].map(() => (
             <div className='rating'>
@@ -134,19 +134,19 @@ const Ratings: FC = () => {
     },
     {
       name: 'Comment',
-      selector: (row: any) => row.comment,
+      selector: (row) => row.comment,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Posted On',
-      selector: (row: any) => row.postedOn,
+      selector: (row) => row.postedOn,
       sortable: true,
       width: '200px',
     },
     {
       name: 'Action',
-      cell: (row: any) => {
+      cell: (row) => {
         return (
           <>
             <Edit
@@ -172,7 +172,7 @@ const Ratings: FC = () => {
     },
   ]
 
-  const data = ratings?.map((rating: any) => {
+  const data = ratings?.map((rating) => {
     return {
       id: rating._id,
       ratingBy: rating.ratingBy,
@@ -200,7 +200,7 @@ const Ratings: FC = () => {
         columns={columns}
         data={data}
         fixedHeader
-        fixedHeaderScrollHeight='300px'
+        fixedHeaderScrollHeight='61vh'
         pagination
         highlightOnHover
         responsive
@@ -229,99 +229,97 @@ const Ratings: FC = () => {
         </>
       </Modal>
 
-      {open ? (
-        <Dialog open={open} onClose={handleClose}>
-          <Toolbar>
-            <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
-              <CloseIcon />
-            </IconButton>
-          </Toolbar>
-          <DialogContent>
-            <TextField
-              label='Rating For'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='ratingFor'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Rating By'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='ratingBy'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Who Rated'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='whoRated'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Job Number'
-              type={'number'}
-              onChange={(e) => handleChange(e)}
-              name='jobNumber'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Rating'
-              type={'number'}
-              onChange={(e) => handleChange(e)}
-              name='rating'
-              select
-              fullWidth
-              variant='standard'
-              margin='dense'
-            >
-              {[1, 2, 3, 4, 5].map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              label='Comment'
-              multiline
-              maxRows={3}
-              onChange={(e) => handleChange(e)}
-              name='comment'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              InputLabelProps={{shrink: true}}
-              label='Posted On'
-              type={'datetime-local'}
-              onChange={(e) => handleChange(e)}
-              name='postedOn'
-              variant='standard'
-              margin='dense'
-            />
-          </DialogContent>
-          <Button
-            className='button'
-            size='lg'
-            variant='success'
-            onClick={() => {
-              handleUpdate(rowId)
-              handleClose()
-            }}
+      <Dialog open={open} onClose={handleClose}>
+        <Toolbar>
+          <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
+            <CloseIcon />
+          </IconButton>
+        </Toolbar>
+        <DialogContent>
+          <TextField
+            label='Rating For'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='ratingFor'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Rating By'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='ratingBy'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Who Rated'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='whoRated'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Job Number'
+            type={'number'}
+            onChange={(e) => handleChange(e)}
+            name='jobNumber'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Rating'
+            type={'number'}
+            onChange={(e) => handleChange(e)}
+            name='rating'
+            select
+            fullWidth
+            variant='standard'
+            margin='dense'
           >
-            Save
-          </Button>
-        </Dialog>
-      ) : null}
+            {[1, 2, 3, 4, 5].map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            label='Comment'
+            multiline
+            maxRows={3}
+            onChange={(e) => handleChange(e)}
+            name='comment'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            InputLabelProps={{shrink: true}}
+            label='Posted On'
+            type={'datetime-local'}
+            onChange={(e) => handleChange(e)}
+            name='postedOn'
+            variant='standard'
+            margin='dense'
+          />
+        </DialogContent>
+        <Button
+          className='button'
+          size='lg'
+          variant='success'
+          onClick={() => {
+            handleUpdate(rowId)
+            handleClose()
+          }}
+        >
+          Save
+        </Button>
+      </Dialog>
     </>
   )
 }

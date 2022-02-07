@@ -23,3 +23,22 @@
   align-items: center;
   height: 60vh;
 }
+
+.image {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.file {
+  margin-bottom: 5px;
+}
+
+.add-button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+.add-button {
+  font-weight: bold !important;
+}
