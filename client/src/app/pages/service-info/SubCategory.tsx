@@ -13,14 +13,25 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
-import {Box, CircularProgress, DialogContent, MenuItem, TextField} from '@material-ui/core'
+import {
+  Box,
+  CircularProgress,
+  DialogContent,
+  DialogTitle,
+  MenuItem,
+  TextField,
+} from '@material-ui/core'
 import '../../App.css'
+import {Image} from 'react-bootstrap-v5'
+import img from '../../../assets/teacher.jpg'
+// import hoverImg from 'clientpublicmediaavatars/300-7.jpg'
 
-const CompletedJobs: FC = () => {
+const SubCategory: FC = () => {
   const intl = useIntl()
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
+  const [addOpen, setAddOpen] = useState(false)
   const [show, setShow] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
@@ -30,6 +41,7 @@ const CompletedJobs: FC = () => {
   const handleClose = () => {
     setOpen(false)
     setShow(false)
+    setAddOpen(false)
   }
 
   useEffect(() => {
@@ -39,12 +51,13 @@ const CompletedJobs: FC = () => {
   const getJobs = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`job?jobCategory=completed`)
+      const response = await ApiGet(`job?jobCategory=open&status=pending`)
       if (response.status === 200) {
         setJobs(response.data.data)
       }
       setLoading(false)
     } catch (err: any) {
+      console.log(err)
       toast.error(err.message)
       setLoading(false)
     }
@@ -83,6 +96,10 @@ const CompletedJobs: FC = () => {
     }
   }
 
+  const handleAdd = async () => {
+    console.log('added')
+  }
+
   const handleChange = (e: any) => {
     const {name, value} = e.target
     setInputValue({...inputValue, [name]: value})
@@ -90,56 +107,32 @@ const CompletedJobs: FC = () => {
 
   const columns = [
     {
-      name: 'Job',
-      selector: (row: any) => row.job,
+      name: 'Category',
+      selector: (row: any) => row.category,
       sortable: true,
       width: '200px',
     },
     {
-      name: 'Quote',
-      selector: (row: any) => row.quote,
-      sortable: true,
-    },
-    {
-      name: 'City',
-      selector: (row: any) => row.city,
-      sortable: true,
-    },
-    {
-      name: 'Job Total',
-      selector: (row: any) => row.jobTotal,
-      sortable: true,
-      width: '150px',
-    },
-    {
-      name: 'Customer',
-      selector: (row: any) => row.customer,
-      sortable: true,
-      width: '150px',
-    },
-    {
-      name: 'Property Name',
-      selector: (row: any) => row.propertyName,
-      sortable: true,
-      width: '150px',
-    },
-    {
-      name: 'Category/Subcategory',
-      selector: (row: any) => row.categorySubcategory,
+      name: 'Parent Category',
+      selector: (row: any) => row.parentCategory,
       sortable: true,
       width: '200px',
     },
     {
-      name: 'Vendor',
-      selector: (row: any) => row.vendor,
-      sortable: true,
-      width: '150px',
+      name: 'Image',
+      cell: (row: any) => {
+        return <Image className='image' src={row.imageSrc} />
+      },
     },
     {
-      name: 'Posted Date',
-      selector: (row: any) => row.postedDate,
+      name: 'Sequence Number',
+      selector: (row: any) => row.sequenceNumber,
       sortable: true,
-      width: '200px',
+    },
+    {
+      name: 'Added On',
+      selector: (row: any) => row.addedOn,
+      sortable: true,
     },
     {
       name: 'Status',
@@ -173,26 +166,45 @@ const CompletedJobs: FC = () => {
     },
   ]
 
-  const data = jobs?.map((job: any) => {
-    return {
-      id: job._id,
-      job: job.jobTitle,
-      quote: job.quote,
-      city: job.city,
-      jobTotal: job.jobTotal,
-      customer: job.customer,
-      propertyName: job.propertyName,
-      categorySubcategory: job.category || job.subCategory,
-      vendor: job.vendor,
-      postedDate: moment(job.createdAt).format('DD MMM YY hh:mmA'),
-      status: job.status,
-    }
-  })
+  //   const data = jobs?.map((job: any) => {
+  //     return {
+  //       id: job._id,
+  //       job: job.jobTitle,
+  //       quote: job.quote,
+  //       city: job.city,
+  //       jobTotal: job.jobTotal,
+  //       customer: job.customer,
+  //       propertyName: job.propertyName,
+  //       categorySubcategory: job.category || job.subCategory,
+  //       vendor: job.vendor,
+  //       postedDate: moment(job.createdAt).format('DD MMM YY hh:mmA'),
+  //       status: job.status,
+  //     }
+  //   })
+
+  const data = [
+    {
+      id: 1,
+      category: 'Teacher',
+      parentCategory: 'school',
+      imageSrc: img,
+      sequenceNumber: 123,
+      addedOn: '',
+      status: 'Active',
+    },
+    {
+      id: 2,
+      category: 'Plumber',
+      parentCategory: 'Housing Service',
+      imageSrc: img,
+      sequenceNumber: 1234,
+      status: 'Active',
+    },
+  ]
 
   const status = [
-    {label: 'Pending', value: 'Pending'},
-    {label: 'Completed', value: 'Completed'},
-    {label: 'Disputed', value: 'Disputed'},
+    {label: 'Active', value: 'Active'},
+    {label: 'Inactive', value: 'Inactive'},
   ]
 
   if (loading) {
@@ -205,7 +217,14 @@ const CompletedJobs: FC = () => {
 
   return (
     <>
-      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.JOBS.COMPLETED_JOBS'})}</PageTitle>
+      <PageTitle breadcrumbs={[]}>
+        {intl.formatMessage({id: 'MENU.SERVICE_INFO.SUB_CATEGORY'})}
+      </PageTitle>
+      <Box className='add-button-wrapper' onClick={() => setAddOpen(true)}>
+        <Button className='add-button' variant='success'>
+          Add New +
+        </Button>
+      </Box>
       <DataTable
         columns={columns}
         data={data}
@@ -237,91 +256,65 @@ const CompletedJobs: FC = () => {
           </Modal.Footer>
         </>
       </Modal>
-      <Dialog open={open} onClose={handleClose}>
-        <Toolbar>
-          <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
-            <CloseIcon />
-          </IconButton>
-        </Toolbar>
+
+      <Dialog open={open || addOpen} onClose={handleClose}>
+        <DialogTitle>
+          <Box sx={{display: 'flex'}}>
+            <Box flexGrow={1}>
+              {open && 'Edit Row'}
+              {addOpen && 'Add New Row'}
+            </Box>
+            <Box>
+              <IconButton color='inherit' onClick={handleClose} aria-label='close'>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          </Box>
+        </DialogTitle>
         <DialogContent>
           <TextField
-            label='Job'
+            label='Category'
             type={'text'}
             onChange={(e) => handleChange(e)}
-            name='job'
+            name='category'
             fullWidth
             variant='standard'
             margin='dense'
           />
           <TextField
-            label='Quote'
+            label='Parent Category'
             type={'text'}
             onChange={(e) => handleChange(e)}
-            name='quote'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='City'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='city'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='Job Total'
-            type={'number'}
-            onChange={(e) => handleChange(e)}
-            name='jobTotal'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='Customer'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='customer'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='Property Name'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='propertyName'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='Category / Subcategory'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='categorySubcategory'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='Vendor'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='vendor'
+            name='parentCategory'
             fullWidth
             variant='standard'
             margin='dense'
           />
           <TextField
             InputLabelProps={{shrink: true}}
-            label='Posted Date'
+            label='Image'
+            type={'file'}
+            onChange={(e) => handleChange(e)}
+            name='image'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Sequence Number'
+            type={'number'}
+            onChange={(e) => handleChange(e)}
+            name='sequenceNumber'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            InputLabelProps={{shrink: true}}
+            label='Added On'
             type={'datetime-local'}
             onChange={(e) => handleChange(e)}
-            name='postedDate'
+            name='addedOn'
             variant='standard'
             margin='dense'
           />
@@ -347,7 +340,8 @@ const CompletedJobs: FC = () => {
           size='lg'
           variant='success'
           onClick={() => {
-            handleUpdate(rowId)
+            open && handleUpdate(rowId)
+            addOpen && handleAdd()
             handleClose()
           }}
         >
@@ -357,5 +351,4 @@ const CompletedJobs: FC = () => {
     </>
   )
 }
-
-export {CompletedJobs}
+export {SubCategory}

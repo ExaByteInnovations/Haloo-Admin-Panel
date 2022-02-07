@@ -2,10 +2,14 @@ import React, {Suspense, lazy} from 'react'
 import {Redirect, Route, Switch} from 'react-router-dom'
 import {FallbackView} from '../../_metronic/partials'
 import {DashboardWrapper} from '../pages/dashboard/DashboardWrapper'
-import {Ratings} from '../pages/ratings/Ratings'
+import {Ratings} from '../pages/userManagement/Ratings'
 import {OpenJobs} from '../pages/jobs/OpenJobs'
 import {CompletedJobs} from '../pages/jobs/CompletedJobs'
 import {DisputedJobs} from '../pages/jobs/DisputedJobs'
+import {Category} from '../pages/service-info/Category'
+import {SubCategory} from '../pages/service-info/SubCategory'
+import {City} from '../pages/service-info/City'
+import {State} from '../pages/service-info/State'
 
 // import {MenuTestPage} from '../pages/MenuTestPage'
 
@@ -21,10 +25,16 @@ export function PrivateRoutes() {
     <Suspense fallback={<FallbackView />}>
       <Switch>
         <Route path='/dashboard' component={DashboardWrapper} />
-        <Route path='/rating-reviews' component={Ratings} />
+        <Route path='/user-management/reviews-and-ratings' component={Ratings} />
+        {/* <Route path='/user-management/customers' component={Ratings} /> */}
+        {/* <Route path='/user-management/vendors' component={Ratings} /> */}
         <Route path='/jobs/open-jobs' component={OpenJobs} />
         <Route path='/jobs/completed-jobs' component={CompletedJobs} />
         <Route path='/jobs/disputed-jobs' component={DisputedJobs} />
+        <Route path='/service-info/category' component={Category} />
+        <Route path='/service-info/subcategory' component={SubCategory} />
+        <Route path='/service-info/city' component={City} />
+        <Route path='/service-info/state' component={State} />
         {/* <Route path='/builder' component={BuilderPageWrapper} />
         <Route path='/crafted/pages/profile' component={ProfilePage} />
         <Route path='/crafted/pages/wizards' component={WizardsPage} />

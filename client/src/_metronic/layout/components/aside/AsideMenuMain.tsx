@@ -16,20 +16,23 @@ export function AsideMenuMain() {
         title={intl.formatMessage({id: 'MENU.DASHBOARD'})}
         fontIcon='bi-app-indicator'
       /> */}
-
-      <AsideMenuItem
-        to='/rating-reviews'
-        icon='/media/icons/duotune/general/gen003.svg'
-        title={intl.formatMessage({id: 'MENU.RATING'})}
+      <AsideMenuItemWithSub
+        to='/user-management'
+        icon='/media/icons/duotune/general/gen051.svg'
+        title={intl.formatMessage({id: 'MENU.USER_MANAGEMENT'})}
         fontIcon='bi-app-indicator'
-      />
-
-      {/* <AsideMenuItem
-        to='/jobs'
-        icon='/media/icons/duotune/communication/com006.svg'
-        title={intl.formatMessage({id: 'MENU.JOBS'})}
-        fontIcon='bi-app-indicator'
-      /> */}
+      >
+        <AsideMenuItem
+          to='/user-management/reviews-and-ratings'
+          title='Reviews And Ratings'
+          hasBullet={true}
+        />
+        {/* <AsideMenuItem
+          to='/user-management/customers'
+          title='Reviews And Ratings'
+          hasBullet={true}
+        /> */}
+      </AsideMenuItemWithSub>
 
       <AsideMenuItemWithSub
         to='/jobs'
@@ -40,6 +43,18 @@ export function AsideMenuMain() {
         <AsideMenuItem to='/jobs/open-jobs' title='Open Jobs' hasBullet={true} />
         <AsideMenuItem to='/jobs/completed-jobs' title='Completed Jobs' hasBullet={true} />
         <AsideMenuItem to='/jobs/disputed-jobs' title='Disputed Jobs' hasBullet={true} />
+      </AsideMenuItemWithSub>
+
+      <AsideMenuItemWithSub
+        to='/service-info'
+        icon='/media/icons/duotune/communication/com006.svg'
+        title={intl.formatMessage({id: 'MENU.SERVICE_INFO'})}
+        fontIcon='bi-app-indicator'
+      >
+        <AsideMenuItem to='/service-info/category' title='Category' hasBullet={true} />
+        <AsideMenuItem to='/service-info/subcategory' title='Subcategory' hasBullet={true} />
+        <AsideMenuItem to='/service-info/city' title='City' hasBullet={true} />
+        <AsideMenuItem to='/service-info/state' title='State' hasBullet={true} />
       </AsideMenuItemWithSub>
 
       {/* <AsideMenuItem

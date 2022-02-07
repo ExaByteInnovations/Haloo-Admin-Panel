@@ -190,6 +190,12 @@ const OpenJobs: FC = () => {
     }
   })
 
+  const status = [
+    {label: 'Pending', value: 'Pending'},
+    {label: 'Completed', value: 'Completed'},
+    {label: 'Disputed', value: 'Disputed'},
+  ]
+
   if (loading) {
     return (
       <Box className='loader'>
@@ -205,7 +211,7 @@ const OpenJobs: FC = () => {
         columns={columns}
         data={data}
         fixedHeader
-        fixedHeaderScrollHeight='300px'
+        fixedHeaderScrollHeight='61vh'
         pagination
         highlightOnHover
         responsive
@@ -233,118 +239,123 @@ const OpenJobs: FC = () => {
         </>
       </Modal>
 
-      {open ? (
-        <Dialog open={open} onClose={handleClose}>
-          <Toolbar>
-            <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
-              <CloseIcon />
-            </IconButton>
-          </Toolbar>
-          <DialogContent>
-            <TextField
-              label='Job'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='job'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Quote'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='quote'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='City'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='city'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Job Total'
-              type={'number'}
-              onChange={(e) => handleChange(e)}
-              name='jobTotal'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Customer'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='customer'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Property Name'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='propertyName'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Category / Subcategory'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='categorySubcategory'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Vendor'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='vendor'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              InputLabelProps={{shrink: true}}
-              label='Posted Date'
-              type={'datetime-local'}
-              onChange={(e) => handleChange(e)}
-              name='postedDate'
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Status'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='status'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-          </DialogContent>
-          <Button
-            className='button'
-            size='lg'
-            variant='success'
-            onClick={() => {
-              handleUpdate(rowId)
-              handleClose()
-            }}
+      <Dialog open={open} onClose={handleClose}>
+        <Toolbar>
+          <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
+            <CloseIcon />
+          </IconButton>
+        </Toolbar>
+        <DialogContent>
+          <TextField
+            label='Job'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='job'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Quote'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='quote'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='City'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='city'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Job Total'
+            type={'number'}
+            onChange={(e) => handleChange(e)}
+            name='jobTotal'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Customer'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='customer'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Property Name'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='propertyName'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Category / Subcategory'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='categorySubcategory'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Vendor'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='vendor'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            InputLabelProps={{shrink: true}}
+            label='Posted Date'
+            type={'datetime-local'}
+            onChange={(e) => handleChange(e)}
+            name='postedDate'
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Status'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='status'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            select
           >
-            Save
-          </Button>
-        </Dialog>
-      ) : null}
+            {status.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </DialogContent>
+        <Button
+          className='button'
+          size='lg'
+          variant='success'
+          onClick={() => {
+            handleUpdate(rowId)
+            handleClose()
+          }}
+        >
+          Save
+        </Button>
+      </Dialog>
     </>
   )
 }

@@ -200,7 +200,7 @@ const Ratings: FC = () => {
         columns={columns}
         data={data}
         fixedHeader
-        fixedHeaderScrollHeight='300px'
+        fixedHeaderScrollHeight='61vh'
         pagination
         highlightOnHover
         responsive
@@ -229,99 +229,97 @@ const Ratings: FC = () => {
         </>
       </Modal>
 
-      {open ? (
-        <Dialog open={open} onClose={handleClose}>
-          <Toolbar>
-            <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
-              <CloseIcon />
-            </IconButton>
-          </Toolbar>
-          <DialogContent>
-            <TextField
-              label='Rating For'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='ratingFor'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Rating By'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='ratingBy'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Who Rated'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='whoRated'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Job Number'
-              type={'number'}
-              onChange={(e) => handleChange(e)}
-              name='jobNumber'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Rating'
-              type={'number'}
-              onChange={(e) => handleChange(e)}
-              name='rating'
-              select
-              fullWidth
-              variant='standard'
-              margin='dense'
-            >
-              {[1, 2, 3, 4, 5].map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              label='Comment'
-              multiline
-              maxRows={3}
-              onChange={(e) => handleChange(e)}
-              name='comment'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              InputLabelProps={{shrink: true}}
-              label='Posted On'
-              type={'datetime-local'}
-              onChange={(e) => handleChange(e)}
-              name='postedOn'
-              variant='standard'
-              margin='dense'
-            />
-          </DialogContent>
-          <Button
-            className='button'
-            size='lg'
-            variant='success'
-            onClick={() => {
-              handleUpdate(rowId)
-              handleClose()
-            }}
+      <Dialog open={open} onClose={handleClose}>
+        <Toolbar>
+          <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
+            <CloseIcon />
+          </IconButton>
+        </Toolbar>
+        <DialogContent>
+          <TextField
+            label='Rating For'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='ratingFor'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Rating By'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='ratingBy'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Who Rated'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='whoRated'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Job Number'
+            type={'number'}
+            onChange={(e) => handleChange(e)}
+            name='jobNumber'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            label='Rating'
+            type={'number'}
+            onChange={(e) => handleChange(e)}
+            name='rating'
+            select
+            fullWidth
+            variant='standard'
+            margin='dense'
           >
-            Save
-          </Button>
-        </Dialog>
-      ) : null}
+            {[1, 2, 3, 4, 5].map((option) => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            label='Comment'
+            multiline
+            maxRows={3}
+            onChange={(e) => handleChange(e)}
+            name='comment'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <TextField
+            InputLabelProps={{shrink: true}}
+            label='Posted On'
+            type={'datetime-local'}
+            onChange={(e) => handleChange(e)}
+            name='postedOn'
+            variant='standard'
+            margin='dense'
+          />
+        </DialogContent>
+        <Button
+          className='button'
+          size='lg'
+          variant='success'
+          onClick={() => {
+            handleUpdate(rowId)
+            handleClose()
+          }}
+        >
+          Save
+        </Button>
+      </Dialog>
     </>
   )
 }
