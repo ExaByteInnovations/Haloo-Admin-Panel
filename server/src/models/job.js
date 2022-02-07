@@ -10,8 +10,8 @@ const jobSchema = new mongoose.Schema({
     jobTitle: {
       type: String,
     },
-    customer: {
-        type: String,
+    customerId: {
+        type: mongoose.Schema.Types.ObjectId, ref: 'customer',
     },
     propertyName: {
         type: String,
@@ -26,8 +26,14 @@ const jobSchema = new mongoose.Schema({
         type: String,
     },
     jobCategory:{
-        type: String, required: true,
-    }
+        type: String, 
+    },
+    vendorId:{
+      type: mongoose.Schema.Types.ObjectId, ref: 'vendor',
+    },
+    jobTotal:{
+      type: Number,
+    },
   },
     {
       timestamps: true
