@@ -10,6 +10,8 @@ import {Category} from '../pages/service-info/Category'
 import {SubCategory} from '../pages/service-info/SubCategory'
 import {City} from '../pages/service-info/City'
 import {State} from '../pages/service-info/State'
+import {Customers} from '../pages/userManagement/Customers'
+import {Vendors} from '../pages/userManagement/Vendors'
 
 // import {MenuTestPage} from '../pages/MenuTestPage'
 
@@ -26,8 +28,8 @@ export function PrivateRoutes() {
       <Switch>
         <Route path='/dashboard' component={DashboardWrapper} />
         <Route path='/user-management/reviews-and-ratings' component={Ratings} />
-        {/* <Route path='/user-management/customers' component={Ratings} /> */}
-        {/* <Route path='/user-management/vendors' component={Ratings} /> */}
+        <Route path='/user-management/customers' component={Customers} />
+        <Route path='/user-management/vendors' component={Vendors} />
         <Route path='/jobs/open-jobs' component={OpenJobs} />
         <Route path='/jobs/completed-jobs' component={CompletedJobs} />
         <Route path='/jobs/disputed-jobs' component={DisputedJobs} />
@@ -35,6 +37,7 @@ export function PrivateRoutes() {
         <Route path='/service-info/subcategory' component={SubCategory} />
         <Route path='/service-info/city' component={City} />
         <Route path='/service-info/state' component={State} />
+
         {/* <Route path='/builder' component={BuilderPageWrapper} />
         <Route path='/crafted/pages/profile' component={ProfilePage} />
         <Route path='/crafted/pages/wizards' component={WizardsPage} />

@@ -27,6 +27,8 @@ export function AsideMenuMain() {
           title='Reviews And Ratings'
           hasBullet={true}
         />
+        <AsideMenuItem to='/user-management/customers' title='Customers' hasBullet={true} />
+        <AsideMenuItem to='/user-management/vendors' title='Vendors' hasBullet={true} />
         {/* <AsideMenuItem
           to='/user-management/customers'
           title='Reviews And Ratings'

@@ -9,6 +9,8 @@
   "MENU.DASHBOARD": "Dashboard",
   "MENU.USER_MANAGEMENT": "User Management",
   "MENU.USER_MANAGEMENT.RATING": "Ratings & Reviews",
+  "MENU.USER_MANAGEMENT.CUSTOMERS": "Customers",
+  "MENU.USER_MANAGEMENT.VENDORS": "Vendors",
   "MENU.JOBS": "Jobs",
   "MENU.JOBS.OPEN_JOBS": "Open Jobs",
   "MENU.JOBS.COMPLETED_JOBS": "Completed Jobs",

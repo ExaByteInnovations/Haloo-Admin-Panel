@@ -16,9 +16,9 @@ import {Modal} from 'react-bootstrap'
 import {Box, CircularProgress, DialogContent, MenuItem, TextField} from '@material-ui/core'
 import '../../App.css'
 
-const Ratings = () => {
+const Customers = () => {
   const intl = useIntl()
-  const [ratings, setRatings] = useState([])
+  const [customers, setCustomers] = useState([])
   const [open, setOpen] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
@@ -33,15 +33,15 @@ const Ratings = () => {
   }
 
   useEffect(() => {
-    getRatings()
+    getCustomers()
   }, [])
 
-  const getRatings = async () => {
+  const getCustomers = async () => {
     try {
       setLoading(true)
       const response = await ApiGet(`review`)
       if (response.status === 200) {
-        setRatings(response.data.data)
+        setCustomers(response.data.data)
       }
       setLoading(false)
     } catch (err) {
@@ -56,7 +56,7 @@ const Ratings = () => {
       const response = await ApiDelete(`review?_id=${rowId}`)
 
       if (response.status === 200) {
-        getRatings()
+        getCustomers()
         toast.success('Deleted Successfully')
       }
       setLoading(false)
@@ -76,7 +76,7 @@ const Ratings = () => {
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
-        getRatings()
+        getCustomers()
       }
       setLoading(false)
     } catch (err) {
@@ -92,31 +92,37 @@ const Ratings = () => {
 
   const columns = [
     {
-      name: 'Rating By',
+      name: 'Image',
       selector: (row) => row.ratingBy,
       sortable: true,
       width: '200px',
     },
     {
-      name: 'Rating For',
+      name: 'Name',
       selector: (row) => row.ratingFor,
       sortable: true,
       width: '200px',
     },
     {
-      name: 'Who Rated',
+      name: 'E-Mail',
       selector: (row) => row.whoRated,
       sortable: true,
       width: '150px',
     },
     {
-      name: 'Job Number',
+      name: 'Age Bracket',
       selector: (row) => row.jobNumber,
       sortable: true,
       width: '150px',
     },
     {
-      name: 'Rating',
+      name: 'No. of Jobs',
+      selector: (row) => row.jobNumber,
+      sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'Average Rating',
       selector: (row) => row.rating,
       cell: (row) => (
         <>
@@ -133,16 +139,28 @@ const Ratings = () => {
       width: '150px',
     },
     {
-      name: 'Comment',
+      name: 'Member Since',
       selector: (row) => row.comment,
       sortable: true,
       width: '150px',
     },
     {
-      name: 'Posted On',
+      name: 'Last Access',
       selector: (row) => row.postedOn,
       sortable: true,
-      width: '200px',
+      width: '150px',
+    },
+    {
+      name: 'COD Status',
+      selector: (row) => row.postedOn,
+      sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'Status',
+      selector: (row) => row.postedOn,
+      sortable: true,
+      width: '150px',
     },
     {
       name: 'Action',
@@ -172,7 +190,7 @@ const Ratings = () => {
     },
   ]
 
-  const data = ratings?.map((rating) => {
+  const data = customers?.map((rating) => {
     return {
       id: rating._id,
       ratingBy: rating.ratingBy,
@@ -196,7 +214,7 @@ const Ratings = () => {
   return (
     <>
       <PageTitle breadcrumbs={[]}>
-        {intl.formatMessage({id: 'MENU.USER_MANAGEMENT.RATING'})}
+        {intl.formatMessage({id: 'MENU.USER_MANAGEMENT.CUSTOMERS'})}
       </PageTitle>
       <DataTable
         columns={columns}
@@ -326,4 +344,4 @@ const Ratings = () => {
   )
 }
 
-export {Ratings}
+export {Customers}
