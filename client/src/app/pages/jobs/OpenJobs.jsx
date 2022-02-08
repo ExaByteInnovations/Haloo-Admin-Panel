@@ -25,7 +25,6 @@ const OpenJobs = () => {
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
   const [currentRow, setCurrentRow] = useState({})
-
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
@@ -176,24 +175,24 @@ const OpenJobs = () => {
 
   const data = jobs?.map((job) => {
     return {
-      id: job._id,
-      job: job.jobTitle,
-      quote: job.quote,
-      city: job.city,
-      jobTotal: job.jobTotal,
-      customer: job.customer,
-      propertyName: job.propertyName,
-      categorySubcategory: job.category || job.subCategory,
-      vendor: job.vendor,
-      postedDate: moment(job.createdAt).format('DD MMM YY hh:mmA'),
-      status: job.status,
+      id: job?._id,
+      job: job?.jobTitle,
+      quote: job?.quote,
+      city: job?.city,
+      jobTotal: job?.jobTotal,
+      customer: job?.customerDetails[0]?.customerName,
+      propertyName: job?.propertyName,
+      categorySubcategory: job?.category || job?.subCategory,
+      vendor: job?.vendorDetails[0]?.companyName,
+      postedDate: moment(job?.createdAt).format('DD MMM YY hh:mmA'),
+      status: job?.status,
     }
   })
 
   const status = [
-    {label: 'Pending', value: 'Pending'},
-    {label: 'Completed', value: 'Completed'},
-    {label: 'Disputed', value: 'Disputed'},
+    {label: 'Pending', value: 'pending'},
+    {label: 'Completed', value: 'completed'},
+    {label: 'Disputed', value: 'disputed'},
   ]
 
   if (loading) {
@@ -334,7 +333,7 @@ const OpenJobs = () => {
             name='postedDate'
             variant='standard'
             margin='dense'
-            value={moment(currentRow.postedDate).format('YYYY-MM-DDTHH:mm')}
+            value={moment(currentRow.postedDate).format('MM-DD-YYYY hh:mm:A')}
           />
           <TextField
             label='Status'
@@ -345,7 +344,7 @@ const OpenJobs = () => {
             variant='standard'
             margin='dense'
             select
-            value={currentRow.status}
+            defaultValue={currentRow?.status}
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>

@@ -39,7 +39,7 @@ const DisputedJobs = () => {
   const getJobs = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`job?jobCategory=disputed`)
+      const response = await ApiGet(`job?jobCategory=disputed&status=disputed`)
       if (response.status === 200) {
         setJobs(response.data.data)
       }
@@ -175,17 +175,17 @@ const DisputedJobs = () => {
 
   const data = jobs?.map((job) => {
     return {
-      id: job._id,
-      job: job.jobTitle,
-      quote: job.quote,
-      city: job.city,
-      jobTotal: job.jobTotal,
-      customer: job.customer,
-      propertyName: job.propertyName,
-      categorySubcategory: job.category || job.subCategory,
-      vendor: job.vendor,
-      postedDate: moment(job.createdAt).format('DD MMM YY hh:mmA'),
-      status: job.status,
+      id: job?._id,
+      job: job?.jobTitle,
+      quote: job?.quote,
+      city: job?.city,
+      jobTotal: job?.jobTotal,
+      customer: job?.customerDetails[0]?.customerName,
+      propertyName: job?.propertyName,
+      categorySubcategory: job?.category || job?.subCategory,
+      vendor: job?.vendorDetails[0]?.companyName,
+      postedDate: moment(job?.createdAt).format('DD MMM YY hh:mmA'),
+      status: job?.status,
     }
   })
 
@@ -343,7 +343,7 @@ const DisputedJobs = () => {
             variant='standard'
             margin='dense'
             select
-            value={currentRow.status}
+            defaultValue={currentRow?.status}
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>
