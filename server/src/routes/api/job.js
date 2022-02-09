@@ -56,11 +56,11 @@ router.post("/" ,async function(req,res){
     var category = req.body.category;
     var subCategory = req.body.subCategory;
     var status = req.body.status;
-    var jobCategory = req.body.jobCategory;
+    // var jobCategory = req.body.jobCategory;
     var vendorId = req.body.vendorId;
     var jobTotal = req.body.jobTotal;
 
-    var item = new Job({ quote, jobTitle, city, customerId, propertyName, category, subCategory, status, jobCategory, vendorId, jobTotal });
+    var item = new Job({ quote, jobTitle, city, customerId, propertyName, category, subCategory, status, vendorId, jobTotal });
     
     item.save( item )
         .then(function(item){

@@ -7,6 +7,9 @@ const subCategorySchema = new mongoose.Schema({
     parentCategoryId: {
         type: mongoose.Schema.Types.ObjectId, ref: 'category'
     },
+    image: {
+      type: String,
+    },
     sequenceNumber: {
         type: Number,
     },
