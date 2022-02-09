@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {FC, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
@@ -8,7 +8,6 @@ import DataTable from 'react-data-table-component'
 import {ApiGet, ApiDelete, ApiPut, ApiPost} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
 import Dialog from '@material-ui/core/Dialog'
-import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import {Button} from 'react-bootstrap'
@@ -27,6 +26,7 @@ import {Image} from 'react-bootstrap-v5'
 const SubCategory = () => {
   const intl = useIntl()
   const [subCategories, setSubCategories] = useState([])
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [addOpen, setAddOpen] = useState(false)
@@ -51,12 +51,30 @@ const SubCategory = () => {
     try {
       const response = await ApiGet(`serviceinfo/subcategory`)
       if (response.status === 200) {
-        setSubCategories(response.data.data)
+        setSubCategories(response?.data?.data)
       }
       setLoading(false)
     } catch (err) {
       console.log(err)
       toast.error(err.message)
+      setLoading(false)
+    }
+  }
+
+  const getCategories = async () => {
+    setLoading(true)
+    try {
+      const response = await ApiGet(`serviceinfo/category`)
+      if (response.status === 200) {
+        setCategories(
+          response?.data?.data?.map((category) => {
+            return {name: category?.categoryName, id: category?._id}
+          })
+        )
+      }
+      setLoading(false)
+    } catch (err) {
+      console.log(err)
       setLoading(false)
     }
   }
@@ -212,7 +230,13 @@ const SubCategory = () => {
       <PageTitle breadcrumbs={[]}>
         {intl.formatMessage({id: 'MENU.SERVICE_INFO.SUB_CATEGORY'})}
       </PageTitle>
-      <Box className='add-button-wrapper' onClick={() => setAddOpen(true)}>
+      <Box
+        className='add-button-wrapper'
+        onClick={() => {
+          setAddOpen(true)
+          getCategories()
+        }}
+      >
         <Button className='add-button' variant='success'>
           Add New +
         </Button>
@@ -360,16 +384,22 @@ const SubCategory = () => {
               variant='standard'
               margin='dense'
             />
-            {/* <TextField
+            <TextField
               label='Parent Category'
-              type={'text'}
               onChange={(e) => handleChange(e)}
-              name='parentCategory'
+              name='parentCategoryId'
               fullWidth
               required
               variant='standard'
               margin='dense'
-            /> */}
+              select
+            >
+              {categories.map((option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.name}
+                </MenuItem>
+              ))}
+            </TextField>
             {/* <TextField
             InputLabelProps={{shrink: true}}
             label='Image'

@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {FC, useEffect, useRef, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
-import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
@@ -19,14 +18,12 @@ import {
   MenuItem,
   TextField,
   DialogTitle,
-  FormControl,
 } from '@material-ui/core'
 import '../../App.css'
 import {Image} from 'react-bootstrap-v5'
 
 const Category = () => {
   const intl = useIntl()
-  const formRef = useRef()
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
