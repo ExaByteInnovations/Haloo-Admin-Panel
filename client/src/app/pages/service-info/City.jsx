@@ -1,14 +1,13 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {FC, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
-import {ApiGet, ApiDelete, ApiPut} from '../../../helpers/API/ApiData'
+import {ApiGet, ApiDelete, ApiPut, ApiPost} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
 import Dialog from '@material-ui/core/Dialog'
-import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import {Button} from 'react-bootstrap'
@@ -22,13 +21,10 @@ import {
   TextField,
 } from '@material-ui/core'
 import '../../App.css'
-import {Image} from 'react-bootstrap-v5'
-import img from '../../../assets/teacher.jpg'
-// import hoverImg from 'clientpublicmediaavatars/300-7.jpg'
 
 const City = () => {
   const intl = useIntl()
-  const [jobs, setJobs] = useState([])
+  const [cities, setCities] = useState([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [addOpen, setAddOpen] = useState(false)
@@ -45,15 +41,15 @@ const City = () => {
   }
 
   useEffect(() => {
-    getJobs()
+    getCities()
   }, [])
 
-  const getJobs = async () => {
+  const getCities = async () => {
     setLoading(true)
     try {
       const response = await ApiGet(`job?jobCategory=open&status=pending`)
       if (response.status === 200) {
-        setJobs(response.data.data)
+        setCities(response.data.data)
       }
       setLoading(false)
     } catch (err) {
@@ -68,7 +64,7 @@ const City = () => {
       setLoading(true)
       const response = await ApiDelete(`job?_id=${rowId}`)
       if (response.status === 200) {
-        getJobs()
+        getCities()
         toast.success('Deleted Successfully')
       }
       setLoading(false)
@@ -87,7 +83,7 @@ const City = () => {
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
-        getJobs()
+        getCities()
       }
       setLoading(false)
     } catch (err) {
@@ -97,7 +93,21 @@ const City = () => {
   }
 
   const handleAdd = async () => {
-    console.log('added')
+    try {
+      setLoading(true)
+      const response = await ApiPost(`serviceinfo/category`, inputValue)
+      if (response.status === 200) {
+        toast.success('Added Successfully')
+        setInputValue({})
+        getCities()
+      }
+      setLoading(false)
+      handleClose()
+    } catch (err) {
+      toast.error(err.message)
+      setLoading(false)
+      handleClose()
+    }
   }
 
   const handleChange = (e) => {
@@ -110,13 +120,11 @@ const City = () => {
       name: 'City Name',
       selector: (row) => row.cityName,
       sortable: true,
-      //   width: '200px',
     },
     {
       name: 'State Name',
       selector: (row) => row.stateName,
       sortable: true,
-      //   width: '200px',
     },
     {
       name: 'Status',
@@ -150,21 +158,14 @@ const City = () => {
     },
   ]
 
-  //   const data = jobs?.map((job) => {
-  //     return {
-  //       id: job._id,
-  //       job: job.jobTitle,
-  //       quote: job.quote,
-  //       city: job.city,
-  //       jobTotal: job.jobTotal,
-  //       customer: job.customer,
-  //       propertyName: job.propertyName,
-  //       categorySubcategory: job.category || job.subCategory,
-  //       vendor: job.vendor,
-  //       postedDate: moment(job.createdAt).format('DD MMM YY hh:mmA'),
-  //       status: job.status,
-  //     }
-  //   })
+  // const data = cities?.map((city) => {
+  //   return {
+  //     id: city?._id,
+  //     cityName: city?.city,
+  //     stateName: city?.state,
+  //     status: city?.status?.charAt(0)?.toUpperCase() + city?.status?.substr(1)?.toLowerCase(),
+  //   }
+  // })
 
   const data = [
     {
@@ -234,13 +235,10 @@ const City = () => {
         </>
       </Modal>
 
-      <Dialog open={open || addOpen} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth='xs'>
         <DialogTitle>
           <Box sx={{display: 'flex'}}>
-            <Box flexGrow={1}>
-              {open && 'Edit Row'}
-              {addOpen && 'Add New Row'}
-            </Box>
+            <Box flexGrow={1}>Edit Row</Box>
             <Box>
               <IconButton color='inherit' onClick={handleClose} aria-label='close'>
                 <CloseIcon />
@@ -257,6 +255,7 @@ const City = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={currentRow?.cityName}
           />
           <TextField
             label='State Name'
@@ -265,6 +264,7 @@ const City = () => {
             name='stateName'
             fullWidth
             variant='standard'
+            value={currentRow?.stateName}
             margin='dense'
           />
           <TextField
@@ -274,6 +274,11 @@ const City = () => {
             name='status'
             fullWidth
             variant='standard'
+            value={inputValue?.status}
+            defaultValue={
+              currentRow?.status?.charAt(0)?.toUpperCase() +
+              currentRow?.status?.substr(1)?.toLowerCase()
+            }
             margin='dense'
             select
           >
@@ -289,13 +294,69 @@ const City = () => {
           size='lg'
           variant='success'
           onClick={() => {
-            open && handleUpdate(rowId)
-            addOpen && handleAdd()
+            handleUpdate(rowId)
             handleClose()
           }}
         >
           Save
         </Button>
+      </Dialog>
+
+      <Dialog open={addOpen} onClose={handleClose} fullWidth maxWidth='xs'>
+        <DialogTitle>
+          <Box sx={{display: 'flex'}}>
+            <Box flexGrow={1}>Add New Row</Box>
+            <Box>
+              <IconButton color='inherit' onClick={handleClose} aria-label='close'>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          </Box>
+        </DialogTitle>
+        <form onSubmit={handleAdd}>
+          <DialogContent>
+            <TextField
+              label='City Name'
+              type={'text'}
+              onChange={(e) => handleChange(e)}
+              name='cityName'
+              fullWidth
+              variant='standard'
+              margin='dense'
+              required
+            />
+            <TextField
+              label='State Name'
+              type={'text'}
+              onChange={(e) => handleChange(e)}
+              name='stateName'
+              fullWidth
+              variant='standard'
+              required
+              margin='dense'
+            />
+            <TextField
+              label='Status'
+              type={'text'}
+              onChange={(e) => handleChange(e)}
+              name='status'
+              fullWidth
+              variant='standard'
+              required
+              margin='dense'
+              select
+            >
+              {status.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          </DialogContent>
+          <Button type='submit' className='button' size='lg' variant='success'>
+            Save
+          </Button>
+        </form>
       </Dialog>
     </>
   )

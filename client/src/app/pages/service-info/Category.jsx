@@ -36,8 +36,6 @@ const Category = () => {
   const [inputValue, setInputValue] = useState({})
   const [currentRow, setCurrentRow] = useState({})
 
-  console.log(categories, 'category')
-
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
@@ -138,17 +136,13 @@ const Category = () => {
     {
       name: 'Image',
       cell: (row) => {
-        return <Image className='image' src={row.imageSrc} />
+        return <Image className='image' src={row.image} />
       },
     },
     {
       name: 'Hover Image',
       cell: (row) => {
-        return (
-          <Box>
-            <Image fluid src={row.hoverImageSrc} />
-          </Box>
-        )
+        return <Image className='image' src={row.hoverImage} />
       },
     },
     {
@@ -185,16 +179,19 @@ const Category = () => {
 
   const data = categories?.map((category) => {
     return {
-      id: category._id,
-      categoryName: category.categoryName,
-      sequenceNumber: category.sequenceNumber,
-      status: category.status,
+      id: category?._id,
+      categoryName: category?.categoryName,
+      image: category?.image,
+      hoverImage: category?.hoverImage,
+      sequenceNumber: category?.sequenceNumber,
+      status:
+        category?.status?.charAt(0)?.toUpperCase() + category?.status?.substr(1)?.toLowerCase(),
     }
   })
 
   const status = [
-    {label: 'Active', value: 'active'},
-    {label: 'Inactive', value: 'inactive'},
+    {label: 'Active', value: 'Active'},
+    {label: 'Inactive', value: 'Inactive'},
   ]
 
   if (loading) {
@@ -247,13 +244,102 @@ const Category = () => {
         </>
       </Modal>
 
-      <Dialog open={open || addOpen} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth='xs'>
         <DialogTitle>
           <Box sx={{display: 'flex'}}>
-            <Box flexGrow={1}>
-              {open && 'Edit Row'}
-              {addOpen && 'Add New Row'}
+            <Box flexGrow={1}>Edit Row</Box>
+            <Box>
+              <IconButton color='inherit' onClick={handleClose} aria-label='close'>
+                <CloseIcon />
+              </IconButton>
             </Box>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            label='Category Name'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='categoryName'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow?.categoryName}
+          />
+          <TextField
+            label='Sequence Number'
+            inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
+            onChange={(e) => handleChange(e)}
+            name='sequenceNumber'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={currentRow?.sequenceNumber}
+          />
+          {/* <TextField
+              InputLabelProps={{shrink: true}}
+              label='Image'
+              type={'file'}
+              onChange={(e) => handleChange(e)}
+              name='image'
+              fullWidth
+              variant='standard'
+              margin='dense'
+              // value={addOpen && currentRow}
+              required={addOpen}
+            /> */}
+          {/* <TextField
+              InputLabelProps={{shrink: true}}
+              label='Hover Image'
+              type={'file'}
+              onChange={(e) => handleChange(e)}
+              name='hoverImage'
+              fullWidth
+              variant='standard'
+              margin='dense'
+              // value={addOpen && currentRow}
+              required={addOpen}
+            /> */}
+          <TextField
+            label='Status'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='status'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={inputValue?.status}
+            defaultValue={
+              currentRow?.status?.charAt(0)?.toUpperCase() +
+              currentRow?.status?.substr(1)?.toLowerCase()
+            }
+            select
+          >
+            {status.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </DialogContent>
+        <Button
+          className='button'
+          type='submit'
+          size='lg'
+          variant='success'
+          onClick={() => {
+            handleUpdate(rowId)
+            handleClose()
+          }}
+        >
+          Save
+        </Button>
+      </Dialog>
+
+      <Dialog open={addOpen} onClose={handleClose} fullWidth maxWidth='xs'>
+        <DialogTitle>
+          <Box sx={{display: 'flex'}}>
+            <Box flexGrow={1}>Add New Row</Box>
             <Box>
               <IconButton color='inherit' onClick={handleClose} aria-label='close'>
                 <CloseIcon />
@@ -269,10 +355,9 @@ const Category = () => {
               onChange={(e) => handleChange(e)}
               name='categoryName'
               fullWidth
+              required
               variant='standard'
               margin='dense'
-              value={open ? currentRow?.categoryName : ''}
-              required={addOpen}
             />
             <TextField
               label='Sequence Number'
@@ -280,10 +365,9 @@ const Category = () => {
               onChange={(e) => handleChange(e)}
               name='sequenceNumber'
               fullWidth
+              required
               variant='standard'
               margin='dense'
-              value={open ? currentRow?.sequenceNumber : ''}
-              required={addOpen}
             />
             {/* <TextField
               InputLabelProps={{shrink: true}}
@@ -292,9 +376,9 @@ const Category = () => {
               onChange={(e) => handleChange(e)}
               name='image'
               fullWidth
+              required
               variant='standard'
               margin='dense'
-              // value={addOpen && currentRow}
               required={addOpen}
             /> */}
             {/* <TextField
@@ -304,20 +388,9 @@ const Category = () => {
               onChange={(e) => handleChange(e)}
               name='hoverImage'
               fullWidth
+              required
               variant='standard'
               margin='dense'
-              // value={addOpen && currentRow}
-              required={addOpen}
-            /> */}
-            {/* <TextField
-              InputLabelProps={{shrink: true}}
-              label='Added On'
-              type={'datetime-local'}
-              onChange={(e) => handleChange(e)}
-              name='addedOn'
-              variant='standard'
-              margin='dense'
-              // value={addOpen && currentRow}
               required={addOpen}
             /> */}
             <TextField
@@ -326,10 +399,9 @@ const Category = () => {
               onChange={(e) => handleChange(e)}
               name='status'
               fullWidth
+              required
               variant='standard'
               margin='dense'
-              defaultValue={open && currentRow.status}
-              required={addOpen}
               select
             >
               {status.map((option) => (
@@ -339,20 +411,9 @@ const Category = () => {
               ))}
             </TextField>
           </DialogContent>
-          <Box>
-            <Button
-              className='button'
-              type='submit'
-              size='lg'
-              variant='success'
-              onClick={() => {
-                open && handleUpdate(rowId)
-                open && handleClose()
-              }}
-            >
-              Save
-            </Button>
-          </Box>
+          <Button className='button' type='submit' size='lg' variant='success'>
+            Save
+          </Button>
         </form>
       </Dialog>
     </>

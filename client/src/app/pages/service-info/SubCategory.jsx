@@ -5,7 +5,7 @@ import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
-import {ApiGet, ApiDelete, ApiPut} from '../../../helpers/API/ApiData'
+import {ApiGet, ApiDelete, ApiPut, ApiPost} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
 import Dialog from '@material-ui/core/Dialog'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -23,12 +23,10 @@ import {
 } from '@material-ui/core'
 import '../../App.css'
 import {Image} from 'react-bootstrap-v5'
-import img from '../../../assets/teacher.jpg'
-// import hoverImg from 'clientpublicmediaavatars/300-7.jpg'
 
 const SubCategory = () => {
   const intl = useIntl()
-  const [jobs, setJobs] = useState([])
+  const [subCategories, setSubCategories] = useState([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [addOpen, setAddOpen] = useState(false)
@@ -45,15 +43,15 @@ const SubCategory = () => {
   }
 
   useEffect(() => {
-    getJobs()
+    getSubCategories()
   }, [])
 
-  const getJobs = async () => {
+  const getSubCategories = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`job?jobCategory=open&status=pending`)
+      const response = await ApiGet(`serviceinfo/subcategory`)
       if (response.status === 200) {
-        setJobs(response.data.data)
+        setSubCategories(response.data.data)
       }
       setLoading(false)
     } catch (err) {
@@ -66,9 +64,9 @@ const SubCategory = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`job?_id=${rowId}`)
+      const response = await ApiDelete(`serviceinfo/subcategory?_id=${rowId}`)
       if (response.status === 200) {
-        getJobs()
+        getSubCategories()
         toast.success('Deleted Successfully')
       }
       setLoading(false)
@@ -83,11 +81,14 @@ const SubCategory = () => {
   const handleUpdate = async (rowId) => {
     try {
       setLoading(true)
-      const response = await ApiPut(`job?_id=${rowId}`, {...currentRow, ...inputValue})
+      const response = await ApiPut(`serviceinfo/subcategory?_id=${rowId}`, {
+        ...currentRow,
+        ...inputValue,
+      })
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
-        getJobs()
+        getSubCategories()
       }
       setLoading(false)
     } catch (err) {
@@ -97,7 +98,21 @@ const SubCategory = () => {
   }
 
   const handleAdd = async () => {
-    console.log('added')
+    try {
+      setLoading(true)
+      const response = await ApiPost(`serviceinfo/subcategory`, inputValue)
+      if (response.status === 200) {
+        toast.success('Added Successfully')
+        setInputValue({})
+        getSubCategories()
+      }
+      setLoading(false)
+      handleClose()
+    } catch (err) {
+      toast.error(err.message)
+      setLoading(false)
+      handleClose()
+    }
   }
 
   const handleChange = (e) => {
@@ -166,41 +181,18 @@ const SubCategory = () => {
     },
   ]
 
-  //   const data = jobs?.map((job) => {
-  //     return {
-  //       id: job._id,
-  //       job: job.jobTitle,
-  //       quote: job.quote,
-  //       city: job.city,
-  //       jobTotal: job.jobTotal,
-  //       customer: job.customer,
-  //       propertyName: job.propertyName,
-  //       categorySubcategory: job.category || job.subCategory,
-  //       vendor: job.vendor,
-  //       postedDate: moment(job.createdAt).format('DD MMM YY hh:mmA'),
-  //       status: job.status,
-  //     }
-  //   })
-
-  const data = [
-    {
-      id: 1,
-      category: 'Teacher',
-      parentCategory: 'school',
-      imageSrc: img,
-      sequenceNumber: 123,
-      addedOn: '',
-      status: 'Active',
-    },
-    {
-      id: 2,
-      category: 'Plumber',
-      parentCategory: 'Housing Service',
-      imageSrc: img,
-      sequenceNumber: 1234,
-      status: 'Active',
-    },
-  ]
+  const data = subCategories?.map((subCategory) => {
+    return {
+      id: subCategory?._id,
+      category: subCategory?.category,
+      parentCategory: subCategory?.parentCategoryDetails[0]?.categoryName,
+      sequenceNumber: subCategory?.sequenceNumber,
+      addedOn: moment(subCategory?.createdAt).format('DD MMM YY hh:mmA'),
+      status:
+        subCategory?.status?.charAt(0)?.toUpperCase() +
+        subCategory?.status?.substr(1)?.toLowerCase(),
+    }
+  })
 
   const status = [
     {label: 'Active', value: 'Active'},
@@ -257,13 +249,10 @@ const SubCategory = () => {
         </>
       </Modal>
 
-      <Dialog open={open || addOpen} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth='xs'>
         <DialogTitle>
           <Box sx={{display: 'flex'}}>
-            <Box flexGrow={1}>
-              {open && 'Edit Row'}
-              {addOpen && 'Add New Row'}
-            </Box>
+            <Box flexGrow={1}>Edit Row</Box>
             <Box>
               <IconButton color='inherit' onClick={handleClose} aria-label='close'>
                 <CloseIcon />
@@ -279,18 +268,20 @@ const SubCategory = () => {
             name='category'
             fullWidth
             variant='standard'
+            value={currentRow?.category}
             margin='dense'
           />
-          <TextField
+          {/* <TextField
             label='Parent Category'
             type={'text'}
             onChange={(e) => handleChange(e)}
             name='parentCategory'
             fullWidth
             variant='standard'
+            value={currentRow?.parentCategory}
             margin='dense'
-          />
-          <TextField
+          /> */}
+          {/* <TextField
             InputLabelProps={{shrink: true}}
             label='Image'
             type={'file'}
@@ -298,24 +289,17 @@ const SubCategory = () => {
             name='image'
             fullWidth
             variant='standard'
+            value={currentRow?.image}
             margin='dense'
-          />
+          /> */}
           <TextField
             label='Sequence Number'
-            type={'number'}
+            inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
             onChange={(e) => handleChange(e)}
             name='sequenceNumber'
             fullWidth
             variant='standard'
-            margin='dense'
-          />
-          <TextField
-            InputLabelProps={{shrink: true}}
-            label='Added On'
-            type={'datetime-local'}
-            onChange={(e) => handleChange(e)}
-            name='addedOn'
-            variant='standard'
+            value={currentRow?.sequenceNumber}
             margin='dense'
           />
           <TextField
@@ -325,6 +309,11 @@ const SubCategory = () => {
             name='status'
             fullWidth
             variant='standard'
+            value={inputValue?.status}
+            defaultValue={
+              currentRow?.status?.charAt(0)?.toUpperCase() +
+              currentRow?.status?.substr(1)?.toLowerCase()
+            }
             margin='dense'
             select
           >
@@ -340,13 +329,90 @@ const SubCategory = () => {
           size='lg'
           variant='success'
           onClick={() => {
-            open && handleUpdate(rowId)
-            addOpen && handleAdd()
+            handleUpdate(rowId)
             handleClose()
           }}
         >
           Save
         </Button>
+      </Dialog>
+
+      <Dialog open={addOpen} onClose={handleClose} fullWidth maxWidth='xs'>
+        <DialogTitle>
+          <Box sx={{display: 'flex'}}>
+            <Box flexGrow={1}>Add New Row</Box>
+            <Box>
+              <IconButton color='inherit' onClick={handleClose} aria-label='close'>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          </Box>
+        </DialogTitle>
+        <form onSubmit={handleAdd}>
+          <DialogContent>
+            <TextField
+              label='Category'
+              type={'text'}
+              onChange={(e) => handleChange(e)}
+              name='category'
+              fullWidth
+              required
+              variant='standard'
+              margin='dense'
+            />
+            {/* <TextField
+              label='Parent Category'
+              type={'text'}
+              onChange={(e) => handleChange(e)}
+              name='parentCategory'
+              fullWidth
+              required
+              variant='standard'
+              margin='dense'
+            /> */}
+            {/* <TextField
+            InputLabelProps={{shrink: true}}
+            label='Image'
+            type={'file'}
+            onChange={(e) => handleChange(e)}
+            name='image'
+            fullWidth
+            required
+            variant='standard'
+            margin='dense'
+          /> */}
+            <TextField
+              label='Sequence Number'
+              inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
+              onChange={(e) => handleChange(e)}
+              name='sequenceNumber'
+              fullWidth
+              required
+              variant='standard'
+              margin='dense'
+            />
+            <TextField
+              label='Status'
+              type={'text'}
+              onChange={(e) => handleChange(e)}
+              name='status'
+              fullWidth
+              required
+              variant='standard'
+              margin='dense'
+              select
+            >
+              {status.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          </DialogContent>
+          <Button className='button' size='lg' variant='success' type='submit'>
+            Save
+          </Button>
+        </form>
       </Dialog>
     </>
   )

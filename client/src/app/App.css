@@ -5,13 +5,6 @@
   transform: scale(1.1, 1.1) !important;
 }
 
-.model {
-  align-self: center;
-  margin: 10px auto;
-  display: flex;
-  justify-content: center;
-}
-
 .button {
   margin-top: 10px;
   width: 100%;

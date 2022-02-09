@@ -13,7 +13,14 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
-import {Box, CircularProgress, DialogContent, MenuItem, TextField} from '@material-ui/core'
+import {
+  Box,
+  CircularProgress,
+  DialogContent,
+  DialogTitle,
+  MenuItem,
+  TextField,
+} from '@material-ui/core'
 import '../../App.css'
 
 const DisputedJobs = () => {
@@ -39,7 +46,7 @@ const DisputedJobs = () => {
   const getJobs = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`job?jobCategory=disputed&status=disputed`)
+      const response = await ApiGet(`job?status=Disputed`)
       if (response.status === 200) {
         setJobs(response.data.data)
       }
@@ -99,11 +106,13 @@ const DisputedJobs = () => {
       name: 'Quote',
       selector: (row) => row.quote,
       sortable: true,
+      width: '150px',
     },
     {
       name: 'City',
       selector: (row) => row.city,
       sortable: true,
+      width: '150px',
     },
     {
       name: 'Job Total',
@@ -145,6 +154,7 @@ const DisputedJobs = () => {
       name: 'Status',
       selector: (row) => row.status,
       sortable: true,
+      width: '150px',
     },
     {
       name: 'Action',
@@ -185,7 +195,7 @@ const DisputedJobs = () => {
       categorySubcategory: job?.category || job?.subCategory,
       vendor: job?.vendorDetails[0]?.companyName,
       postedDate: moment(job?.createdAt).format('DD MMM YY hh:mmA'),
-      status: job?.status,
+      status: job?.status?.charAt(0)?.toUpperCase() + job?.status?.substr(1)?.toLowerCase(),
     }
   })
 
@@ -237,12 +247,17 @@ const DisputedJobs = () => {
           </Modal.Footer>
         </>
       </Modal>
-      <Dialog open={open} onClose={handleClose}>
-        <Toolbar>
-          <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
-            <CloseIcon />
-          </IconButton>
-        </Toolbar>
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth='xs'>
+        <DialogTitle>
+          <Box sx={{display: 'flex'}}>
+            <Box flexGrow={1}>Edit Row</Box>
+            <Box>
+              <IconButton color='inherit' onClick={handleClose} aria-label='close'>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          </Box>
+        </DialogTitle>
         <DialogContent>
           <TextField
             label='Job'
@@ -252,7 +267,7 @@ const DisputedJobs = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow.job}
+            value={currentRow?.job}
           />
           <TextField
             label='Quote'
@@ -262,7 +277,7 @@ const DisputedJobs = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow.quote}
+            value={currentRow?.quote}
           />
           <TextField
             label='City'
@@ -272,17 +287,17 @@ const DisputedJobs = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow.city}
+            value={currentRow?.city}
           />
           <TextField
             label='Job Total'
-            type={'number'}
+            inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
             onChange={(e) => handleChange(e)}
             name='jobTotal'
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow.jobTotal}
+            value={currentRow?.jobTotal}
           />
           <TextField
             label='Customer'
@@ -292,7 +307,7 @@ const DisputedJobs = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow.customer}
+            value={currentRow?.customer}
           />
           <TextField
             label='Property Name'
@@ -302,7 +317,7 @@ const DisputedJobs = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow.propertyName}
+            value={currentRow?.propertyName}
           />
           <TextField
             label='Category / Subcategory'
@@ -312,7 +327,7 @@ const DisputedJobs = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow.categorySubcategory}
+            value={currentRow?.categorySubcategory}
           />
           <TextField
             label='Vendor'
@@ -322,17 +337,7 @@ const DisputedJobs = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow.vendor}
-          />
-          <TextField
-            InputLabelProps={{shrink: true}}
-            label='Posted Date'
-            type={'datetime-local'}
-            onChange={(e) => handleChange(e)}
-            name='postedDate'
-            variant='standard'
-            margin='dense'
-            value={moment(currentRow.postedDate).format('YYYY-MM-DDTHH:mm')}
+            value={currentRow?.vendor}
           />
           <TextField
             label='Status'
@@ -343,7 +348,11 @@ const DisputedJobs = () => {
             variant='standard'
             margin='dense'
             select
-            defaultValue={currentRow?.status}
+            value={inputValue?.status}
+            defaultValue={
+              currentRow?.status?.charAt(0)?.toUpperCase() +
+              currentRow?.status?.substr(1)?.toLowerCase()
+            }
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>
