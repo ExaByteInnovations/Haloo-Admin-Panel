@@ -1,7 +1,7 @@
 var express = require('express')
 var bodyParser = require('body-parser')
 var mongoose = require('mongoose')
-
+var path = require('path');
 
 // importing models
 const Review = require('./src/models/review')
@@ -20,6 +20,9 @@ app.use(
   })
 )
 app.use(bodyParser.json())
+
+
+app.use('/uploads', express.static('./uploads'));
 
 mongoose.connect(
   'mongodb+srv://Alex:Alex@cluster0-myor5.mongodb.net/Haloo?retryWrites=true&w=majority',

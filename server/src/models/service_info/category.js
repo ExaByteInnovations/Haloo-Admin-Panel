@@ -7,6 +7,12 @@ const categorySchema = new mongoose.Schema({
     sequenceNumber: {
         type: Number,
     },
+    image: {
+      type: String,
+    },
+    hoverImage: {
+      type: String,
+    },
     status: {
       type: String,
     },

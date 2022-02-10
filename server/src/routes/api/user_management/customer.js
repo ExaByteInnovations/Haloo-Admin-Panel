@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Customer = require('../../../models/user_management/customer');
+const fs = require('fs');
+const upload = require('../../../controller/multer');
 
 router.get('/',async (req,res) =>{
     console.log('Got query:', req.query);
@@ -46,7 +48,7 @@ router.get('/',async (req,res) =>{
     }
 })
 
-router.post('/',(req,res) =>{
+router.post('/', upload.fields([{name: 'profileImage', maxCount: 1}]), (req,res) =>{
     console.log('Got query:', req.query);
     console.log('Got body:', req.body);
 
@@ -59,7 +61,13 @@ router.post('/',(req,res) =>{
     var lastAccessOn = req.body.lastAccessOn;
     var codStatus = req.body.codStatus;
     var status = req.body.status;
-    var newCustomer = new Customer({customerName, emailAddress, phone, ageBracket, noOfJobs, averageRating, lastAccessOn, codStatus, status});
+
+    var profileImage;
+    if (req.files.profileImage) {
+        profileImage = 'uploads/images/' + req.files.profileImage[0].filename;
+    }
+
+    var newCustomer = new Customer({customerName, profileImage, emailAddress, phone, ageBracket, noOfJobs, averageRating, lastAccessOn, codStatus, status});
     
     newCustomer.save()
         .then((item) => {
@@ -80,8 +88,14 @@ router.delete("/" ,async function(req,res){
         res.send({error: "Please provide an id"});
     }else{
         //  remove eleemnt id id mongodb
-        Customer.remove({_id:_id})
+        Customer.findOneAndDelete({_id:_id})
         .then((item) => {
+                if (item.profileImage) {
+                    fs.unlink(item.profileImage, (err) => {
+                        if (err) throw err;
+                        console.log('successfully deleted profileImage');
+                    });
+                }
                 res.sendStatus(200);
         }).catch((error) => {
             //error handle
@@ -91,13 +105,33 @@ router.delete("/" ,async function(req,res){
     }
 });
 
-router.put("/" ,async function(req,res){
+router.put("/", upload.fields([{name: 'profileImage', maxCount: 1}]) ,async function(req,res){
     console.log('Got query:', req.query);
     console.log('Got body:', req.body);
     var _id = req.query._id;
+
+
+    data = await Customer.findOne({
+        _id: _id
+    })
+    console.log(data);
     if (!_id){
         res.send({error: "Please provide an id"});
+    }else if (!_id){
+        res.send({error: "Please provide an id"});
     }else{
+
+        if (req.files.profileImage) {
+            req.body.profileImage = 'uploads/images/' + req.files.profileImage[0].filename;
+            if (data.profileImage) {
+                fs.unlink(data.profileImage, (err) => {
+                    if (err) throw err;
+                    console.log('successfully deleted profileImage');
+                });
+            }
+            
+        }
+
         //  update element in mongodb put
         Customer.updateOne({_id:_id}, {$set: req.body})
         .then((item) => {

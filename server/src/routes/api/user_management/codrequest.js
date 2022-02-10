@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const City = require('../../../models/service_info/city');
+const CodRequest = require('../../../models/user_management/codrequest');
+
 
 router.get('/',async (req,res) =>{
     console.log('Got query:', req.query);
     var findQuery = {};
     if(req.query.length > 0){
-       var findQuery = {_id:req.query._id, cityName:req.query.cityName, stateId:req.query.stateId, status:req.query.status};
+        
+       var findQuery = {_id:req.query._id, vendorId:req.query.vendorId, jobID:req.query.jobID, reason:req.query.reason, status:req.query.status};
 
         Object.keys(findQuery).forEach(key => {
             if (findQuery[key] === '' || findQuery[key] === NaN || findQuery[key] === undefined) { 
@@ -15,20 +17,31 @@ router.get('/',async (req,res) =>{
         });
     }
     try {
-        // data = await City.find(findQuery);
-        data = await City.aggregate([
+        
+        data = await CodRequest.aggregate([
             {
                 $match : findQuery
             },
             {
                 $lookup: {
-                    from: 'states',
-                    localField: 'stateId',
+                    from: 'jobs',
+                    localField: '_id',
+                    foreignField: 'customerId',
+                    as: 'jobDetails'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'vendors',
+                    localField: 'vendorId',
                     foreignField: '_id',
-                    as: 'stateDetails'
+                    as: 'vendorDetails'
                 }
             },
         ]);
+
+
+
         res.send({data:data});
     }   catch (error) {
         console.log(error);
@@ -39,14 +52,22 @@ router.get('/',async (req,res) =>{
 router.post('/',(req,res) =>{
     console.log('Got query:', req.query);
     console.log('Got body:', req.body);
-    var cityName = req.body.cityName;
-    var stateId = req.body.stateId;
+
+    var vendorId = req.body.vendorId;
+    var jobID = req.body.jobID;
+    var reason = req.body.reason;
     var status = req.body.status;
 
-    var item = new City({ cityName, stateId, status });
+    var newCodRequest = new CodRequest({
+        vendorId,
+        jobID,
+        reason,
+        status
+    });
 
-    item.save( item )
-        .then(function(item){
+    
+    newCodRequest.save()
+        .then((item) => {
             console.log(item);
             res.sendStatus(200);
         }).catch((error) => {
@@ -54,8 +75,6 @@ router.post('/',(req,res) =>{
             console.log(error);
             res.sendStatus(400);       
         });   
-
-
 })
 
 router.delete("/" ,async function(req,res){
@@ -66,8 +85,8 @@ router.delete("/" ,async function(req,res){
         res.send({error: "Please provide an id"});
     }else{
         //  remove eleemnt id id mongodb
-        City.remove({_id:_id})
-        .then(function(item){
+        CodRequest.remove({_id:_id})
+        .then((item) => {
                 res.sendStatus(200);
         }).catch((error) => {
             //error handle
@@ -85,8 +104,8 @@ router.put("/" ,async function(req,res){
         res.send({error: "Please provide an id"});
     }else{
         //  update element in mongodb put
-        City.updateOne({_id:_id}, {$set: req.body})
-        .then(function(item){
+        CodRequest.updateOne({_id:_id}, {$set: req.body})
+        .then((item) => {
                 res.sendStatus(200);
         }).catch((error) => {
             //error handle

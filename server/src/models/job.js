@@ -25,9 +25,9 @@ const jobSchema = new mongoose.Schema({
     status:{
         type: String,
     },
-    jobCategory:{
-        type: String, 
-    },
+    // jobCategory:{
+    //     type: String, 
+    // },
     vendorId:{
       type: mongoose.Schema.Types.ObjectId, ref: 'vendor',
     },
