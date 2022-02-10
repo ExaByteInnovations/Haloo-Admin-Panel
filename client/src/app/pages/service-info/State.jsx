@@ -46,7 +46,7 @@ const State = () => {
   const getStates = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`job?jobCategory=open&status=pending`)
+      const response = await ApiGet(`serviceinfo/state`)
       if (response.status === 200) {
         setStates(response.data.data)
       }
@@ -61,7 +61,7 @@ const State = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`job?_id=${rowId}`)
+      const response = await ApiDelete(`serviceinfo/state?_id=${rowId}`)
       if (response.status === 200) {
         getStates()
         toast.success('Deleted Successfully')
@@ -75,10 +75,13 @@ const State = () => {
     }
   }
 
-  const handleUpdate = async (rowId) => {
+  const handleUpdate = async () => {
     try {
       setLoading(true)
-      const response = await ApiPut(`job?_id=${rowId}`, {...currentRow, ...inputValue})
+      const response = await ApiPut(`serviceinfo/state?_id=${rowId}`, {
+        ...currentRow,
+        ...inputValue,
+      })
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
@@ -94,7 +97,7 @@ const State = () => {
   const handleAdd = async () => {
     try {
       setLoading(true)
-      const response = await ApiPost(`serviceinfo/category`, inputValue)
+      const response = await ApiPost(`serviceinfo/state`, inputValue)
       if (response.status === 200) {
         toast.success('Added Successfully')
         setInputValue({})
@@ -141,6 +144,7 @@ const State = () => {
                 handleOpen()
                 setRowId(row.id)
                 setCurrentRow(row)
+                setInputValue(row)
               }}
             />
             <Delete
@@ -157,29 +161,14 @@ const State = () => {
     },
   ]
 
-  // const data = states?.map((state) => {
-  //   return {
-  //     id: state?._id,
-  //     stateName: state?.stateName,
-  //     countryName: state?.CountryName,
-  //     status: state?.status?.charAt(0)?.toUpperCase() + state?.status?.substr(1)?.toLowerCase(),
-  //   }
-  // })
-
-  const data = [
-    {
-      id: 1,
-      stateName: 'Gujarat',
-      countryName: 'Surat',
-      status: 'Active',
-    },
-    {
-      id: 2,
-      stateName: 'Maharastra',
-      countryName: 'Mumbai',
-      status: 'Active',
-    },
-  ]
+  const data = states?.map((state) => {
+    return {
+      id: state?._id,
+      stateName: state?.stateName,
+      countryName: state?.countryName,
+      status: state?.status?.charAt(0)?.toUpperCase() + state?.status?.substr(1)?.toLowerCase(),
+    }
+  })
 
   const status = [
     {label: 'Active', value: 'Active'},
@@ -254,7 +243,7 @@ const State = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow?.stateName}
+            value={inputValue?.stateName}
           />
           <TextField
             label='Country Name'
@@ -264,7 +253,7 @@ const State = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow?.countryName}
+            value={inputValue?.countryName}
           />
           <TextField
             label='Status'
@@ -276,8 +265,8 @@ const State = () => {
             margin='dense'
             value={inputValue?.status}
             defaultValue={
-              currentRow?.status?.charAt(0)?.toUpperCase() +
-              currentRow?.status?.substr(1)?.toLowerCase()
+              inputValue?.status?.charAt(0)?.toUpperCase() +
+              inputValue?.status?.substr(1)?.toLowerCase()
             }
             select
           >
@@ -293,8 +282,7 @@ const State = () => {
           size='lg'
           variant='success'
           onClick={() => {
-            open && handleUpdate(rowId)
-            addOpen && handleAdd()
+            handleUpdate()
             handleClose()
           }}
         >

@@ -25,6 +25,7 @@ import {Image} from 'react-bootstrap-v5'
 
 const SubCategory = () => {
   const intl = useIntl()
+  const serverUrl = 'http://localhost:3000/'
   const [subCategories, setSubCategories] = useState([])
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
@@ -33,7 +34,6 @@ const SubCategory = () => {
   const [show, setShow] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
-  const [currentRow, setCurrentRow] = useState({})
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
@@ -96,29 +96,41 @@ const SubCategory = () => {
     }
   }
 
-  const handleUpdate = async (rowId) => {
+  const handleUpdate = async () => {
+    const imageData = new FormData()
+    imageData.append('image', inputValue.image)
+    imageData.append('category', inputValue.category)
+    imageData.append('sequenceNumber', inputValue.sequenceNumber)
+    imageData.append('parentCategoryId', inputValue.parentCategoryId)
+    imageData.append('status', inputValue.status)
     try {
       setLoading(true)
-      const response = await ApiPut(`serviceinfo/subcategory?_id=${rowId}`, {
-        ...currentRow,
-        ...inputValue,
-      })
+      const response = await ApiPut(`serviceinfo/subcategory?_id=${rowId}`, imageData)
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
         getSubCategories()
       }
       setLoading(false)
+      handleClose()
     } catch (err) {
       toast.error(err.message)
       setLoading(false)
+      handleClose()
     }
   }
 
   const handleAdd = async () => {
+    const imageData = new FormData()
+    imageData.append('image', inputValue.image)
+    imageData.append('category', inputValue.category)
+    imageData.append('sequenceNumber', inputValue.sequenceNumber)
+    imageData.append('parentCategoryId', inputValue.parentCategoryId)
+    imageData.append('status', inputValue.status)
+
     try {
       setLoading(true)
-      const response = await ApiPost(`serviceinfo/subcategory`, inputValue)
+      const response = await ApiPost(`serviceinfo/subcategory`, imageData)
       if (response.status === 200) {
         toast.success('Added Successfully')
         setInputValue({})
@@ -134,8 +146,9 @@ const SubCategory = () => {
   }
 
   const handleChange = (e) => {
-    const {name, value} = e.target
-    setInputValue({...inputValue, [name]: value})
+    const {name, value, files} = e.target
+    if (files) setInputValue({...inputValue, [name]: files[0]})
+    else setInputValue({...inputValue, [name]: value})
   }
 
   const columns = [
@@ -154,7 +167,7 @@ const SubCategory = () => {
     {
       name: 'Image',
       cell: (row) => {
-        return <Image className='image' src={row.imageSrc} />
+        return <Image className='image' src={serverUrl + row.image} />
       },
     },
     {
@@ -182,7 +195,8 @@ const SubCategory = () => {
               onClick={() => {
                 handleOpen()
                 setRowId(row.id)
-                setCurrentRow(row)
+                setInputValue(row)
+                getCategories()
               }}
             />
             <Delete
@@ -203,7 +217,9 @@ const SubCategory = () => {
     return {
       id: subCategory?._id,
       category: subCategory?.category,
+      image: subCategory?.image,
       parentCategory: subCategory?.parentCategoryDetails[0]?.categoryName,
+      parentCategoryId: subCategory?.parentCategoryId,
       sequenceNumber: subCategory?.sequenceNumber,
       addedOn: moment(subCategory?.createdAt).format('DD MMM YY hh:mmA'),
       status:
@@ -284,81 +300,86 @@ const SubCategory = () => {
             </Box>
           </Box>
         </DialogTitle>
-        <DialogContent>
-          <TextField
-            label='Category'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='category'
-            fullWidth
-            variant='standard'
-            value={currentRow?.category}
-            margin='dense'
-          />
-          {/* <TextField
-            label='Parent Category'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='parentCategory'
-            fullWidth
-            variant='standard'
-            value={currentRow?.parentCategory}
-            margin='dense'
-          /> */}
-          {/* <TextField
-            InputLabelProps={{shrink: true}}
-            label='Image'
-            type={'file'}
-            onChange={(e) => handleChange(e)}
-            name='image'
-            fullWidth
-            variant='standard'
-            value={currentRow?.image}
-            margin='dense'
-          /> */}
-          <TextField
-            label='Sequence Number'
-            inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
-            onChange={(e) => handleChange(e)}
-            name='sequenceNumber'
-            fullWidth
-            variant='standard'
-            value={currentRow?.sequenceNumber}
-            margin='dense'
-          />
-          <TextField
-            label='Status'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='status'
-            fullWidth
-            variant='standard'
-            value={inputValue?.status}
-            defaultValue={
-              currentRow?.status?.charAt(0)?.toUpperCase() +
-              currentRow?.status?.substr(1)?.toLowerCase()
-            }
-            margin='dense'
-            select
-          >
-            {status.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-        </DialogContent>
-        <Button
-          className='button'
-          size='lg'
-          variant='success'
-          onClick={() => {
-            handleUpdate(rowId)
-            handleClose()
-          }}
-        >
-          Save
-        </Button>
+        <form onSubmit={handleUpdate}>
+          <DialogContent>
+            <TextField
+              label='Category'
+              type={'text'}
+              onChange={(e) => handleChange(e)}
+              name='category'
+              fullWidth
+              variant='standard'
+              value={inputValue?.category}
+              margin='dense'
+            />
+            <TextField
+              label='Parent Category'
+              onChange={(e) => handleChange(e)}
+              name='parentCategoryId'
+              fullWidth
+              variant='standard'
+              margin='dense'
+              select
+              value={inputValue?.parentCategoryId}
+              defaultValue={inputValue?.parentCategoryId}
+              SelectProps={{
+                MenuProps: {
+                  style: {height: '300px'},
+                },
+              }}
+            >
+              {categories.map((option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.name}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              InputLabelProps={{shrink: true}}
+              label='Image'
+              type={'file'}
+              onChange={(e) => handleChange(e)}
+              name='image'
+              fullWidth
+              variant='standard'
+              margin='dense'
+            />
+            <TextField
+              label='Sequence Number'
+              inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
+              onChange={(e) => handleChange(e)}
+              name='sequenceNumber'
+              fullWidth
+              variant='standard'
+              value={inputValue?.sequenceNumber}
+              margin='dense'
+            />
+            <TextField
+              label='Status'
+              type={'text'}
+              onChange={(e) => handleChange(e)}
+              name='status'
+              fullWidth
+              variant='standard'
+              value={inputValue?.status}
+              defaultValue={
+                inputValue?.status?.charAt(0)?.toUpperCase() +
+                inputValue?.status?.substr(1)?.toLowerCase()
+              }
+              margin='dense'
+              select
+            >
+              {status.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          </DialogContent>
+          <Button className='button' size='lg' variant='success' type='submit'>
+            Save
+          </Button>
+        </form>
       </Dialog>
 
       <Dialog open={addOpen} onClose={handleClose} fullWidth maxWidth='xs'>
@@ -405,17 +426,17 @@ const SubCategory = () => {
                 </MenuItem>
               ))}
             </TextField>
-            {/* <TextField
-            InputLabelProps={{shrink: true}}
-            label='Image'
-            type={'file'}
-            onChange={(e) => handleChange(e)}
-            name='image'
-            fullWidth
-            required
-            variant='standard'
-            margin='dense'
-          /> */}
+            <TextField
+              InputLabelProps={{shrink: true}}
+              label='Image'
+              type={'file'}
+              onChange={(e) => handleChange(e)}
+              name='image'
+              fullWidth
+              required
+              variant='standard'
+              margin='dense'
+            />
             <TextField
               label='Sequence Number'
               inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
