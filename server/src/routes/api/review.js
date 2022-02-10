@@ -1,12 +1,16 @@
 const express = require('express');
 const router = express.Router();
+const Review = require('../../models/review');
 
 router.get("/" ,async function(req,res){
     console.log('Got query:', req.query);
-    var jobNumber = req.query.jobNumber;
+    var customerId = req.query.customerId;
+    var vendorId = req.query.vendorId;
+    var jobId = req.query.jobId;
+    var _id = req.query._id
     var rating = req.query.rating;
 
-    var findQuery = {jobNumber, rating};
+    var findQuery = {_id,customerId, vendorId, jobId, rating};
 
     Object.keys(findQuery).forEach(key => {
         if (findQuery[key] === '' || findQuery[key] === NaN || findQuery[key] === undefined) { 
@@ -14,7 +18,37 @@ router.get("/" ,async function(req,res){
         }
     });
     try {
-        data = await req.review.find(findQuery);
+        // data = await Review.find(findQuery);
+        data = await Review.aggregate([
+            {
+                $match : findQuery
+            },
+            {
+                $lookup: {
+                    from: 'customers',
+                    localField: 'customerId',
+                    foreignField: '_id',
+                    as: 'customerDetails'
+                },
+            },
+            {
+                $lookup: {
+                    from: 'vendors',
+                    localField: 'vendorId',
+                    foreignField: '_id',
+                    as: 'vendorDetails'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'jobs',
+                    localField: 'jobId',
+                    foreignField: '_id',
+                    as: 'jobDetails'
+                }
+            },
+        ]);
+
         res.send({data:data});
     } catch (error) {
         res.sendStatus(400);
@@ -24,10 +58,9 @@ router.get("/" ,async function(req,res){
 router.post("/" ,async function(req,res){
         console.log('Got query:', req.query);
         console.log('Got body:', req.body);
-        var ratingBy = req.body.ratingBy;
-        var ratingFor = req.body.ratingFor;
-        var whoRated = req.body.whoRated;
-        var jobNumber = req.body.jobNumber;
+        var customerId = req.body.customerId;
+        var vendorId = req.body.vendorId;
+        var jobId = req.body.jobId;
         var rating = parseFloat(req.body.rating);
         var comment = req.body.comment;
 
@@ -36,7 +69,7 @@ router.post("/" ,async function(req,res){
         }else if(!jobNumber){
             res.send({error: "Invalid jobNumber value"});
         }
-        var item = new req.review({ ratingBy: ratingBy, ratingFor: ratingFor, whoRated: whoRated, jobNumber: jobNumber, rating: rating, comment: comment });
+        var item = new Review({ customerId, vendorId, jobId, rating, comment });
         
         item.save( item )
             .then(function(item){
@@ -57,7 +90,7 @@ router.delete("/" ,async function(req,res){
         res.send({error: "Please provide an id"});
     }else{
         //  remove eleemnt id id mongodb
-        req.review.remove({_id:_id})
+        Review.remove({_id:_id})
         .then(function(item){
                 res.sendStatus(200);
         }).catch((error) => {
@@ -76,7 +109,7 @@ router.put("/" ,async function(req,res){
         res.send({error: "Please provide an id"});
     }else{
         //  update eleemnt id id mongodb
-        req.review.update({_id:_id}, {$set: req.body})
+        Review.update({_id:_id}, {$set: req.body})
         .then(function(item){
                 res.sendStatus(200);
         }).catch((error) => {

@@ -4,6 +4,9 @@ const vendorSchema = new mongoose.Schema({
     companyName: {
         type: String, required: true,
     },
+    logo: {
+        type: String,
+    },
     firstName: {
         type: String,
     },

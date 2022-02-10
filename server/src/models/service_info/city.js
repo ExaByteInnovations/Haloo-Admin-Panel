@@ -4,8 +4,8 @@ const citySchema = new mongoose.Schema({
     cityName: {
         type: String, required: true,
     },
-    stateName: {
-        type: String, required: true,
+    stateId: {
+        type: mongoose.Schema.Types.ObjectId, ref: 'state',
     },
     status: {
       type: String,
