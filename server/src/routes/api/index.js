@@ -2,10 +2,11 @@ const express = require('express');
 const MainRouter = express.Router();
 const auth = require('../../middleware/auth');
 
-MainRouter.use('/review', require('./review.js'));
-MainRouter.use('/job', require('./job.js'));
-MainRouter.use('/serviceinfo', require('./service_info'));
-MainRouter.use('/usermanagement', require('./user_management'));
-MainRouter.get('/', auth, (req, res) => { res.send('Hello World!'); });
+MainRouter.use('/review', auth, require('./review.js'));
+MainRouter.use('/job', auth, require('./job.js'));
+MainRouter.use('/serviceinfo', auth, require('./service_info'));
+MainRouter.use('/usermanagement', auth, require('./user_management'));
+MainRouter.use('/auth', require('./auth'));
+MainRouter.get('/', auth, (req, res) => { console.log('req.user',req.user);res.send('Hello World!'); });
 
 module.exports = MainRouter;
