@@ -393,6 +393,11 @@ const SubCategory = () => {
               variant='standard'
               margin='dense'
               select
+              SelectProps={{
+                MenuProps: {
+                  style: {height: '300px'},
+                },
+              }}
             >
               {categories.map((option) => (
                 <MenuItem key={option.id} value={option.id}>
