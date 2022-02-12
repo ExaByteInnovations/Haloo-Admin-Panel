@@ -10,6 +10,9 @@ const customerSchema = new mongoose.Schema({
     emailAddress: {
         type: String,
     },
+    city: {
+        type: String,
+    },
     phone: {
         type: String,
         unique: true,
@@ -18,6 +21,12 @@ const customerSchema = new mongoose.Schema({
         type: String,
     },
     averageRating: {
+        type: Number,
+    },
+    address: {
+        type: String,
+    },
+    pincode: {
         type: Number,
     },
     lastAccessOn: {

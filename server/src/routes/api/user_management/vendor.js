@@ -28,15 +28,19 @@ router.get('/',async (req,res) =>{
                 "$lookup": {
                     "from": "reviews",
                     "let": { "vId": "$_id" },
-                    "pipeline": [{
-                        "$match": {
-                            $expr: { $eq: [ "vendorId", "$$vId" ] },
-                            // "ratingFor": "vendor"
-                        }
-                    }],
-                    "as": "ratingDetails"
+
+                    "pipeline": [
+                        {
+                            "$match": {
+                                $expr: { $eq: ["$vendorId", {"$toObjectId": "$$vId"}] },
+                                "reviewFor": "vendor"
+                            }
+                        },
+                        { $group: { _id: null, avg : { $avg : '$rating' } } }
+                    ],
+                    "as": "reviewDetails"
                 }
-              },
+            },
             {
                 $addFields: {noOfJobs: {$size: "$jobDetails"}}
             },
@@ -56,24 +60,14 @@ router.post('/', upload.fields([{name: 'logo', maxCount: 1}]) ,(req,res) =>{
     console.log('Got query:', req.query);
     console.log('Got body:', req.body);
 
-    var companyName = req.body.companyName;
-    var firstName = req.body.firstName;
-    var lastName = req.body.lastName;
-    var emailAddress = req.body.emailAddress;
-    var phoneNumber = req.body.phoneNumber;
-    var city = req.body.city;
-    var state = req.body.state;
-    var noOfJobs = req.body.noOfJobs;
-    var averageRating = req.body.averageRating;
-    var lastAccessOn = req.body.lastAccessOn;
-    var status = req.body.status;
+    var { companyName, firstName, lastName, emailAddress, phoneNumber, city, state, noOfJobs, averageRating, lastAccessOn, status, pincode, address } = req.body;
 
     var logo;
     if (req.files.logo) {
         logo = 'uploads/images/' + req.files.logo[0].filename;
     }
 
-    var newVendor = new Vendor({companyName, logo, firstName, lastName, emailAddress, phoneNumber, city, state, noOfJobs, averageRating, lastAccessOn, status});
+    var newVendor = new Vendor({companyName, logo, firstName, lastName, emailAddress, phoneNumber, address, pincode, city, state, noOfJobs, averageRating, lastAccessOn, status});
 
     newVendor.save()
         .then((item) => {

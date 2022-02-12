@@ -11,7 +11,7 @@ router.get('/',async (req,res) =>{
         req.query._id = ObjectId(req.query._id) 
     }
     try {
-        data = await Customer.find(findQuery);
+        data = await Master.find(req.query);
         res.send({data:data});
 
     }   catch (error) {
@@ -20,22 +20,22 @@ router.get('/',async (req,res) =>{
     }
 })
 
-router.post('/', async (req,res) =>{
-    console.log('Got query:', req.query);
-    console.log('Got body:', req.body);
+// router.post('/', async (req,res) =>{
+//     console.log('Got query:', req.query);
+//     console.log('Got body:', req.body);
 
-    try{
-        var { copyrightText, siteControlPanelTitle, validImageExtensions, noOfRecordsPerPage, rewardsAmount } = req.body;
+//     try{
+//         var { copyrightText, siteControlPanelTitle, validImageExtensions, noOfRecordsPerPage, rewardsAmount } = req.body;
 
-        var master = new Master({ copyrightText, siteControlPanelTitle, validImageExtensions, noOfRecordsPerPage, rewardsAmount });
+//         var master = new Master({ copyrightText, siteControlPanelTitle, validImageExtensions, noOfRecordsPerPage, rewardsAmount });
         
-        await master.save();
-        return res.status(200).send('ok');
-    } catch (error) {
-        console.log(error);
-        return res.status(400).send(error); 
-    }
-})
+//         await master.save();
+//         return res.status(200).send('ok');
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(400).send(error); 
+//     }
+// })
 
 router.delete("/" ,async function(req,res){
     // console.log('Got query:', req.query);
@@ -61,13 +61,7 @@ router.put("/" ,async function(req,res){
     console.log('Got body:', req.body);
     var _id = req.query._id;
 
-    data = await Customer.findOne({
-        _id: _id
-    })
-    console.log(data);
     if (!_id){
-        res.send({error: "Please provide an id"});
-    }else if (!_id){
         res.send({error: "Please provide an id"});
     }else{
 

@@ -26,6 +26,12 @@ const vendorSchema = new mongoose.Schema({
     state: {
         type: String,
     },
+    address: {
+        type: String,
+    },
+    pincode: {
+        type: Number,
+    },
     averageRating: {
         type: Number,
     },

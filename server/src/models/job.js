@@ -17,10 +17,10 @@ const jobSchema = new mongoose.Schema({
         type: String,
     },
     category:{
-        type: String,
+      type: mongoose.Schema.Types.ObjectId, ref: 'customer',
     },
     subCategory:{
-        type: String,
+      type: mongoose.Schema.Types.ObjectId, ref: 'customer',
     },
     status:{
         type: String,
