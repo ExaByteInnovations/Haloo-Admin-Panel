@@ -5,7 +5,7 @@ const socialMediaSchema = new mongoose.Schema({
         type: String,
     },
     linkedInUrl: {
-        type: Number,
+        type: String,
     },
     InstagramUrl: {
       type: String,

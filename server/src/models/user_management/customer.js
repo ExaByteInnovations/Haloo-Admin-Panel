@@ -20,6 +20,12 @@ const customerSchema = new mongoose.Schema({
     averageRating: {
         type: Number,
     },
+    address: {
+        type: String,
+    },
+    pincode: {
+        type: Number,
+    },
     lastAccessOn: {
         type: Date,
     },

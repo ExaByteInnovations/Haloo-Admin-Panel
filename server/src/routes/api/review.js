@@ -66,9 +66,11 @@ router.post("/" ,async function(req,res){
         var reviewFor = req.body.reviewFor;
 
         if (rating == NaN  || rating > 5 || rating < 0) {
-            res.send({error: "Invalid rating value"});
+            return res.send({error: "Invalid rating value"});
         }else if(!jobId){
-            res.send({error: "Add JobId value"});
+            return res.send({error: "Add JobId value"});
+        }else if(reviewFor != "customer" && reviewFor != "vendor"){
+           return res.send({error: "Invalid reviewFor value, customer or vendor"});
         }
         var item = new Review({ customerId, vendorId, jobId, rating, comment, reviewFor});
         
