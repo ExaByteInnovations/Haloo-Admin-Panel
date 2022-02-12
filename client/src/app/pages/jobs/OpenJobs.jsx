@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {FC, useEffect, useState} from 'react'
+import {FC, useContext, useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
@@ -22,6 +22,7 @@ import {
   TextField,
 } from '@material-ui/core'
 import '../../App.css'
+import {AuthContext} from '../../auth/authContext'
 
 const OpenJobs = () => {
   const intl = useIntl()
@@ -31,7 +32,7 @@ const OpenJobs = () => {
   const [show, setShow] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
-  const [currentRow, setCurrentRow] = useState({})
+  const {user} = useContext(AuthContext)
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
@@ -45,7 +46,7 @@ const OpenJobs = () => {
   const getJobs = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`job?status=Pending`)
+      const response = await ApiGet(`job?status=Pending`, user?.token)
       if (response.status === 200) {
         setJobs(response.data.data)
       }
@@ -60,7 +61,7 @@ const OpenJobs = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`job?_id=${rowId}`)
+      const response = await ApiDelete(`job?_id=${rowId}`, user?.token)
       if (response.status === 200) {
         getJobs()
         toast.success('Deleted Successfully')
@@ -77,7 +78,7 @@ const OpenJobs = () => {
   const handleUpdate = async (rowId) => {
     try {
       setLoading(true)
-      const response = await ApiPut(`job?_id=${rowId}`, {...currentRow, ...inputValue})
+      const response = await ApiPut(`job?_id=${rowId}`, inputValue, user?.token)
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
@@ -98,7 +99,7 @@ const OpenJobs = () => {
   const columns = [
     {
       name: 'Job',
-      selector: (row) => row.job,
+      selector: (row) => row.jobTitle,
       sortable: true,
       width: '200px',
     },
@@ -166,7 +167,7 @@ const OpenJobs = () => {
               onClick={() => {
                 handleOpen()
                 setRowId(row.id)
-                setCurrentRow(row)
+                setInputValue(row)
               }}
             />
             <Delete
@@ -186,7 +187,7 @@ const OpenJobs = () => {
   const data = jobs?.map((job) => {
     return {
       id: job?._id,
-      job: job?.jobTitle,
+      jobTitle: job?.jobTitle,
       quote: job?.quote,
       city: job?.city,
       jobTotal: job?.jobTotal,
@@ -266,11 +267,11 @@ const OpenJobs = () => {
             label='Job'
             type={'text'}
             onChange={(e) => handleChange(e)}
-            name='job'
+            name='jobTitle'
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow?.job}
+            value={inputValue?.jobTitle}
           />
           <TextField
             label='Quote'
@@ -280,7 +281,7 @@ const OpenJobs = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow?.quote}
+            value={inputValue?.quote}
           />
           <TextField
             label='City'
@@ -290,7 +291,7 @@ const OpenJobs = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow?.city}
+            value={inputValue?.city}
           />
           <TextField
             label='Job Total'
@@ -300,9 +301,9 @@ const OpenJobs = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow?.jobTotal}
+            value={inputValue?.jobTotal}
           />
-          <TextField
+          {/* <TextField
             label='Customer'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -310,8 +311,8 @@ const OpenJobs = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow?.customer}
-          />
+            value={inputValue?.customer}
+          /> */}
           <TextField
             label='Property Name'
             type={'text'}
@@ -320,7 +321,7 @@ const OpenJobs = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow?.propertyName}
+            value={inputValue?.propertyName}
           />
           <TextField
             label='Category / Subcategory'
@@ -330,9 +331,9 @@ const OpenJobs = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow?.categorySubcategory}
+            value={inputValue?.categorySubcategory}
           />
-          <TextField
+          {/* <TextField
             label='Vendor'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -340,8 +341,8 @@ const OpenJobs = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow?.vendor}
-          />
+            value={inputValue?.vendor}
+          /> */}
           <TextField
             label='Status'
             type={'text'}
@@ -353,8 +354,8 @@ const OpenJobs = () => {
             select
             value={inputValue?.status}
             defaultValue={
-              currentRow?.status?.charAt(0)?.toUpperCase() +
-              currentRow?.status?.substr(1)?.toLowerCase()
+              inputValue?.status?.charAt(0)?.toUpperCase() +
+              inputValue?.status?.substr(1)?.toLowerCase()
             }
           >
             {status.map((option) => (

@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useState} from 'react'
+import {useContext, useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import {Edit, Delete} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
@@ -21,10 +21,11 @@ import {
 } from '@material-ui/core'
 import '../../App.css'
 import {Image} from 'react-bootstrap-v5'
+import {AuthContext} from '../../auth/authContext'
 
 const Category = () => {
+  const {user} = useContext(AuthContext)
   const intl = useIntl()
-  const serverUrl = 'http://localhost:3000/'
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
@@ -50,7 +51,7 @@ const Category = () => {
   const getCategories = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`serviceinfo/category`)
+      const response = await ApiGet(`serviceinfo/category`, user?.token)
       if (response.status === 200) {
         setCategories(response.data.data)
       }
@@ -65,7 +66,7 @@ const Category = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`serviceinfo/category?_id=${rowId}`)
+      const response = await ApiDelete(`serviceinfo/category?_id=${rowId}`, user?.token)
       if (response.status === 200) {
         getCategories()
         toast.success('Deleted Successfully')
@@ -88,7 +89,7 @@ const Category = () => {
     imageData.append('status', inputValue.status)
     try {
       setLoading(true)
-      const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, imageData)
+      const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, imageData, user?.token)
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
@@ -113,7 +114,7 @@ const Category = () => {
 
     try {
       setLoading(true)
-      const response = await ApiPost(`serviceinfo/category`, imageData)
+      const response = await ApiPost(`serviceinfo/category`, imageData, user?.token)
       if (response.status === 200) {
         toast.success('Added Successfully')
         setInputValue({})
@@ -149,13 +150,13 @@ const Category = () => {
     {
       name: 'Image',
       cell: (row) => {
-        return <Image className='image' src={serverUrl + row.image} />
+        return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.image} />
       },
     },
     {
       name: 'Hover Image',
       cell: (row) => {
-        return <Image className='image' src={serverUrl + row.hoverImage} />
+        return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.hoverImage} />
       },
     },
     {

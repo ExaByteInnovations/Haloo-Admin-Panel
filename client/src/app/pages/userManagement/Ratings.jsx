@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {FC, useEffect, useState} from 'react'
+import {FC, useContext, useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
@@ -15,6 +15,7 @@ import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
 import {Box, CircularProgress, DialogContent, MenuItem, TextField} from '@material-ui/core'
 import '../../App.css'
+import {AuthContext} from '../../auth/authContext'
 
 const Ratings = () => {
   const intl = useIntl()
@@ -22,9 +23,10 @@ const Ratings = () => {
   const [open, setOpen] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
-  const [currentRow, setCurrentRow] = useState({})
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
+
+  const {user} = useContext(AuthContext)
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
@@ -39,7 +41,7 @@ const Ratings = () => {
   const getRatings = async () => {
     try {
       setLoading(true)
-      const response = await ApiGet(`review`)
+      const response = await ApiGet(`review`, user?.token)
       if (response.status === 200) {
         setRatings(response.data.data)
       }
@@ -53,7 +55,7 @@ const Ratings = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`review?_id=${rowId}`)
+      const response = await ApiDelete(`review?_id=${rowId}`, user?.token)
 
       if (response.status === 200) {
         getRatings()
@@ -71,7 +73,7 @@ const Ratings = () => {
   const handleUpdate = async (rowId) => {
     try {
       setLoading(true)
-      const response = await ApiPut(`review?_id=${rowId}`, {...currentRow, ...inputValue})
+      const response = await ApiPut(`review?_id=${rowId}`, inputValue, user?.token)
 
       if (response.status === 200) {
         toast.success('Updated Successfully')
@@ -153,9 +155,8 @@ const Ratings = () => {
               className='icon'
               onClick={() => {
                 handleOpen()
-                setInputValue({...row})
                 setRowId(row.id)
-                setCurrentRow(row)
+                setInputValue(row)
               }}
             />
             <Delete
@@ -246,6 +247,7 @@ const Ratings = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={inputValue?.ratingFor}
           />
           <TextField
             label='Rating By'
@@ -255,6 +257,7 @@ const Ratings = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={inputValue?.ratingBy}
           />
           <TextField
             label='Who Rated'
@@ -264,6 +267,7 @@ const Ratings = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={inputValue?.whoRated}
           />
           <TextField
             label='Job Number'
@@ -273,6 +277,7 @@ const Ratings = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={inputValue?.jobNumber}
           />
           <TextField
             label='Rating'
@@ -283,6 +288,8 @@ const Ratings = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            value={inputValue?.rating}
+            defaultValue={inputValue?.rating}
           >
             {[1, 2, 3, 4, 5].map((option) => (
               <MenuItem key={option} value={option}>
@@ -299,15 +306,7 @@ const Ratings = () => {
             fullWidth
             variant='standard'
             margin='dense'
-          />
-          <TextField
-            InputLabelProps={{shrink: true}}
-            label='Posted On'
-            type={'datetime-local'}
-            onChange={(e) => handleChange(e)}
-            name='postedOn'
-            variant='standard'
-            margin='dense'
+            value={inputValue?.comment}
           />
         </DialogContent>
         <Button
