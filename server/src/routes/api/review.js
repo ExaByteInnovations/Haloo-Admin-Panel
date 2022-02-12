@@ -63,13 +63,14 @@ router.post("/" ,async function(req,res){
         var jobId = req.body.jobId;
         var rating = parseFloat(req.body.rating);
         var comment = req.body.comment;
+        var reviewFor = req.body.reviewFor;
 
         if (rating == NaN  || rating > 5 || rating < 0) {
             res.send({error: "Invalid rating value"});
-        }else if(!jobNumber){
-            res.send({error: "Invalid jobNumber value"});
+        }else if(!jobId){
+            res.send({error: "Add JobId value"});
         }
-        var item = new Review({ customerId, vendorId, jobId, rating, comment });
+        var item = new Review({ customerId, vendorId, jobId, rating, comment, reviewFor});
         
         item.save( item )
             .then(function(item){

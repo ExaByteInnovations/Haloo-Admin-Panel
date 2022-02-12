@@ -1,17 +1,12 @@
 var mongoose = require('mongoose');
 
 const codRequestSchema = new mongoose.Schema({
-    vendorId: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'vendor'
-    },
-    jobID: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'job'
-    },
-    reason: {
-        type: String,
+    customerId: {
+        type: mongoose.Schema.Types.ObjectId, ref: 'customer'
     },
     status: {
       type: String,
+      default: 'pending',
     },
   },
     {

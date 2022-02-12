@@ -7,6 +7,7 @@ const adminSchema = new mongoose.Schema({
   userRole: { type: String },
   password: { type: String },
   token: { type: String },
+  status : { type: String, default: "active" },
 });
 
 const Admin = mongoose.model("admin", adminSchema);
