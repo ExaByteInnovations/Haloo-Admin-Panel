@@ -4,19 +4,17 @@ const Job = require('../../models/job');
 
 router.get("/" ,async function(req,res){
     console.log('Got query:', req.query);
-    var findQuery = {_id:req.query._id, quote:req.query.quote, city:req.query.city, customerId:req.query.customer, propertyName:req.query.propertyName, category:req.query.category, subCategory:req.query.subCategory, status:req.query.status, jobCategory:req.query.jobCategory, vendorId:req.query.vendor, jobTotal:req.query.jobTotal};
+    
+    if (req.query._id) {
+        req.query._id = ObjectId(req.query._id) 
+    }
 
-    Object.keys(findQuery).forEach(key => {
-        if (findQuery[key] === '' || findQuery[key] === NaN || findQuery[key] === undefined) { 
-          delete findQuery[key];
-        }
-    });
     try {
         // data = await Job.find(findQuery);
 
         data = await Job.aggregate([
             {
-                $match : findQuery
+                $match : req.query
             },
             {
                 $lookup: {
@@ -33,6 +31,22 @@ router.get("/" ,async function(req,res){
                     foreignField: '_id',
                     as: 'vendorDetails'
                 }
+            },
+            {
+                $lookup: {
+                    from: 'categories ',
+                    localField: 'categoryId',
+                    foreignField: '_id',
+                    as: 'categoryDetails'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'subcategories  ',
+                    localField: 'subCategoryId',
+                    foreignField: '_id',
+                    as: 'subcategoryDetails'
+                }
             }
         ]);
 
@@ -47,20 +61,10 @@ router.get("/" ,async function(req,res){
 router.post("/" ,async function(req,res){
     console.log('Got query:', req.query);
     console.log('Got body:', req.body);
-    var quote = req.body.quote;
-    var jobTitle = req.body.jobTitle;
-    var city = req.body.city;
-    // var customer = req.body.customer;
-    var customerId = req.body.customerId;
-    var propertyName = req.body.propertyName;
-    var category = req.body.category;
-    var subCategory = req.body.subCategory;
-    var status = req.body.status;
-    // var jobCategory = req.body.jobCategory;
-    var vendorId = req.body.vendorId;
-    var jobTotal = req.body.jobTotal;
 
-    var item = new Job({ quote, jobTitle, city, customerId, propertyName, category, subCategory, status, vendorId, jobTotal });
+    var { quote, jobTitle, city, customerId, propertyName, categoryId, subCategoryId, status, vendorId, jobTotal } = req.body;
+
+    var item = new Job({ quote, jobTitle, city, customerId, propertyName, categoryId, subCategoryId, status, vendorId, jobTotal });
     
     item.save( item )
         .then(function(item){
@@ -101,7 +105,7 @@ router.put("/" ,async function(req,res){
         res.send({error: "Please provide an id"});
     }else{
         //  update element in mongodb put
-        Job.update({_id:_id}, {$set: req.body})
+        Job.updateOne({_id:_id}, {$set: req.body})
         .then(function(item){
                 res.sendStatus(200);
         }).catch((error) => {

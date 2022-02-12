@@ -17,6 +17,9 @@ const customerSchema = new mongoose.Schema({
         type: String,
         unique: true,
     },
+    state: {
+        type: String,
+    },
     ageBracket: {
         type: String,
     },

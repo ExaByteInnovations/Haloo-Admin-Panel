@@ -64,14 +64,14 @@ router.post('/', upload.fields([{name: 'profileImage', maxCount: 1}]), async (re
     console.log('Got body:', req.body);
 
     try{
-        var { customerName, emailAddress, phone, ageBracket, noOfJobs, address, pincode, averageRating, lastAccessOn, codStatus, status } = req.body;
+        var { customerName, emailAddress, phone, ageBracket, noOfJobs, address, city, state, pincode, averageRating, lastAccessOn, codStatus, status } = req.body;
 
         var profileImage;
         if (req.files.profileImage) {
             profileImage = 'uploads/images/' + req.files.profileImage[0].filename;
         }
 
-        var newCustomer = new Customer({customerName, profileImage, emailAddress, pincode, pincode,  phone, ageBracket, noOfJobs, averageRating, lastAccessOn, codStatus, status});
+        var newCustomer = new Customer({customerName, profileImage, emailAddress, address, city, state, pincode,  phone, ageBracket, noOfJobs, averageRating, lastAccessOn, codStatus, status});
         
         await newCustomer.save();
 
