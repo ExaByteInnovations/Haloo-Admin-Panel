@@ -7,6 +7,7 @@ import {Routes} from './routing/Routes'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import {AuthContextProvider} from './auth/authContext'
 
 type Props = {
   basename: string
@@ -14,18 +15,20 @@ type Props = {
 
 const App: React.FC<Props> = ({basename}) => {
   return (
-    <Suspense fallback={<LayoutSplashScreen />}>
-      <BrowserRouter basename={basename}>
-        <I18nProvider>
-          <LayoutProvider>
-            <AuthInit>
-              <Routes />
-              <ToastContainer />
-            </AuthInit>
-          </LayoutProvider>
-        </I18nProvider>
-      </BrowserRouter>
-    </Suspense>
+    <AuthContextProvider>
+      <Suspense fallback={<LayoutSplashScreen />}>
+        <BrowserRouter basename={basename}>
+          <I18nProvider>
+            <LayoutProvider>
+              <AuthInit>
+                <Routes />
+                <ToastContainer />
+              </AuthInit>
+            </LayoutProvider>
+          </I18nProvider>
+        </BrowserRouter>
+      </Suspense>
+    </AuthContextProvider>
   )
 }
 

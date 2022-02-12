@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useState} from 'react'
+import {useContext, useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
-import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
@@ -21,10 +20,12 @@ import {
   TextField,
 } from '@material-ui/core'
 import '../../App.css'
+import {AuthContext} from '../../auth/authContext'
 
 const City = () => {
   const intl = useIntl()
   const [cities, setCities] = useState([])
+  const [states, setStates] = useState([])
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [addOpen, setAddOpen] = useState(false)
@@ -32,6 +33,8 @@ const City = () => {
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
   const [currentRow, setCurrentRow] = useState({})
+
+  const {user} = useContext(AuthContext)
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
@@ -47,7 +50,7 @@ const City = () => {
   const getCities = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`job?jobCategory=open&status=pending`)
+      const response = await ApiGet(`serviceinfo/city`, user?.token)
       if (response.status === 200) {
         setCities(response.data.data)
       }
@@ -59,10 +62,28 @@ const City = () => {
     }
   }
 
+  const getStates = async () => {
+    setLoading(true)
+    try {
+      const response = await ApiGet(`serviceinfo/state`, user?.token)
+      if (response.status === 200) {
+        setStates(
+          response?.data?.data?.map((state) => {
+            return {name: state?.stateName, id: state?._id}
+          })
+        )
+      }
+      setLoading(false)
+    } catch (err) {
+      console.log(err)
+      setLoading(false)
+    }
+  }
+
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`job?_id=${rowId}`)
+      const response = await ApiDelete(`serviceinfo/city?_id=${rowId}`, user?.token)
       if (response.status === 200) {
         getCities()
         toast.success('Deleted Successfully')
@@ -76,10 +97,14 @@ const City = () => {
     }
   }
 
-  const handleUpdate = async (rowId) => {
+  const handleUpdate = async () => {
     try {
       setLoading(true)
-      const response = await ApiPut(`job?_id=${rowId}`, {...currentRow, ...inputValue})
+      const response = await ApiPut(
+        `serviceinfo/city?_id=${rowId}`,
+        {...currentRow, ...inputValue},
+        user?.token
+      )
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
@@ -95,7 +120,7 @@ const City = () => {
   const handleAdd = async () => {
     try {
       setLoading(true)
-      const response = await ApiPost(`serviceinfo/category`, inputValue)
+      const response = await ApiPost(`serviceinfo/city`, inputValue, user?.token)
       if (response.status === 200) {
         toast.success('Added Successfully')
         setInputValue({})
@@ -142,6 +167,8 @@ const City = () => {
                 handleOpen()
                 setRowId(row.id)
                 setCurrentRow(row)
+                setInputValue(row)
+                getStates()
               }}
             />
             <Delete
@@ -158,29 +185,15 @@ const City = () => {
     },
   ]
 
-  // const data = cities?.map((city) => {
-  //   return {
-  //     id: city?._id,
-  //     cityName: city?.city,
-  //     stateName: city?.state,
-  //     status: city?.status?.charAt(0)?.toUpperCase() + city?.status?.substr(1)?.toLowerCase(),
-  //   }
-  // })
-
-  const data = [
-    {
-      id: 1,
-      cityName: 'Surat',
-      stateName: 'Gujarat',
-      status: 'Active',
-    },
-    {
-      id: 2,
-      cityName: 'Mumbai',
-      stateName: 'Maharastra',
-      status: 'Active',
-    },
-  ]
+  const data = cities?.map((city) => {
+    return {
+      id: city?._id,
+      cityName: city?.cityName,
+      stateName: city?.stateDetails[0]?.stateName,
+      stateId: city?.stateId,
+      status: city?.status?.charAt(0)?.toUpperCase() + city?.status?.substr(1)?.toLowerCase(),
+    }
+  })
 
   const status = [
     {label: 'Active', value: 'Active'},
@@ -198,7 +211,13 @@ const City = () => {
   return (
     <>
       <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.SERVICE_INFO.CITY'})}</PageTitle>
-      <Box className='add-button-wrapper' onClick={() => setAddOpen(true)}>
+      <Box
+        className='add-button-wrapper'
+        onClick={() => {
+          setAddOpen(true)
+          getStates()
+        }}
+      >
         <Button className='add-button' variant='success'>
           Add New +
         </Button>
@@ -255,18 +274,30 @@ const City = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            value={currentRow?.cityName}
+            value={inputValue?.cityName}
           />
           <TextField
             label='State Name'
-            type={'text'}
             onChange={(e) => handleChange(e)}
-            name='stateName'
+            name='stateId'
             fullWidth
             variant='standard'
-            value={currentRow?.stateName}
             margin='dense'
-          />
+            select
+            value={inputValue?.stateId}
+            defaultValue={inputValue?.stateId}
+            SelectProps={{
+              MenuProps: {
+                style: {height: '300px'},
+              },
+            }}
+          >
+            {states.map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
           <TextField
             label='Status'
             type={'text'}
@@ -276,8 +307,8 @@ const City = () => {
             variant='standard'
             value={inputValue?.status}
             defaultValue={
-              currentRow?.status?.charAt(0)?.toUpperCase() +
-              currentRow?.status?.substr(1)?.toLowerCase()
+              inputValue?.status?.charAt(0)?.toUpperCase() +
+              inputValue?.status?.substr(1)?.toLowerCase()
             }
             margin='dense'
             select
@@ -294,7 +325,7 @@ const City = () => {
           size='lg'
           variant='success'
           onClick={() => {
-            handleUpdate(rowId)
+            handleUpdate()
             handleClose()
           }}
         >
@@ -327,14 +358,25 @@ const City = () => {
             />
             <TextField
               label='State Name'
-              type={'text'}
               onChange={(e) => handleChange(e)}
-              name='stateName'
+              name='stateId'
               fullWidth
               variant='standard'
-              required
               margin='dense'
-            />
+              required
+              select
+              SelectProps={{
+                MenuProps: {
+                  style: {height: '300px'},
+                },
+              }}
+            >
+              {states.map((option) => (
+                <MenuItem key={option.id} value={option.id}>
+                  {option.name}
+                </MenuItem>
+              ))}
+            </TextField>
             <TextField
               label='Status'
               type={'text'}

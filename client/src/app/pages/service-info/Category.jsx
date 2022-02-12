@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useState} from 'react'
+import {useContext, useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import {Edit, Delete} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
@@ -21,8 +21,10 @@ import {
 } from '@material-ui/core'
 import '../../App.css'
 import {Image} from 'react-bootstrap-v5'
+import {AuthContext} from '../../auth/authContext'
 
 const Category = () => {
+  const {user} = useContext(AuthContext)
   const intl = useIntl()
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
@@ -31,7 +33,9 @@ const Category = () => {
   const [addOpen, setAddOpen] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
-  const [currentRow, setCurrentRow] = useState({})
+  // const [currentRow, setCurrentRow] = useState({})
+
+  console.log(categories, 'categories')
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
@@ -47,7 +51,7 @@ const Category = () => {
   const getCategories = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`serviceinfo/category`)
+      const response = await ApiGet(`serviceinfo/category`, user?.token)
       if (response.status === 200) {
         setCategories(response.data.data)
       }
@@ -62,7 +66,7 @@ const Category = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`serviceinfo/category?_id=${rowId}`)
+      const response = await ApiDelete(`serviceinfo/category?_id=${rowId}`, user?.token)
       if (response.status === 200) {
         getCategories()
         toast.success('Deleted Successfully')
@@ -76,29 +80,41 @@ const Category = () => {
     }
   }
 
-  const handleUpdate = async (rowId) => {
+  const handleUpdate = async () => {
+    const imageData = new FormData()
+    imageData.append('image', inputValue.image)
+    imageData.append('hoverImage', inputValue.hoverImage)
+    imageData.append('categoryName', inputValue.categoryName)
+    imageData.append('sequenceNumber', inputValue.sequenceNumber)
+    imageData.append('status', inputValue.status)
     try {
       setLoading(true)
-      const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, {
-        ...currentRow,
-        ...inputValue,
-      })
+      const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, imageData, user?.token)
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
         getCategories()
       }
       setLoading(false)
+      handleClose()
     } catch (err) {
       toast.error(err.message)
       setLoading(false)
+      handleClose()
     }
   }
 
   const handleAdd = async () => {
+    const imageData = new FormData()
+    imageData.append('image', inputValue.image)
+    imageData.append('hoverImage', inputValue.hoverImage)
+    imageData.append('categoryName', inputValue.categoryName)
+    imageData.append('sequenceNumber', inputValue.sequenceNumber)
+    imageData.append('status', inputValue.status)
+
     try {
       setLoading(true)
-      const response = await ApiPost(`serviceinfo/category`, inputValue)
+      const response = await ApiPost(`serviceinfo/category`, imageData, user?.token)
       if (response.status === 200) {
         toast.success('Added Successfully')
         setInputValue({})
@@ -114,8 +130,9 @@ const Category = () => {
   }
 
   const handleChange = (e) => {
-    const {name, value} = e.target
-    setInputValue({...inputValue, [name]: value})
+    const {name, value, files} = e.target
+    if (files) setInputValue({...inputValue, [name]: files[0]})
+    else setInputValue({...inputValue, [name]: value})
   }
 
   const columns = [
@@ -133,13 +150,13 @@ const Category = () => {
     {
       name: 'Image',
       cell: (row) => {
-        return <Image className='image' src={row.image} />
+        return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.image} />
       },
     },
     {
       name: 'Hover Image',
       cell: (row) => {
-        return <Image className='image' src={row.hoverImage} />
+        return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.hoverImage} />
       },
     },
     {
@@ -157,7 +174,8 @@ const Category = () => {
               onClick={() => {
                 handleOpen()
                 setRowId(row.id)
-                setCurrentRow(row)
+                // setCurrentRow(row)
+                setInputValue(row)
               }}
             />
             <Delete
@@ -242,38 +260,39 @@ const Category = () => {
       </Modal>
 
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='xs'>
-        <DialogTitle>
-          <Box sx={{display: 'flex'}}>
-            <Box flexGrow={1}>Edit Row</Box>
-            <Box>
-              <IconButton color='inherit' onClick={handleClose} aria-label='close'>
-                <CloseIcon />
-              </IconButton>
+        <form onSubmit={handleUpdate}>
+          <DialogTitle>
+            <Box sx={{display: 'flex'}}>
+              <Box flexGrow={1}>Edit Row</Box>
+              <Box>
+                <IconButton color='inherit' onClick={handleClose} aria-label='close'>
+                  <CloseIcon />
+                </IconButton>
+              </Box>
             </Box>
-          </Box>
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            label='Category Name'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='categoryName'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            value={currentRow?.categoryName}
-          />
-          <TextField
-            label='Sequence Number'
-            inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
-            onChange={(e) => handleChange(e)}
-            name='sequenceNumber'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            value={currentRow?.sequenceNumber}
-          />
-          {/* <TextField
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+              label='Category Name'
+              type={'text'}
+              onChange={(e) => handleChange(e)}
+              name='categoryName'
+              fullWidth
+              variant='standard'
+              margin='dense'
+              value={inputValue?.categoryName}
+            />
+            <TextField
+              label='Sequence Number'
+              inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
+              onChange={(e) => handleChange(e)}
+              name='sequenceNumber'
+              fullWidth
+              variant='standard'
+              margin='dense'
+              value={inputValue?.sequenceNumber}
+            />
+            <TextField
               InputLabelProps={{shrink: true}}
               label='Image'
               type={'file'}
@@ -282,10 +301,8 @@ const Category = () => {
               fullWidth
               variant='standard'
               margin='dense'
-              // value={addOpen && currentRow}
-              required={addOpen}
-            /> */}
-          {/* <TextField
+            />
+            <TextField
               InputLabelProps={{shrink: true}}
               label='Hover Image'
               type={'file'}
@@ -294,43 +311,42 @@ const Category = () => {
               fullWidth
               variant='standard'
               margin='dense'
-              // value={addOpen && currentRow}
-              required={addOpen}
-            /> */}
-          <TextField
-            label='Status'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='status'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            value={inputValue?.status}
-            defaultValue={
-              currentRow?.status?.charAt(0)?.toUpperCase() +
-              currentRow?.status?.substr(1)?.toLowerCase()
-            }
-            select
+            />
+            <TextField
+              label='Status'
+              type={'text'}
+              onChange={(e) => handleChange(e)}
+              name='status'
+              fullWidth
+              variant='standard'
+              margin='dense'
+              value={inputValue?.status}
+              defaultValue={
+                inputValue?.status?.charAt(0)?.toUpperCase() +
+                inputValue?.status?.substr(1)?.toLowerCase()
+              }
+              select
+            >
+              {status.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          </DialogContent>
+          <Button
+            className='button'
+            type='submit'
+            size='lg'
+            variant='success'
+            // onClick={() => {
+            //   handleUpdate(rowId)
+            //   handleClose()
+            // }}
           >
-            {status.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-        </DialogContent>
-        <Button
-          className='button'
-          type='submit'
-          size='lg'
-          variant='success'
-          onClick={() => {
-            handleUpdate(rowId)
-            handleClose()
-          }}
-        >
-          Save
-        </Button>
+            Save
+          </Button>
+        </form>
       </Dialog>
 
       <Dialog open={addOpen} onClose={handleClose} fullWidth maxWidth='xs'>
@@ -366,7 +382,7 @@ const Category = () => {
               variant='standard'
               margin='dense'
             />
-            {/* <TextField
+            <TextField
               InputLabelProps={{shrink: true}}
               label='Image'
               type={'file'}
@@ -376,9 +392,9 @@ const Category = () => {
               required
               variant='standard'
               margin='dense'
-              required={addOpen}
-            /> */}
-            {/* <TextField
+              required
+            />
+            <TextField
               InputLabelProps={{shrink: true}}
               label='Hover Image'
               type={'file'}
@@ -389,7 +405,7 @@ const Category = () => {
               variant='standard'
               margin='dense'
               required={addOpen}
-            /> */}
+            />
             <TextField
               label='Status'
               type={'text'}
