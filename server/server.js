@@ -40,8 +40,8 @@ db.once('open', function (callback) {
 // forwarding models to routes
 app.use((req, res, next) => {
   console.log(`Request_Endpoint: ${req.method} ${req.url}`)
-  req.review = Review
-  req.job = Job
+  // req.review = Review
+  // req.job = Job
   // req.category = Category
   next()
 })

@@ -18,6 +18,7 @@ const vendorSchema = new mongoose.Schema({
     },
     phoneNumber: {
         type: String,
+        unique: true,
     },
     city: {
         type: String,

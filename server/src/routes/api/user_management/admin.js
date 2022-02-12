@@ -3,43 +3,14 @@ const router = express.Router();
 const Admin = require('../../../models/user_management/admin');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const upload = require('../../../controller/multer');
 
 router.get('/',async (req,res) =>{
     console.log('Got query:', req.query);
     var findQuery = {};
-    if(req.query.length > 0){
-        
-       var findQuery = {_id:req.query._id, customerName:req.query.customerName, emailAddress:req.query.emailAddress, phone:req.query.phone, ageBracket:req.query.ageBracket, averageRating:req.query.averageRating, lastAccessOn:req.query.lastAccessOn,codStatus:req.query.codStatus, status:req.query.status};
-
-        Object.keys(findQuery).forEach(key => {
-            if (findQuery[key] === '' || findQuery[key] === NaN || findQuery[key] === undefined) { 
-            delete findQuery[key];
-            }
-        });
-    }
+    
     try {
-        data = await Admin.find(findQuery);
-        // data = await Admin.aggregate([
-        //     {
-        //         $match : findQuery
-        //     },
-        //     {
-        //         $lookup: {
-        //             from: 'jobs',
-        //             localField: '_id',
-        //             foreignField: 'customerId',
-        //             as: 'jobDetails'
-        //         }
-        //     },
-        //     { 
-        //         $addFields: {noOfJobs: {$size: "$jobDetails"}}
-        //     },
-        //     {
-        //         $project : { jobDetails : 0}
-        //     }
-        // ]);
-
-
+        data = await Admin.find(req.query);
 
         res.send({data:data});
     }   catch (error) {
@@ -48,155 +19,117 @@ router.get('/',async (req,res) =>{
     }
 })
 
-router.post('/', async (req,res) =>{
-    console.log('Got query:', req.query);
-    console.log('Got body:', req.body);
+router.post('/', upload.fields([{name: 'profileImage', maxCount: 1}]), async (req,res) =>{
+  console.log('Got query:', req.query);
+  console.log('Got body:', req.body);
 
-    var first_name = req.body.first_name;
-    var last_name = req.body.last_name;
-    var email = req.body.email;
-    var password = req.body.password;
+  let { name, userRole, email, password, status} = req.body;
+  
 
-    encryptedPassword = await bcrypt.hash(password, 10);
+  var profileImage;
+  if (req.files.profileImage) {
+      profileImage = 'uploads/images/' + req.files.profileImage[0].filename;
+  }
 
-    const admin = await Admin.create({
-        first_name,
-        last_name,
-        email: email.toLowerCase(), // sanitize: convert email to lowercase
-        password: encryptedPassword,
-      });
+  encryptedPassword = await bcrypt.hash(password, 10);
 
-    // Create token
-    const token = jwt.sign(
-        { admin_id: admin._id, email },
-        process.env.TOKEN_KEY,
-        {
-          expiresIn: "265d",
-        }
-      );
-      // save user token
-    admin.token = token;
+  const admin = await Admin.create({
+      name,
+      userRole,
+      profileImage,
+      status,
+      email: email.toLowerCase(), // sanitize: convert email to lowercase
+      password: encryptedPassword,
+    });
 
-    admin.save()
+  // Create token
+  const token = jwt.sign(
+      { admin_id: admin._id, email },
+      process.env.TOKEN_KEY,
+      {
+        expiresIn: "265d",
+      }
+    );
+    // save user token
+  admin.token = token;
+
+  admin.save()
+      .then((item) => {
+          console.log(item);
+          res.status(201).json(admin);
+      }).catch((error) => {
+          //error handle
+          console.log(error);
+          res.sendStatus(400);       
+      });   
+})
+
+
+router.delete("/" ,async function(req,res){
+    // console.log('Got query:', req.query);
+    // console.log('Got body:', req.body);
+    var _id = req.query._id;
+    if (!_id){
+        res.send({error: "Please provide an id"});
+    }else{
+        //  remove eleemnt id id mongodb
+        Admin.findOneAndDelete({_id:_id})
         .then((item) => {
-            console.log(item);
-            res.status(201).json(admin);
+                if (item.profileImage) {
+                    fs.unlink(item.profileImage, (err) => {
+                        if (err) throw err;
+                        console.log('successfully deleted profileImage');
+                    });
+                }
+                res.sendStatus(200);
         }).catch((error) => {
             //error handle
             console.log(error);
             res.sendStatus(400);       
-        });   
-})
-
-
-
-router.post("/login", async (req, res) => {
-
-    // Our login logic starts here
-    try {
-      // Get user input
-      const { email, password } = req.body;
-  
-      // Validate user input
-      if (!(email && password)) {
-        res.status(400).send("All input is required");
-      }
-      // Validate if user exist in our database
-      const admin = await Admin.findOne({ email });
-  
-      if (admin && (await bcrypt.compare(password, admin.password))) {
-        // Create token
-        const token = jwt.sign(
-          { admin_id: admin._id, email },
-          process.env.TOKEN_KEY,
-          {
-            expiresIn: "365d",
-          }
-        );
-  
-        // save user token
-        admin.token = token;
-  
-        // user
-        res.status(200).json(admin);
-      }
-      res.status(400).send("Invalid Credentials");
-    } catch (err) {
-      console.log(err);
+        });
     }
-    // Our register logic ends here
-  });
-  
+});
+
+router.put("/", upload.fields([{name: 'profileImage', maxCount: 1}]) ,async function(req,res){
+    console.log('Got query:', req.query);
+    console.log('Got body:', req.body);
+    var _id = req.query._id;
 
 
+    data = await Customer.findOne({
+        _id: _id
+    })
+    console.log(data);
+    if (!_id){
+        res.send({error: "Please provide an id"});
+    }else if (!_id){
+        res.send({error: "Please provide an id"});
+    }else{
 
-
-
-
-
-
-// router.delete("/" ,async function(req,res){
-//     // console.log('Got query:', req.query);
-//     // console.log('Got body:', req.body);
-//     var _id = req.query._id;
-//     if (!_id){
-//         res.send({error: "Please provide an id"});
-//     }else{
-//         //  remove eleemnt id id mongodb
-//         Customer.findOneAndDelete({_id:_id})
-//         .then((item) => {
-//                 if (item.profileImage) {
-//                     fs.unlink(item.profileImage, (err) => {
-//                         if (err) throw err;
-//                         console.log('successfully deleted profileImage');
-//                     });
-//                 }
-//                 res.sendStatus(200);
-//         }).catch((error) => {
-//             //error handle
-//             console.log(error);
-//             res.sendStatus(400);       
-//         });
-//     }
-// });
-
-// router.put("/", upload.fields([{name: 'profileImage', maxCount: 1}]) ,async function(req,res){
-//     console.log('Got query:', req.query);
-//     console.log('Got body:', req.body);
-//     var _id = req.query._id;
-
-
-//     data = await Customer.findOne({
-//         _id: _id
-//     })
-//     console.log(data);
-//     if (!_id){
-//         res.send({error: "Please provide an id"});
-//     }else if (!_id){
-//         res.send({error: "Please provide an id"});
-//     }else{
-
-//         if (req.files.profileImage) {
-//             req.body.profileImage = 'uploads/images/' + req.files.profileImage[0].filename;
-//             if (data.profileImage) {
-//                 fs.unlink(data.profileImage, (err) => {
-//                     if (err) throw err;
-//                     console.log('successfully deleted profileImage');
-//                 });
-//             }
+        if (req.files.profileImage) {
+            req.body.profileImage = 'uploads/images/' + req.files.profileImage[0].filename;
+            if (data.profileImage) {
+                fs.unlink(data.profileImage, (err) => {
+                    if (err) throw err;
+                    console.log('successfully deleted profileImage');
+                });
+            }
             
-//         }
+        }
+        if(req.body.password){
+            req.body.password = await bcrypt.hash(req.body.password, 10);
+        }
 
-//         //  update element in mongodb put
-//         Customer.updateOne({_id:_id}, {$set: req.body})
-//         .then((item) => {
-//                 res.sendStatus(200);
-//         }).catch((error) => {
-//             //error handle
-//             console.log(error);
-//             res.sendStatus(400);       
-//         });
-//     }
-// });
+        //  update element in mongodb put
+        Customer.updateOne({_id:_id}, {$set: req.body})
+        .then((item) => {
+                res.sendStatus(200);
+        }).catch((error) => {
+            //error handle
+            console.log(error);
+            res.sendStatus(400);       
+        });
+    }
+});
 
 module.exports = router;

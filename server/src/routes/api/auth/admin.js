@@ -9,7 +9,7 @@ router.post('/register', upload.fields([{name: 'profileImage', maxCount: 1}]), a
     console.log('Got query:', req.query);
     console.log('Got body:', req.body);
 
-    let { name, userRole, email, password} = req.body;
+    let { name, userRole, email, password, status} = req.body;
     
 
     var profileImage;
@@ -23,6 +23,7 @@ router.post('/register', upload.fields([{name: 'profileImage', maxCount: 1}]), a
         name,
         userRole,
         profileImage,
+        status,
         email: email.toLowerCase(), // sanitize: convert email to lowercase
         password: encryptedPassword,
       });

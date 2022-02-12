@@ -3,25 +3,19 @@ const router = express.Router();
 const Customer = require('../../../models/user_management/customer');
 const fs = require('fs');
 const upload = require('../../../controller/multer');
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
 
 router.get('/',async (req,res) =>{
     console.log('Got query:', req.query);
-    var findQuery = {};
-    if(req.query.length > 0){
-        
-       var findQuery = {_id:req.query._id, customerName:req.query.customerName, emailAddress:req.query.emailAddress, phone:req.query.phone, ageBracket:req.query.ageBracket, averageRating:req.query.averageRating, lastAccessOn:req.query.lastAccessOn,codStatus:req.query.codStatus, status:req.query.status};
-
-        Object.keys(findQuery).forEach(key => {
-            if (findQuery[key] === '' || findQuery[key] === NaN || findQuery[key] === undefined) { 
-            delete findQuery[key];
-            }
-        });
+    if (req.query._id) {
+        req.query._id = ObjectId(req.query._id) 
     }
     try {
         // data = await Customer.find(findQuery);
         data = await Customer.aggregate([
             {
-                $match : findQuery
+                $match : req.query
             },
             {
                 $lookup: {
@@ -48,36 +42,27 @@ router.get('/',async (req,res) =>{
     }
 })
 
-router.post('/', upload.fields([{name: 'profileImage', maxCount: 1}]), (req,res) =>{
+router.post('/', upload.fields([{name: 'profileImage', maxCount: 1}]), async (req,res) =>{
     console.log('Got query:', req.query);
     console.log('Got body:', req.body);
 
-    var customerName = req.body.customerName;
-    var emailAddress = req.body.emailAddress;
-    var phone = req.body.phone;
-    var ageBracket = req.body.ageBracket;
-    var noOfJobs = req.body.noOfJobs;
-    var averageRating = req.body.averageRating;
-    var lastAccessOn = req.body.lastAccessOn;
-    var codStatus = req.body.codStatus;
-    var status = req.body.status;
+    try{
+        var { customerName, emailAddress, phone, ageBracket, noOfJobs, averageRating, lastAccessOn, codStatus, status } = req.body;
 
-    var profileImage;
-    if (req.files.profileImage) {
-        profileImage = 'uploads/images/' + req.files.profileImage[0].filename;
+        var profileImage;
+        if (req.files.profileImage) {
+            profileImage = 'uploads/images/' + req.files.profileImage[0].filename;
+        }
+
+        var newCustomer = new Customer({customerName, profileImage, emailAddress, phone, ageBracket, noOfJobs, averageRating, lastAccessOn, codStatus, status});
+        
+        await newCustomer.save();
+
+        return res.status(200).send('ok');
+    } catch (error) {
+        console.log(error);
+        return res.status(400).send(error); 
     }
-
-    var newCustomer = new Customer({customerName, profileImage, emailAddress, phone, ageBracket, noOfJobs, averageRating, lastAccessOn, codStatus, status});
-    
-    newCustomer.save()
-        .then((item) => {
-            console.log(item);
-            res.sendStatus(200);
-        }).catch((error) => {
-            //error handle
-            console.log(error);
-            res.sendStatus(400);       
-        });   
 })
 
 router.delete("/" ,async function(req,res){
@@ -87,7 +72,7 @@ router.delete("/" ,async function(req,res){
     if (!_id){
         res.send({error: "Please provide an id"});
     }else{
-        //  remove eleemnt id id mongodb
+        //  remove element by id
         Customer.findOneAndDelete({_id:_id})
         .then((item) => {
                 if (item.profileImage) {

@@ -4,21 +4,15 @@ const City = require('../../../models/service_info/city');
 
 router.get('/',async (req,res) =>{
     console.log('Got query:', req.query);
-    var findQuery = {};
-    if(req.query.length > 0){
-       var findQuery = {_id:req.query._id, cityName:req.query.cityName, stateId:req.query.stateId, status:req.query.status};
 
-        Object.keys(findQuery).forEach(key => {
-            if (findQuery[key] === '' || findQuery[key] === NaN || findQuery[key] === undefined) { 
-            delete findQuery[key];
-            }
-        });
+    if (req.query._id) {
+        req.query._id = ObjectId(req.query._id) 
     }
     try {
         // data = await City.find(findQuery);
         data = await City.aggregate([
             {
-                $match : findQuery
+                $match : req.query
             },
             {
                 $lookup: {

@@ -15,7 +15,10 @@ const reviewSchema = new mongoose.Schema({
     },
     comment: {
       type: String,
-    }, 
+    },
+    reviewFor:{
+      type: String,
+    }
   },
     {
       timestamps: true

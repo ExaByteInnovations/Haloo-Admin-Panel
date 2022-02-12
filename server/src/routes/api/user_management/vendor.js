@@ -7,22 +7,14 @@ const upload = require('../../../controller/multer');
 
 router.get('/',async (req,res) =>{
     console.log('Got query:', req.query);
-    var findQuery = {};
-    if(req.query.length > 0){
-        
-       var findQuery = {_id:req.query._id, companyName:req.query.companyName, firstName:req.query.firstName, lastName:req.query.lastName, emailAddress:req.query.emailAddress, phoneNumber:req.query.phoneNumber, city:req.query.city, state:req.query.state, averageRating:req.query.averageRating, lastAccessOn:req.query.lastAccessOn, status:req.query.status};
-
-        Object.keys(findQuery).forEach(key => {
-            if (findQuery[key] === '' || findQuery[key] === NaN || findQuery[key] === undefined) { 
-            delete findQuery[key];
-            }
-        });
+    if (req.query._id) {
+        req.query._id = ObjectId(req.query._id) 
     }
     try {
         // data = await Vendor.find(findQuery);
         data = await Vendor.aggregate([
             {
-                $match : findQuery
+                $match : req.query
             },
             {
                 $lookup: {
