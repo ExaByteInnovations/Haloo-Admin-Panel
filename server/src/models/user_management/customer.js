@@ -10,6 +10,9 @@ const customerSchema = new mongoose.Schema({
     emailAddress: {
         type: String,
     },
+    city: {
+        type: String,
+    },
     phone: {
         type: String,
         unique: true,
