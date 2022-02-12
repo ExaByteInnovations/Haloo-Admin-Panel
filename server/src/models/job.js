@@ -7,6 +7,9 @@ const jobSchema = new mongoose.Schema({
     city: {
         type: String,
     },
+    state: {
+      type: String,
+    },
     jobTitle: {
       type: String,
     },
@@ -16,18 +19,15 @@ const jobSchema = new mongoose.Schema({
     propertyName: {
         type: String,
     },
-    category:{
-      type: mongoose.Schema.Types.ObjectId, ref: 'customer',
+    categoryId:{
+      type: mongoose.Schema.Types.ObjectId, ref: 'categories ',
     },
-    subCategory:{
-      type: mongoose.Schema.Types.ObjectId, ref: 'customer',
+    subCategoryId:{
+      type: mongoose.Schema.Types.ObjectId, ref: 'subcategories ',
     },
     status:{
         type: String,
     },
-    // jobCategory:{
-    //     type: String, 
-    // },
     vendorId:{
       type: mongoose.Schema.Types.ObjectId, ref: 'vendor',
     },
