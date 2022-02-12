@@ -1,12 +1,13 @@
-import React, {useEffect} from 'react'
-import {useDispatch} from 'react-redux'
+import {useContext, useEffect} from 'react'
 import {Redirect, Switch} from 'react-router-dom'
-import * as auth from './redux/AuthRedux'
+import {AuthContext} from '../../auth/authContext'
 
 export function Logout() {
-  const dispatch = useDispatch()
+  const {dispatch} = useContext(AuthContext)
   useEffect(() => {
-    dispatch(auth.actions.logout())
+    dispatch({
+      type: 'LOGOUT',
+    })
     document.location.reload()
   }, [dispatch])
 

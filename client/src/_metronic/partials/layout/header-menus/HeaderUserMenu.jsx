@@ -1,20 +1,13 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {FC} from 'react'
-import {shallowEqual, useSelector} from 'react-redux'
-import {Link} from 'react-router-dom'
-import {UserModel} from '../../../../app/modules/auth/models/UserModel'
-import {RootState} from '../../../../setup'
-import {Languages} from './Languages'
-import * as auth from '../../../../app/modules/auth/redux/AuthRedux'
-import {useDispatch} from 'react-redux'
-import {toAbsoluteUrl} from '../../../helpers'
+import {useContext} from 'react'
+import {AuthContext} from '../../../../app/auth/authContext'
 
-const HeaderUserMenu: FC = () => {
-  const user: UserModel = useSelector<RootState>(({auth}) => auth.user, shallowEqual) as UserModel
-
-  const dispatch = useDispatch()
+const HeaderUserMenu = () => {
+  const {user, dispatch} = useContext(AuthContext)
   const logout = () => {
-    dispatch(auth.actions.logout())
+    dispatch({
+      type: 'LOGOUT',
+    })
   }
 
   return (
@@ -25,16 +18,16 @@ const HeaderUserMenu: FC = () => {
       <div className='menu-item px-3'>
         <div className='menu-content d-flex align-items-center px-3'>
           <div className='symbol symbol-50px me-5'>
-            <img alt='Logo' src={toAbsoluteUrl('/media/avatars/300-1.jpg')} />
+            <img alt='Logo' src={process.env.REACT_APP_SERVER_URL + user?.profileImage} />
           </div>
 
           <div className='d-flex flex-column'>
             <div className='fw-bolder d-flex align-items-center fs-5'>
-              {user.first_name} {user.first_name}
+              {user?.name}
               {/* <span className='badge badge-light-success fw-bolder fs-8 px-2 py-1 ms-2'>Pro</span> */}
             </div>
             <a href='#' className='fw-bold text-muted text-hover-primary fs-7'>
-              {user.email}
+              {user?.email}
             </a>
           </div>
         </div>

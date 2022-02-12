@@ -1,13 +1,11 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, {useState} from 'react'
-import {useDispatch} from 'react-redux'
+import {useContext, useState} from 'react'
 import * as Yup from 'yup'
 import clsx from 'clsx'
 import {Link} from 'react-router-dom'
 import {useFormik} from 'formik'
-import * as auth from '../redux/AuthRedux'
-import {login} from '../redux/AuthCRUD'
-import {toAbsoluteUrl} from '../../../../_metronic/helpers'
+import {ApiPost} from '../../../../helpers/API/ApiData'
+import {AuthContext} from '../../../auth/authContext'
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -22,8 +20,8 @@ const loginSchema = Yup.object().shape({
 })
 
 const initialValues = {
-  email: 'admin@demo.com',
-  password: 'demo',
+  email: 'test@gmail.com',
+  password: 'test',
 }
 
 /*
@@ -34,17 +32,21 @@ const initialValues = {
 
 export function Login() {
   const [loading, setLoading] = useState(false)
-  const dispatch = useDispatch()
+  const {dispatch} = useContext(AuthContext)
+
   const formik = useFormik({
     initialValues,
     validationSchema: loginSchema,
     onSubmit: (values, {setStatus, setSubmitting}) => {
       setLoading(true)
       setTimeout(() => {
-        login(values.email, values.password)
-          .then(({data: {api_token}}) => {
+        ApiPost(`auth/admin/login`, {email: values.email, password: values.password})
+          .then(({data}) => {
             setLoading(false)
-            dispatch(auth.actions.login(api_token))
+            dispatch({
+              type: 'LOGIN_SUCCESS',
+              payload: data,
+            })
           })
           .catch(() => {
             setLoading(false)
@@ -64,13 +66,13 @@ export function Login() {
     >
       {/* begin::Heading */}
       <div className='text-center mb-10'>
-        <h1 className='text-dark mb-3'>Sign In to Metronic</h1>
-        <div className='text-gray-400 fw-bold fs-4'>
+        <h1 className='text-dark mb-3'>Sign In to Haloo</h1>
+        {/* <div className='text-gray-400 fw-bold fs-4'>
           New Here?{' '}
           <Link to='/auth/registration' className='link-primary fw-bolder'>
             Create an Account
           </Link>
-        </div>
+        </div> */}
       </div>
       {/* begin::Heading */}
 
@@ -81,7 +83,7 @@ export function Login() {
       ) : (
         <div className='mb-10 bg-light-info p-8 rounded'>
           <div className='text-info'>
-            Use account <strong>admin@demo.com</strong> and password <strong>demo</strong> to
+            Use account <strong>test@gmail.com</strong> and password <strong>test</strong> to
             continue.
           </div>
         </div>
@@ -170,43 +172,6 @@ export function Login() {
             </span>
           )}
         </button>
-
-        {/* begin::Separator */}
-        <div className='text-center text-muted text-uppercase fw-bolder mb-5'>or</div>
-        {/* end::Separator */}
-
-        {/* begin::Google link */}
-        <a href='#' className='btn btn-flex flex-center btn-light btn-lg w-100 mb-5'>
-          <img
-            alt='Logo'
-            src={toAbsoluteUrl('/media/svg/brand-logos/google-icon.svg')}
-            className='h-20px me-3'
-          />
-          Continue with Google
-        </a>
-        {/* end::Google link */}
-
-        {/* begin::Google link */}
-        <a href='#' className='btn btn-flex flex-center btn-light btn-lg w-100 mb-5'>
-          <img
-            alt='Logo'
-            src={toAbsoluteUrl('/media/svg/brand-logos/facebook-4.svg')}
-            className='h-20px me-3'
-          />
-          Continue with Facebook
-        </a>
-        {/* end::Google link */}
-
-        {/* begin::Google link */}
-        <a href='#' className='btn btn-flex flex-center btn-light btn-lg w-100'>
-          <img
-            alt='Logo'
-            src={toAbsoluteUrl('/media/svg/brand-logos/apple-black.svg')}
-            className='h-20px me-3'
-          />
-          Continue with Apple
-        </a>
-        {/* end::Google link */}
       </div>
       {/* end::Action */}
     </form>

@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useState} from 'react'
+import {useContext, useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import {Edit, Delete} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
@@ -20,6 +20,7 @@ import {
   TextField,
 } from '@material-ui/core'
 import '../../App.css'
+import {AuthContext} from '../../auth/authContext'
 
 const City = () => {
   const intl = useIntl()
@@ -32,6 +33,8 @@ const City = () => {
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
   const [currentRow, setCurrentRow] = useState({})
+
+  const {user} = useContext(AuthContext)
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
@@ -47,7 +50,7 @@ const City = () => {
   const getCities = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`serviceinfo/city`)
+      const response = await ApiGet(`serviceinfo/city`, user?.token)
       if (response.status === 200) {
         setCities(response.data.data)
       }
@@ -62,7 +65,7 @@ const City = () => {
   const getStates = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`serviceinfo/state`)
+      const response = await ApiGet(`serviceinfo/state`, user?.token)
       if (response.status === 200) {
         setStates(
           response?.data?.data?.map((state) => {
@@ -80,7 +83,7 @@ const City = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`serviceinfo/city?_id=${rowId}`)
+      const response = await ApiDelete(`serviceinfo/city?_id=${rowId}`, user?.token)
       if (response.status === 200) {
         getCities()
         toast.success('Deleted Successfully')
@@ -97,7 +100,11 @@ const City = () => {
   const handleUpdate = async () => {
     try {
       setLoading(true)
-      const response = await ApiPut(`serviceinfo/city?_id=${rowId}`, {...currentRow, ...inputValue})
+      const response = await ApiPut(
+        `serviceinfo/city?_id=${rowId}`,
+        {...currentRow, ...inputValue},
+        user?.token
+      )
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
@@ -113,7 +120,7 @@ const City = () => {
   const handleAdd = async () => {
     try {
       setLoading(true)
-      const response = await ApiPost(`serviceinfo/city`, inputValue)
+      const response = await ApiPost(`serviceinfo/city`, inputValue, user?.token)
       if (response.status === 200) {
         toast.success('Added Successfully')
         setInputValue({})

@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useState} from 'react'
+import {useContext, useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
@@ -22,10 +22,10 @@ import {
 } from '@material-ui/core'
 import '../../App.css'
 import {Image} from 'react-bootstrap-v5'
+import {AuthContext} from '../../auth/authContext'
 
 const SubCategory = () => {
   const intl = useIntl()
-  const serverUrl = 'http://localhost:3000/'
   const [subCategories, setSubCategories] = useState([])
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
@@ -34,6 +34,7 @@ const SubCategory = () => {
   const [show, setShow] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
+  const {user} = useContext(AuthContext)
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
@@ -49,7 +50,7 @@ const SubCategory = () => {
   const getSubCategories = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`serviceinfo/subcategory`)
+      const response = await ApiGet(`serviceinfo/subcategory`, user?.token)
       if (response.status === 200) {
         setSubCategories(response?.data?.data)
       }
@@ -64,7 +65,7 @@ const SubCategory = () => {
   const getCategories = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`serviceinfo/category`)
+      const response = await ApiGet(`serviceinfo/category`, user?.token)
       if (response.status === 200) {
         setCategories(
           response?.data?.data?.map((category) => {
@@ -82,7 +83,7 @@ const SubCategory = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`serviceinfo/subcategory?_id=${rowId}`)
+      const response = await ApiDelete(`serviceinfo/subcategory?_id=${rowId}`, user?.token)
       if (response.status === 200) {
         getSubCategories()
         toast.success('Deleted Successfully')
@@ -105,7 +106,7 @@ const SubCategory = () => {
     imageData.append('status', inputValue.status)
     try {
       setLoading(true)
-      const response = await ApiPut(`serviceinfo/subcategory?_id=${rowId}`, imageData)
+      const response = await ApiPut(`serviceinfo/subcategory?_id=${rowId}`, imageData, user?.token)
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
@@ -130,7 +131,7 @@ const SubCategory = () => {
 
     try {
       setLoading(true)
-      const response = await ApiPost(`serviceinfo/subcategory`, imageData)
+      const response = await ApiPost(`serviceinfo/subcategory`, imageData, user?.token)
       if (response.status === 200) {
         toast.success('Added Successfully')
         setInputValue({})
@@ -167,7 +168,7 @@ const SubCategory = () => {
     {
       name: 'Image',
       cell: (row) => {
-        return <Image className='image' src={serverUrl + row.image} />
+        return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.image} />
       },
     },
     {

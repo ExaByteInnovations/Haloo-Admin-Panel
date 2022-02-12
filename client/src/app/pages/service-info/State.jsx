@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useState} from 'react'
+import {useContext, useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import {Edit, Delete} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
@@ -20,6 +20,7 @@ import {
   TextField,
 } from '@material-ui/core'
 import '../../App.css'
+import {AuthContext} from '../../auth/authContext'
 
 const State = () => {
   const intl = useIntl()
@@ -31,6 +32,8 @@ const State = () => {
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
   const [currentRow, setCurrentRow] = useState({})
+
+  const {user} = useContext(AuthContext)
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
@@ -46,7 +49,7 @@ const State = () => {
   const getStates = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`serviceinfo/state`)
+      const response = await ApiGet(`serviceinfo/state`, user?.token)
       if (response.status === 200) {
         setStates(response.data.data)
       }
@@ -61,7 +64,7 @@ const State = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`serviceinfo/state?_id=${rowId}`)
+      const response = await ApiDelete(`serviceinfo/state?_id=${rowId}`, user?.token)
       if (response.status === 200) {
         getStates()
         toast.success('Deleted Successfully')
@@ -78,10 +81,14 @@ const State = () => {
   const handleUpdate = async () => {
     try {
       setLoading(true)
-      const response = await ApiPut(`serviceinfo/state?_id=${rowId}`, {
-        ...currentRow,
-        ...inputValue,
-      })
+      const response = await ApiPut(
+        `serviceinfo/state?_id=${rowId}`,
+        {
+          ...currentRow,
+          ...inputValue,
+        },
+        user?.token
+      )
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
@@ -97,7 +104,7 @@ const State = () => {
   const handleAdd = async () => {
     try {
       setLoading(true)
-      const response = await ApiPost(`serviceinfo/state`, inputValue)
+      const response = await ApiPost(`serviceinfo/state`, inputValue, user?.token)
       if (response.status === 200) {
         toast.success('Added Successfully')
         setInputValue({})
