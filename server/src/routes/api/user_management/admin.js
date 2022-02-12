@@ -45,7 +45,7 @@ router.post('/', upload.fields([{name: 'profileImage', maxCount: 1}]), async (re
   // Create token
   const token = jwt.sign(
       { admin_id: admin._id, email },
-      process.env.TOKEN_KEY,
+      'config.TOKEN_KEY',
       {
         expiresIn: "265d",
       }

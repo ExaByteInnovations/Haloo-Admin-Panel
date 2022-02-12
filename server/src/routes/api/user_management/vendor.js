@@ -25,6 +25,19 @@ router.get('/',async (req,res) =>{
                 }
             },
             {
+                "$lookup": {
+                    "from": "reviews",
+                    "let": { "vId": "$_id" },
+                    "pipeline": [{
+                        "$match": {
+                            $expr: { $eq: [ "vendorId", "$$vId" ] },
+                            // "ratingFor": "vendor"
+                        }
+                    }],
+                    "as": "ratingDetails"
+                }
+              },
+            {
                 $addFields: {noOfJobs: {$size: "$jobDetails"}}
             },
             {

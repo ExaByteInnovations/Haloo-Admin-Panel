@@ -4,6 +4,7 @@ const Admin = require('../../../models/user_management/admin');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const upload = require('../../../controller/multer');
+const config = process.env;
 
 router.post('/register', upload.fields([{name: 'profileImage', maxCount: 1}]), async (req,res) =>{
     console.log('Got query:', req.query);
@@ -31,7 +32,7 @@ router.post('/register', upload.fields([{name: 'profileImage', maxCount: 1}]), a
     // Create token
     const token = jwt.sign(
         { admin_id: admin._id, email },
-        process.env.TOKEN_KEY,
+        'config.TOKEN_KEY',
         {
           expiresIn: "265d",
         }
@@ -70,7 +71,7 @@ router.post("/login", async (req, res) => {
         // Create token
         const token = jwt.sign(
           { admin_id: admin._id, email },
-          process.env.TOKEN_KEY,
+          'config.TOKEN_KEY',
           {
             expiresIn: "365d",
           }
