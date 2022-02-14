@@ -46,7 +46,7 @@ router.get('/',async (req,res) =>{
                 $addFields: {noOfJobs: {$size: "$jobDetails"}}
             },
             {
-                $project : { jobDetails : 0}
+                $project : { jobDetails : 0, reviewDetails : 0 }
             }
         ]);
 
