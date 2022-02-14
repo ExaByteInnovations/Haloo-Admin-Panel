@@ -12,7 +12,7 @@ const defaultHeaders = {
   isAuth: true,
   AdditionalParams: {},
   isJsonRequest: true,
-  'x-access-token': true,
+  // api_key: true,
 }
 
 // const useAxiosLoader = () => {
@@ -162,10 +162,10 @@ export const Api = (type, methodtype, userData) => {
   })
 }
 
-export const ApiGet = (type, token) => {
+export const ApiGet = (type) => {
   return new Promise((resolve, reject) => {
     axios
-      .get(BaseURL + type, getHttpOptions(token))
+      .get(BaseURL + type, getHttpOptions())
       .then((responseJson) => {
         resolve(responseJson)
       })
@@ -184,12 +184,12 @@ export const ApiGet = (type, token) => {
   })
 }
 
-export const ApiPost = (type, userData, token, AdditionalHeader) => {
+export const ApiPost = (type, userData, AdditionalHeader) => {
   return new Promise((resolve, reject) => {
     // console.log("dataBody", userData);
     axios
       .post(BaseURL + type, userData, {
-        ...getHttpOptions(token),
+        ...getHttpOptions(),
         ...AdditionalHeader,
       })
       .then((responseJson) => {
@@ -218,10 +218,10 @@ export const ApiPost = (type, userData, token, AdditionalHeader) => {
   })
 }
 
-export const ApiPut = (type, userData, token) => {
+export const ApiPut = (type, userData) => {
   return new Promise((resolve, reject) => {
     axios
-      .put(BaseURL + type, userData, getHttpOptions(token))
+      .put(BaseURL + type, userData, getHttpOptions())
       .then((responseJson) => {
         resolve(responseJson)
       })
@@ -240,10 +240,10 @@ export const ApiPut = (type, userData, token) => {
   })
 }
 
-export const ApiPatch = (type, userData, token) => {
+export const ApiPatch = (type, userData) => {
   return new Promise((resolve, reject) => {
     axios
-      .patch(BaseURL + type, userData, getHttpOptions(token))
+      .patch(BaseURL + type, userData, getHttpOptions())
       .then((responseJson) => {
         resolve(responseJson)
       })
@@ -262,13 +262,12 @@ export const ApiPatch = (type, userData, token) => {
   })
 }
 
-export const ApiDelete = (type, token, userData) => {
-  console.log(token, 'token')
+export const ApiDelete = (type, userData) => {
   return new Promise((resolve, reject) => {
     axios({
       url: BaseURL + type,
       method: 'delete',
-      headers: getHttpOptions(token).headers,
+      headers: getHttpOptions().headers,
       data: userData,
     })
       .then((responseJson) => {
@@ -348,19 +347,26 @@ export const Logout = () => {
   return ApiPost('/accounts/logout', {})
 }
 
-export const getHttpOptions = (token, options = defaultHeaders) => {
+export const getHttpOptions = (options = defaultHeaders) => {
   let headers = {}
   if (options.hasOwnProperty('isAuth') && options.isAuth) {
+    console.log(authUtil.getToken(), 'token')
     if (authUtil.getToken()) {
-      headers['Authorization'] = 'Bearer ' + authUtil.getToken()
-    } else if (authUtil.getAdminToken()) {
-      headers['Authorization'] = 'Bearer' + authUtil.getAdminToken()
+      headers['x-access-token'] = authUtil.getToken()
     }
+    //  else if (authUtil.getAdminToken()) {
+    //   headers['Authorization'] = 'Bearer' + authUtil.getAdminToken()
+    // }
   }
 
-  if (options.hasOwnProperty('x-access-token') && options['x-access-token']) {
-    headers['x-access-token'] = token
-  }
+  // if (options.hasOwnProperty('api_key') && options.api_key) {
+  //   headers['api_key'] = '6QSy49rUTH'
+  // }
+
+  // if (options.hasOwnProperty('x-access-token') && options['x-access-token']) {
+  //   headers['x-access-token'] = token
+  // }
+
   if (options.hasOwnProperty('isJsonRequest') && options.isJsonRequest) {
     headers['Content-Type'] = 'application/json'
   }

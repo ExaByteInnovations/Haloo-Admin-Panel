@@ -10,7 +10,7 @@ const trailUrl = ''
 const hostUrl = `${protocol}://${host}${port ? ':' + port : ''}/`
 const endpoint = `${protocol}://${host}${port ? ':' + port : ''}${trailUrl}`
 
-export default {
+export const API_DEV = {
   protocol: protocol,
   host: host,
   port: port,

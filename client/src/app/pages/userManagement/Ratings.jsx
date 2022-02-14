@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {FC, useContext, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
@@ -15,7 +15,6 @@ import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
 import {Box, CircularProgress, DialogContent, MenuItem, TextField} from '@material-ui/core'
 import '../../App.css'
-import {AuthContext} from '../../auth/authContext'
 
 const Ratings = () => {
   const intl = useIntl()
@@ -26,8 +25,6 @@ const Ratings = () => {
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
 
-  const {user} = useContext(AuthContext)
-
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
@@ -36,12 +33,12 @@ const Ratings = () => {
 
   useEffect(() => {
     getRatings()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const getRatings = async () => {
     try {
       setLoading(true)
-      const response = await ApiGet(`review`, user?.token)
+      const response = await ApiGet(`review`)
       if (response.status === 200) {
         setRatings(response.data.data)
       }
@@ -55,7 +52,7 @@ const Ratings = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`review?_id=${rowId}`, user?.token)
+      const response = await ApiDelete(`review?_id=${rowId}`)
 
       if (response.status === 200) {
         getRatings()
@@ -73,7 +70,7 @@ const Ratings = () => {
   const handleUpdate = async (rowId) => {
     try {
       setLoading(true)
-      const response = await ApiPut(`review?_id=${rowId}`, inputValue, user?.token)
+      const response = await ApiPut(`review?_id=${rowId}`, inputValue)
 
       if (response.status === 200) {
         toast.success('Updated Successfully')

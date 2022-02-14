@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {FC, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
