@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useContext, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import {Edit, Delete} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
@@ -21,10 +21,8 @@ import {
 } from '@material-ui/core'
 import '../../App.css'
 import {Image} from 'react-bootstrap-v5'
-import {AuthContext} from '../../auth/authContext'
 
 const Category = () => {
-  const {user} = useContext(AuthContext)
   const intl = useIntl()
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
@@ -33,7 +31,6 @@ const Category = () => {
   const [addOpen, setAddOpen] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
-  // const [currentRow, setCurrentRow] = useState({})
 
   console.log(categories, 'categories')
 
@@ -46,12 +43,12 @@ const Category = () => {
 
   useEffect(() => {
     getCategories()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const getCategories = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`serviceinfo/category`, user?.token)
+      const response = await ApiGet(`serviceinfo/category`)
       if (response.status === 200) {
         setCategories(response.data.data)
       }
@@ -66,7 +63,7 @@ const Category = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`serviceinfo/category?_id=${rowId}`, user?.token)
+      const response = await ApiDelete(`serviceinfo/category?_id=${rowId}`)
       if (response.status === 200) {
         getCategories()
         toast.success('Deleted Successfully')
@@ -89,7 +86,7 @@ const Category = () => {
     imageData.append('status', inputValue.status)
     try {
       setLoading(true)
-      const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, imageData, user?.token)
+      const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, imageData)
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
@@ -114,7 +111,7 @@ const Category = () => {
 
     try {
       setLoading(true)
-      const response = await ApiPost(`serviceinfo/category`, imageData, user?.token)
+      const response = await ApiPost(`serviceinfo/category`, imageData)
       if (response.status === 200) {
         toast.success('Added Successfully')
         setInputValue({})
@@ -392,7 +389,6 @@ const Category = () => {
               required
               variant='standard'
               margin='dense'
-              required
             />
             <TextField
               InputLabelProps={{shrink: true}}
@@ -404,7 +400,6 @@ const Category = () => {
               required
               variant='standard'
               margin='dense'
-              required={addOpen}
             />
             <TextField
               label='Status'

@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {FC, useContext, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
@@ -8,7 +8,6 @@ import DataTable from 'react-data-table-component'
 import {ApiGet, ApiDelete, ApiPut} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
 import Dialog from '@material-ui/core/Dialog'
-import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import {Button} from 'react-bootstrap'
@@ -22,7 +21,6 @@ import {
   TextField,
 } from '@material-ui/core'
 import '../../App.css'
-import {AuthContext} from '../../auth/authContext'
 
 const CompletedJobs = () => {
   const intl = useIntl()
@@ -33,8 +31,6 @@ const CompletedJobs = () => {
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
 
-  const {user} = useContext(AuthContext)
-
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
@@ -43,12 +39,12 @@ const CompletedJobs = () => {
 
   useEffect(() => {
     getJobs()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const getJobs = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`job?status=Completed`, user?.token)
+      const response = await ApiGet(`job?status=Completed`)
       if (response.status === 200) {
         setJobs(response.data.data)
       }
@@ -62,7 +58,7 @@ const CompletedJobs = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`job?_id=${rowId}`, user?.token)
+      const response = await ApiDelete(`job?_id=${rowId}`)
       if (response.status === 200) {
         getJobs()
         toast.success('Deleted Successfully')
@@ -79,7 +75,7 @@ const CompletedJobs = () => {
   const handleUpdate = async (rowId) => {
     try {
       setLoading(true)
-      const response = await ApiPut(`job?_id=${rowId}`, inputValue, user?.token)
+      const response = await ApiPut(`job?_id=${rowId}`, inputValue)
       if (response.status === 200) {
         toast.success('Updated Successfully')
         setInputValue({})
