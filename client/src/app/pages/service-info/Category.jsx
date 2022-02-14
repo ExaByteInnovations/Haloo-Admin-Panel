@@ -31,12 +31,14 @@ const Category = () => {
   const [addOpen, setAddOpen] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
+  const [errors, setErrors] = useState({})
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
     setShow(false)
     setAddOpen(false)
+    setErrors({})
   }
 
   useEffect(() => {
@@ -76,58 +78,96 @@ const Category = () => {
   }
 
   const handleUpdate = async () => {
-    const imageData = new FormData()
-    imageData.append('image', inputValue.image)
-    imageData.append('hoverImage', inputValue.hoverImage)
-    imageData.append('categoryName', inputValue.categoryName)
-    imageData.append('sequenceNumber', inputValue.sequenceNumber)
-    imageData.append('status', inputValue.status)
-    try {
-      setLoading(true)
-      const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, imageData)
-      if (response.status === 200) {
-        toast.success('Updated Successfully')
-        setInputValue({})
-        getCategories()
+    if (validateForm()) {
+      const imageData = new FormData()
+      imageData.append('image', inputValue.image)
+      imageData.append('hoverImage', inputValue.hoverImage)
+      imageData.append('categoryName', inputValue.categoryName)
+      imageData.append('sequenceNumber', inputValue.sequenceNumber)
+      imageData.append('status', inputValue.status)
+      try {
+        setLoading(true)
+        const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, imageData)
+        if (response.status === 200) {
+          toast.success('Updated Successfully')
+          setInputValue({})
+          setErrors({})
+          getCategories()
+        }
+        setLoading(false)
+        handleClose()
+      } catch (err) {
+        toast.error(err.message)
+        setLoading(false)
+        handleClose()
       }
-      setLoading(false)
-      handleClose()
-    } catch (err) {
-      toast.error(err.message)
-      setLoading(false)
-      handleClose()
-    }
-  }
-
-  const handleAdd = async () => {
-    const imageData = new FormData()
-    imageData.append('image', inputValue.image)
-    imageData.append('hoverImage', inputValue.hoverImage)
-    imageData.append('categoryName', inputValue.categoryName)
-    imageData.append('sequenceNumber', inputValue.sequenceNumber)
-    imageData.append('status', inputValue.status)
-
-    try {
-      setLoading(true)
-      const response = await ApiPost(`serviceinfo/category`, imageData)
-      if (response.status === 200) {
-        toast.success('Added Successfully')
-        setInputValue({})
-        getCategories()
-      }
-      setLoading(false)
-      handleClose()
-    } catch (err) {
-      toast.error(err.message)
-      setLoading(false)
-      handleClose()
     }
   }
 
   const handleChange = (e) => {
     const {name, value, files} = e.target
-    if (files) setInputValue({...inputValue, [name]: files[0]})
-    else setInputValue({...inputValue, [name]: value})
+    if (files) {
+      setInputValue({...inputValue, [name]: files[0]})
+      setErrors({...errors, [name]: ''})
+    } else {
+      setInputValue({...inputValue, [name]: value})
+      setErrors({...errors, [name]: ''})
+    }
+  }
+
+  const validateForm = () => {
+    let formIsValid = true
+    let errors = {}
+
+    if (inputValue && !inputValue.categoryName) {
+      formIsValid = false
+      errors['categoryName'] = '*Please Enter Category Name!'
+    }
+    if (inputValue && !inputValue.sequenceNumber) {
+      formIsValid = false
+      errors['sequenceNumber'] = '*Please Enter Sequence Number!'
+    }
+    if (inputValue && !inputValue.image) {
+      formIsValid = false
+      errors['image'] = '*Please Select Image!'
+    }
+    if (inputValue && !inputValue.hoverImage) {
+      formIsValid = false
+      errors['hoverImage'] = '*Please Select Hover Image!'
+    }
+    if (inputValue && !inputValue.status) {
+      formIsValid = false
+      errors['status'] = '*Please Select Status!'
+    }
+    setErrors(errors)
+    return formIsValid
+  }
+
+  const handleAdd = async () => {
+    if (validateForm()) {
+      const imageData = new FormData()
+      imageData.append('image', inputValue.image)
+      imageData.append('hoverImage', inputValue.hoverImage)
+      imageData.append('categoryName', inputValue.categoryName)
+      imageData.append('sequenceNumber', inputValue.sequenceNumber)
+      imageData.append('status', inputValue.status)
+
+      try {
+        setLoading(true)
+        const response = await ApiPost(`serviceinfo/category`, imageData)
+        if (response.status === 200) {
+          toast.success('Added Successfully')
+          setInputValue({})
+          getCategories()
+        }
+        setLoading(false)
+        handleClose()
+      } catch (err) {
+        toast.error(err.message)
+        setLoading(false)
+        handleClose()
+      }
+    }
   }
 
   const columns = [
@@ -254,93 +294,129 @@ const Category = () => {
       </Modal>
 
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='xs'>
-        <form onSubmit={handleUpdate}>
-          <DialogTitle>
-            <Box sx={{display: 'flex'}}>
-              <Box flexGrow={1}>Edit Row</Box>
-              <Box>
-                <IconButton color='inherit' onClick={handleClose} aria-label='close'>
-                  <CloseIcon />
-                </IconButton>
-              </Box>
+        <DialogTitle>
+          <Box sx={{display: 'flex'}}>
+            <Box flexGrow={1}>Edit Row</Box>
+            <Box>
+              <IconButton color='inherit' onClick={handleClose} aria-label='close'>
+                <CloseIcon />
+              </IconButton>
             </Box>
-          </DialogTitle>
-          <DialogContent>
-            <TextField
-              label='Category Name'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='categoryName'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              value={inputValue?.categoryName}
-            />
-            <TextField
-              label='Sequence Number'
-              inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
-              onChange={(e) => handleChange(e)}
-              name='sequenceNumber'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              value={inputValue?.sequenceNumber}
-            />
-            <TextField
-              InputLabelProps={{shrink: true}}
-              label='Image'
-              type={'file'}
-              onChange={(e) => handleChange(e)}
-              name='image'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              InputLabelProps={{shrink: true}}
-              label='Hover Image'
-              type={'file'}
-              onChange={(e) => handleChange(e)}
-              name='hoverImage'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Status'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='status'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              value={inputValue?.status}
-              defaultValue={
-                inputValue?.status?.charAt(0)?.toUpperCase() +
-                inputValue?.status?.substr(1)?.toLowerCase()
-              }
-              select
-            >
-              {status.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </DialogContent>
-          <Button
-            className='button'
-            type='submit'
-            size='lg'
-            variant='success'
-            // onClick={() => {
-            //   handleUpdate(rowId)
-            //   handleClose()
-            // }}
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            label='Category Name'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='categoryName'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={inputValue?.categoryName}
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
           >
-            Save
-          </Button>
-        </form>
+            {errors['categoryName']}
+          </span>
+
+          <TextField
+            label='Sequence Number'
+            inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
+            onChange={(e) => handleChange(e)}
+            name='sequenceNumber'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            type={'number'}
+            value={inputValue?.sequenceNumber}
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['sequenceNumber']}
+          </span>
+          <TextField
+            InputLabelProps={{shrink: true}}
+            label='Image'
+            type={'file'}
+            onChange={(e) => handleChange(e)}
+            name='image'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['image']}
+          </span>
+          <TextField
+            InputLabelProps={{shrink: true}}
+            label='Hover Image'
+            type={'file'}
+            onChange={(e) => handleChange(e)}
+            name='hoverImage'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['hoverImage']}
+          </span>
+          <TextField
+            label='Status'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='status'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={inputValue?.status}
+            defaultValue={
+              inputValue?.status?.charAt(0)?.toUpperCase() +
+              inputValue?.status?.substr(1)?.toLowerCase()
+            }
+            select
+          >
+            {status.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['status']}
+          </span>
+        </DialogContent>
+        <Button className='button' size='lg' variant='success' onClick={handleUpdate}>
+          Save
+        </Button>
       </Dialog>
 
       <Dialog open={addOpen} onClose={handleClose} fullWidth maxWidth='xs'>
@@ -354,72 +430,112 @@ const Category = () => {
             </Box>
           </Box>
         </DialogTitle>
-        <form onSubmit={handleAdd}>
-          <DialogContent>
-            <TextField
-              label='Category Name'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='categoryName'
-              fullWidth
-              required
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Sequence Number'
-              inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
-              onChange={(e) => handleChange(e)}
-              name='sequenceNumber'
-              fullWidth
-              required
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              InputLabelProps={{shrink: true}}
-              label='Image'
-              type={'file'}
-              onChange={(e) => handleChange(e)}
-              name='image'
-              fullWidth
-              required
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              InputLabelProps={{shrink: true}}
-              label='Hover Image'
-              type={'file'}
-              onChange={(e) => handleChange(e)}
-              name='hoverImage'
-              fullWidth
-              required
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Status'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='status'
-              fullWidth
-              required
-              variant='standard'
-              margin='dense'
-              select
-            >
-              {status.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </DialogContent>
-          <Button className='button' type='submit' size='lg' variant='success'>
-            Save
-          </Button>
-        </form>
+
+        <DialogContent>
+          <TextField
+            label='Category Name'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='categoryName'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['categoryName']}
+          </span>
+          <TextField
+            label='Sequence Number'
+            inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
+            onChange={(e) => handleChange(e)}
+            name='sequenceNumber'
+            fullWidth
+            type={'number'}
+            variant='standard'
+            margin='dense'
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['sequenceNumber']}
+          </span>
+          <TextField
+            InputLabelProps={{shrink: true}}
+            label='Image'
+            type={'file'}
+            onChange={(e) => handleChange(e)}
+            name='image'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['image']}
+          </span>
+          <TextField
+            InputLabelProps={{shrink: true}}
+            label='Hover Image'
+            type={'file'}
+            onChange={(e) => handleChange(e)}
+            name='hoverImage'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['hoverImage']}
+          </span>
+          <TextField
+            label='Status'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='status'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            select
+          >
+            {status.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['status']}
+          </span>
+        </DialogContent>
+        <Button className='button' onClick={handleAdd} size='lg' variant='success'>
+          Save
+        </Button>
       </Dialog>
     </>
   )
