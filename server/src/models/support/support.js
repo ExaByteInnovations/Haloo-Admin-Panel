@@ -2,10 +2,10 @@ var mongoose = require('mongoose');
 
 const supportSchema = new mongoose.Schema({
     customerId: {
-        type: String, required: true,
+        type: mongoose.Schema.Types.ObjectId, ref: 'customer',
     },
     query: {
-        type: Number,
+        type: String,
     },
     status:{
         type: String,

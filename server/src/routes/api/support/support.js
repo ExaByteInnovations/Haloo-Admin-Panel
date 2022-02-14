@@ -11,7 +11,20 @@ router.get('/',async (req,res) =>{
         req.query._id = ObjectId(req.query._id) 
     }
     try {
-        data = await Support.find(req.query);
+        // data = await Support.find(req.query);
+        data = await Support.aggregate([
+            {
+                $match : req.query
+            },
+            {
+                $lookup: {
+                    from: 'customers',
+                    localField: 'customerId',
+                    foreignField: '_id',
+                    as: 'customerDetails'
+                },
+            },
+        ]);
         res.send({data:data});
 
     }   catch (error) {
