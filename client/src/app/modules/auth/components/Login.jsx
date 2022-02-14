@@ -6,6 +6,7 @@ import {Link} from 'react-router-dom'
 import {useFormik} from 'formik'
 import {ApiPost} from '../../../../helpers/API/ApiData'
 import {AuthContext} from '../../../auth/authContext'
+import * as authUtil from '../../../../utils/auth.util'
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -43,6 +44,7 @@ export function Login() {
         ApiPost(`auth/admin/login`, {email: values.email, password: values.password})
           .then(({data}) => {
             setLoading(false)
+            authUtil.setToken(data.token)
             dispatch({
               type: 'LOGIN_SUCCESS',
               payload: data,
