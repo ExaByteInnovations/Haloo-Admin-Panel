@@ -350,7 +350,6 @@ export const Logout = () => {
 export const getHttpOptions = (options = defaultHeaders) => {
   let headers = {}
   if (options.hasOwnProperty('isAuth') && options.isAuth) {
-    console.log(authUtil.getToken(), 'token')
     if (authUtil.getToken()) {
       headers['x-access-token'] = authUtil.getToken()
     }

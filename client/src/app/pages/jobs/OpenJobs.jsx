@@ -211,8 +211,6 @@ const OpenJobs = () => {
     )
   }
 
-  console.log(inputValue, 'input')
-
   return (
     <>
       <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.JOBS.OPEN_JOBS'})}</PageTitle>
