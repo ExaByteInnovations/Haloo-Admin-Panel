@@ -16,6 +16,7 @@ const customerSchema = new mongoose.Schema({
     phone: {
         type: String,
         unique: true,
+        trim: true,
     },
     state: {
         type: String,
@@ -39,6 +40,13 @@ const customerSchema = new mongoose.Schema({
       type: String,
       default: 'active',
     },
+    token: { 
+        type: String 
+    },
+    otp: {
+        type: Number,
+    },
+
     status: {
         type: String,
         default: 'active',
