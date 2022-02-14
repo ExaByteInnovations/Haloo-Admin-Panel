@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 const vendorSchema = new mongoose.Schema({
     companyName: {
-        type: String, required: true,
+        type: String,
     },
     logo: {
         type: String,
@@ -16,9 +16,10 @@ const vendorSchema = new mongoose.Schema({
     emailAddress: {
         type: String,
     },
-    phoneNumber: {
+    phone: {
         type: String,
         unique: true,
+        trim: true,
     },
     city: {
         type: String,
@@ -41,6 +42,12 @@ const vendorSchema = new mongoose.Schema({
     status: {
         type: String,
         default: 'active',
+    },
+    token: { 
+        type: String 
+    },
+    otp: {
+        type: Number,
     },
   },
     {
