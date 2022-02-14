@@ -5,31 +5,42 @@ import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
-import {ApiGet, ApiDelete, ApiPut} from '../../../helpers/API/ApiData'
+import {ApiGet, ApiDelete, ApiPut, ApiPost} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
 import Dialog from '@material-ui/core/Dialog'
-import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
-import {Box, CircularProgress, DialogContent, MenuItem, TextField} from '@material-ui/core'
+import {
+  Box,
+  CircularProgress,
+  DialogContent,
+  DialogTitle,
+  MenuItem,
+  TextField,
+} from '@material-ui/core'
 import '../../App.css'
+import {Image} from 'react-bootstrap-v5'
 
 const Vendors = () => {
   const intl = useIntl()
   const [vendors, setVendors] = useState([])
   const [open, setOpen] = useState(false)
+  const [addOpen, setAddOpen] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
-  const [currentRow, setCurrentRow] = useState({})
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
+
+  console.log(inputValue, 'inputValue')
+  console.log(vendors, 'vendors')
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
     setShow(false)
+    setAddOpen(false)
   }
 
   useEffect(() => {
@@ -39,7 +50,7 @@ const Vendors = () => {
   const getVendors = async () => {
     try {
       setLoading(true)
-      const response = await ApiGet(`review`)
+      const response = await ApiGet(`usermanagement/vendor`)
       if (response.status === 200) {
         setVendors(response.data.data)
       }
@@ -53,7 +64,7 @@ const Vendors = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`review?_id=${rowId}`)
+      const response = await ApiDelete(`usermanagement/vendor?_id=${rowId}`)
 
       if (response.status === 200) {
         getVendors()
@@ -68,10 +79,24 @@ const Vendors = () => {
     }
   }
 
-  const handleUpdate = async (rowId) => {
+  const handleUpdate = async () => {
+    const imageData = new FormData()
+    imageData.append('logo', inputValue.logo)
+    imageData.append('companyName', inputValue.companyName)
+    imageData.append('firstName', inputValue.firstName)
+    imageData.append('lastName', inputValue.lastName)
+    imageData.append('emailAddress', inputValue.emailAddress)
+    imageData.append('phoneNumber', inputValue.phoneNumber)
+    imageData.append('city', inputValue.city)
+    imageData.append('state', inputValue.state)
+    imageData.append('address', inputValue.address)
+    imageData.append('pincode', inputValue.pincode)
+    // imageData.append('averageRating', inputValue.averageRating)
+    // imageData.append('lastAccessOn', inputValue.lastAccessOn)
+    imageData.append('status', inputValue.status)
     try {
       setLoading(true)
-      const response = await ApiPut(`review?_id=${rowId}`, {...currentRow, ...inputValue})
+      const response = await ApiPut(`usermanagement/vendor?_id=${rowId}`, imageData)
 
       if (response.status === 200) {
         toast.success('Updated Successfully')
@@ -79,69 +104,125 @@ const Vendors = () => {
         getVendors()
       }
       setLoading(false)
+      handleClose()
     } catch (err) {
       toast.error(err.message)
       setLoading(false)
+      handleClose()
+    }
+  }
+
+  const handleAdd = async () => {
+    const imageData = new FormData()
+    imageData.append('logo', inputValue.logo)
+    imageData.append('companyName', inputValue.companyName)
+    imageData.append('firstName', inputValue.firstName)
+    imageData.append('lastName', inputValue.lastName)
+    imageData.append('emailAddress', inputValue.emailAddress)
+    imageData.append('phoneNumber', inputValue.phoneNumber)
+    imageData.append('city', inputValue.city)
+    imageData.append('state', inputValue.state)
+    imageData.append('address', inputValue.address)
+    imageData.append('pincode', inputValue.pincode)
+    // imageData.append('averageRating', inputValue.averageRating)
+    // imageData.append('lastAccessOn', inputValue.lastAccessOn)
+    imageData.append('status', inputValue.status)
+
+    try {
+      setLoading(true)
+      const response = await ApiPost(`usermanagement/vendor`, imageData)
+      if (response.status === 200) {
+        toast.success('Added Successfully')
+        getVendors()
+        setInputValue({})
+      }
+      setLoading(false)
+      handleClose()
+    } catch (err) {
+      toast.error(err.message)
+      setLoading(false)
+      handleClose()
     }
   }
 
   const handleChange = (e) => {
-    const {name, value} = e.target
-    setInputValue({...inputValue, [name]: value})
+    const {name, value, files} = e.target
+    if (files) setInputValue({...inputValue, [name]: files[0]})
+    else setInputValue({...inputValue, [name]: value})
   }
 
   const columns = [
     {
       name: 'Logo',
-      selector: (row) => row.ratingBy,
-      sortable: true,
-      width: '200px',
+      cell: (row) => {
+        return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.logo} />
+      },
     },
     {
       name: 'Company Name',
-      selector: (row) => row.ratingFor,
+      selector: (row) => row.companyName,
       sortable: true,
       width: '200px',
     },
     {
       name: 'First Name',
-      selector: (row) => row.whoRated,
+      selector: (row) => row.firstName,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Last Name',
-      selector: (row) => row.whoRated,
+      selector: (row) => row.lastName,
       sortable: true,
       width: '150px',
     },
     {
-      name: 'E-Mail',
-      selector: (row) => row.jobNumber,
+      name: 'Email Address',
+      selector: (row) => row.emailAddress,
+      cell: (row) => <Box>{row.emailAddress}</Box>,
+      sortable: true,
+      width: '200px',
+    },
+    {
+      name: 'Phone Number',
+      selector: (row) => row.phoneNumber,
       sortable: true,
       width: '150px',
     },
     {
-      name: 'Phone',
-      selector: (row) => row.jobNumber,
+      name: 'Address',
+      selector: (row) => row.address,
+      cell: (row) => <Box>{row.address}</Box>,
       sortable: true,
-      width: '150px',
+      width: '200px',
     },
     {
       name: 'City',
-      selector: (row) => row.jobNumber,
+      selector: (row) => row.city,
+      sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'State',
+      selector: (row) => row.state,
+      sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'Postal Code',
+      selector: (row) => row.pincode,
       sortable: true,
       width: '150px',
     },
     {
       name: 'No. of Jobs',
-      selector: (row) => row.jobNumber,
+      selector: (row) => row.noOfJobs,
       sortable: true,
       width: '150px',
     },
     {
       name: 'Average Rating',
-      selector: (row) => row.rating,
+      selector: (row) => row.averageRating,
       cell: (row) => (
         <>
           {[...Array(row.rating)].map(() => (
@@ -158,19 +239,19 @@ const Vendors = () => {
     },
     {
       name: 'Member Since',
-      selector: (row) => row.comment,
+      selector: (row) => row.memberSince,
       sortable: true,
-      width: '150px',
+      width: '200px',
     },
     {
       name: 'Last Access',
-      selector: (row) => row.postedOn,
+      selector: (row) => row.lastAccess,
       sortable: true,
-      width: '150px',
+      width: '200px',
     },
     {
       name: 'Status',
-      selector: (row) => row.postedOn,
+      selector: (row) => row.status,
       sortable: true,
       width: '150px',
     },
@@ -183,9 +264,8 @@ const Vendors = () => {
               className='icon'
               onClick={() => {
                 handleOpen()
-                setInputValue({...row})
+                setInputValue(row)
                 setRowId(row.id)
-                setCurrentRow(row)
               }}
             />
             <Delete
@@ -202,18 +282,31 @@ const Vendors = () => {
     },
   ]
 
-  const data = vendors?.map((rating) => {
+  const data = vendors?.map((vendor) => {
     return {
-      id: rating._id,
-      ratingBy: rating.ratingBy,
-      ratingFor: rating.ratingFor,
-      whoRated: rating.whoRated,
-      jobNumber: rating.jobNumber,
-      rating: rating.rating,
-      comment: rating.comment,
-      postedOn: moment(rating.createdAt).format('DD MMM YY hh:mmA'),
+      id: vendor?._id,
+      logo: vendor?.logo,
+      companyName: vendor?.companyName,
+      firstName: vendor?.firstName,
+      lastName: vendor?.lastName,
+      emailAddress: vendor?.emailAddress,
+      phoneNumber: vendor?.phoneNumber,
+      address: vendor?.address,
+      city: vendor?.city,
+      state: vendor?.state,
+      pincode: vendor?.pincode,
+      noOfJobs: vendor?.noOfJobs,
+      averageRating: vendor?.averageRating,
+      memberSince: moment(vendor?.createdAt).format('DD MMM YY hh:mmA'),
+      lastAccess: moment(vendor?.lastAccess).format('DD MMM YY hh:mmA'),
+      status: vendor?.status?.charAt(0)?.toUpperCase() + vendor?.status?.substr(1)?.toLowerCase(),
     }
   })
+
+  const status = [
+    {label: 'Active', value: 'Active'},
+    {label: 'Inactive', value: 'Inactive'},
+  ]
 
   if (loading) {
     return (
@@ -228,6 +321,11 @@ const Vendors = () => {
       <PageTitle breadcrumbs={[]}>
         {intl.formatMessage({id: 'MENU.USER_MANAGEMENT.VENDORS'})}
       </PageTitle>
+      <Box className='add-button-wrapper' onClick={() => setAddOpen(true)}>
+        <Button className='add-button' variant='success'>
+          Add New +
+        </Button>
+      </Box>
       <DataTable
         columns={columns}
         data={data}
@@ -261,96 +359,281 @@ const Vendors = () => {
         </>
       </Modal>
 
-      <Dialog open={open} onClose={handleClose}>
-        <Toolbar>
-          <IconButton edge='start' color='inherit' onClick={handleClose} aria-label='close'>
-            <CloseIcon />
-          </IconButton>
-        </Toolbar>
-        <DialogContent>
-          <TextField
-            label='Rating For'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='ratingFor'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='Rating By'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='ratingBy'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='Who Rated'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='whoRated'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='Job Number'
-            type={'number'}
-            onChange={(e) => handleChange(e)}
-            name='jobNumber'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            label='Rating'
-            type={'number'}
-            onChange={(e) => handleChange(e)}
-            name='rating'
-            select
-            fullWidth
-            variant='standard'
-            margin='dense'
-          >
-            {[1, 2, 3, 4, 5].map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            label='Comment'
-            multiline
-            maxRows={3}
-            onChange={(e) => handleChange(e)}
-            name='comment'
-            fullWidth
-            variant='standard'
-            margin='dense'
-          />
-          <TextField
-            InputLabelProps={{shrink: true}}
-            label='Posted On'
-            type={'datetime-local'}
-            onChange={(e) => handleChange(e)}
-            name='postedOn'
-            variant='standard'
-            margin='dense'
-          />
-        </DialogContent>
-        <Button
-          className='button'
-          size='lg'
-          variant='success'
-          onClick={() => {
-            handleUpdate(rowId)
-            handleClose()
-          }}
-        >
-          Save
-        </Button>
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth='xs'>
+        <DialogTitle>
+          <Box sx={{display: 'flex'}}>
+            <Box flexGrow={1}>Edit Row</Box>
+            <Box>
+              <IconButton color='inherit' onClick={handleClose} aria-label='close'>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          </Box>
+        </DialogTitle>
+        <form onSubmit={handleUpdate}>
+          <DialogContent>
+            <TextField
+              InputLabelProps={{shrink: true}}
+              label='Logo'
+              name='logo'
+              type={'file'}
+              onChange={handleChange}
+              variant='standard'
+              margin='dense'
+              fullWidth
+            />
+            <TextField
+              label='Company Name'
+              type={'text'}
+              name='companyName'
+              onChange={handleChange}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              value={inputValue?.companyName}
+            />
+            <TextField
+              label='First Name'
+              type={'text'}
+              name='firstName'
+              onChange={handleChange}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              value={inputValue?.firstName}
+            />
+            <TextField
+              label='Last Name'
+              type={'text'}
+              name='lastName'
+              onChange={handleChange}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              value={inputValue?.lastName}
+            />
+            <TextField
+              label='Email Address'
+              type={'email'}
+              name='emailAddress'
+              onChange={handleChange}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              value={inputValue?.emailAddress}
+            />
+            <TextField
+              label='Phone Number'
+              type={'tel'}
+              name='phoneNumber'
+              onChange={handleChange}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              value={inputValue?.phoneNumber}
+            />
+            <TextField
+              label='Address'
+              type={'text'}
+              name='address'
+              onChange={handleChange}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              value={inputValue?.address}
+            />
+            <TextField
+              label='City'
+              type={'text'}
+              name='city'
+              onChange={handleChange}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              value={inputValue?.city}
+            />
+            <TextField
+              label='State'
+              type={'text'}
+              name='state'
+              onChange={handleChange}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              value={inputValue?.state}
+            />
+            <TextField
+              label='Postal Code'
+              inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
+              name='pincode'
+              onChange={handleChange}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              value={inputValue?.pincode}
+            />
+            <TextField
+              label='Status'
+              name='status'
+              onChange={handleChange}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              select
+              value={inputValue?.status}
+              defaultValue={
+                inputValue?.status?.charAt(0)?.toUpperCase() +
+                inputValue?.status?.substr(1)?.toLowerCase()
+              }
+            >
+              {status.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          </DialogContent>
+          <Button className='button' size='lg' variant='success' type='submit'>
+            Save
+          </Button>
+        </form>
+      </Dialog>
+
+      <Dialog open={addOpen} onClose={handleClose} fullWidth maxWidth='xs'>
+        <DialogTitle>
+          <Box sx={{display: 'flex'}}>
+            <Box flexGrow={1}>Add New Row</Box>
+            <Box>
+              <IconButton color='inherit' onClick={handleClose} aria-label='close'>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          </Box>
+        </DialogTitle>
+        <form onSubmit={handleAdd}>
+          <DialogContent>
+            <TextField
+              InputLabelProps={{shrink: true}}
+              label='Logo'
+              name='logo'
+              type={'file'}
+              onChange={(e) => handleChange(e)}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              required
+            />
+            <TextField
+              label='Company Name'
+              type={'text'}
+              name='companyName'
+              onChange={(e) => handleChange(e)}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              required
+            />
+            <TextField
+              label='First Name'
+              type={'text'}
+              name='firstName'
+              onChange={(e) => handleChange(e)}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              required
+            />
+            <TextField
+              label='Last Name'
+              type={'text'}
+              name='lastName'
+              onChange={(e) => handleChange(e)}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              required
+            />
+            <TextField
+              label='Email Address'
+              type={'email'}
+              name='emailAddress'
+              onChange={(e) => handleChange(e)}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              required
+            />
+            <TextField
+              label='Phone Number'
+              type={'tel'}
+              name='phoneNumber'
+              onChange={(e) => handleChange(e)}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              required
+            />
+            <TextField
+              label='Address'
+              type={'text'}
+              name='address'
+              onChange={(e) => handleChange(e)}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              required
+            />
+            <TextField
+              label='City'
+              type={'text'}
+              name='city'
+              onChange={(e) => handleChange(e)}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              required
+            />
+            <TextField
+              label='State'
+              type={'text'}
+              name='state'
+              onChange={(e) => handleChange(e)}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              required
+            />
+            <TextField
+              label='Postal Code'
+              inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
+              name='pincode'
+              onChange={(e) => handleChange(e)}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              required
+            />
+            <TextField
+              label='Status'
+              name='status'
+              onChange={(e) => handleChange(e)}
+              variant='standard'
+              margin='dense'
+              fullWidth
+              required
+              select
+            >
+              {status.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          </DialogContent>
+          <Button className='button' size='lg' variant='success' type='submit'>
+            Save
+          </Button>
+        </form>
       </Dialog>
     </>
   )

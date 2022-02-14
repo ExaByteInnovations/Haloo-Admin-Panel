@@ -139,7 +139,6 @@ const State = () => {
               onClick={() => {
                 handleOpen()
                 setRowId(row.id)
-                setCurrentRow(row)
                 setInputValue(row)
               }}
             />

@@ -158,7 +158,6 @@ const City = () => {
               onClick={() => {
                 handleOpen()
                 setRowId(row.id)
-                setCurrentRow(row)
                 setInputValue(row)
                 getStates()
               }}

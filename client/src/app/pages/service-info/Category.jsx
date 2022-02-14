@@ -32,8 +32,6 @@ const Category = () => {
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
 
-  console.log(categories, 'categories')
-
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
@@ -171,7 +169,6 @@ const Category = () => {
               onClick={() => {
                 handleOpen()
                 setRowId(row.id)
-                // setCurrentRow(row)
                 setInputValue(row)
               }}
             />
