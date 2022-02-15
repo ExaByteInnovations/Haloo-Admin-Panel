@@ -31,12 +31,14 @@ const City = () => {
   const [show, setShow] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
+  const [errors, setErrors] = useState({})
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
     setShow(false)
     setAddOpen(false)
+    setErrors({})
   }
 
   useEffect(() => {
@@ -92,44 +94,77 @@ const City = () => {
       setShow(false)
     }
   }
+  const validateForm = () => {
+    let formIsValid = true
+    let errors = {}
+
+    if (inputValue && !inputValue.cityName) {
+      formIsValid = false
+      errors['cityName'] = '*Please Enter City Name !'
+    }
+    if (inputValue && !inputValue.stateId) {
+      formIsValid = false
+      errors['stateId'] = '*Please Enter State Name!'
+    }
+    if (inputValue && !inputValue.status) {
+      formIsValid = false
+      errors['status'] = '*Please Select Status!'
+    }
+
+    setErrors(errors)
+    console.log('errors', errors)
+    return formIsValid
+  }
 
   const handleUpdate = async () => {
-    try {
-      setLoading(true)
-      const response = await ApiPut(`serviceinfo/city?_id=${rowId}`, inputValue)
-      if (response.status === 200) {
-        toast.success('Updated Successfully')
-        setInputValue({})
-        getCities()
+    if (validateForm()) {
+      try {
+        setLoading(true)
+        const response = await ApiPut(`serviceinfo/city?_id=${rowId}`, inputValue)
+        if (response.status === 200) {
+          toast.success('Updated Successfully')
+          setInputValue({})
+          getCities()
+          handleClose()
+          setLoading(false)
+        } else {
+          setLoading(false)
+          handleClose()
+        }
+      } catch (err) {
+        toast.error(err.message)
+        setLoading(false)
+        handleClose()
       }
-      setLoading(false)
-    } catch (err) {
-      toast.error(err.message)
-      setLoading(false)
     }
   }
 
   const handleAdd = async () => {
-    try {
-      setLoading(true)
-      const response = await ApiPost(`serviceinfo/city`, inputValue)
-      if (response.status === 200) {
-        toast.success('Added Successfully')
-        setInputValue({})
-        getCities()
+    if (validateForm()) {
+      try {
+        setLoading(true)
+        const response = await ApiPost(`serviceinfo/city`, inputValue)
+        if (response.status === 200) {
+          toast.success('Added Successfully')
+          setInputValue({})
+          getCities()
+          setLoading(false)
+          handleClose()
+        }
+        setLoading(false)
+        handleClose()
+      } catch (err) {
+        toast.error(err.message)
+        setLoading(false)
+        handleClose()
       }
-      setLoading(false)
-      handleClose()
-    } catch (err) {
-      toast.error(err.message)
-      setLoading(false)
-      handleClose()
     }
   }
 
   const handleChange = (e) => {
     const {name, value} = e.target
     setInputValue({...inputValue, [name]: value})
+    setErrors({...errors, [name]: ''})
   }
 
   const columns = [
@@ -267,6 +302,15 @@ const City = () => {
             margin='dense'
             value={inputValue?.cityName}
           />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['cityName']}
+          </span>
           <TextField
             label='State Name'
             onChange={(e) => handleChange(e)}
@@ -289,6 +333,15 @@ const City = () => {
               </MenuItem>
             ))}
           </TextField>
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['stateId']}
+          </span>
           <TextField
             label='Status'
             type={'text'}
@@ -310,6 +363,15 @@ const City = () => {
               </MenuItem>
             ))}
           </TextField>
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['status']}
+          </span>
         </DialogContent>
         <Button
           className='button'
@@ -317,7 +379,6 @@ const City = () => {
           variant='success'
           onClick={() => {
             handleUpdate()
-            handleClose()
           }}
         >
           Save
@@ -335,61 +396,84 @@ const City = () => {
             </Box>
           </Box>
         </DialogTitle>
-        <form onSubmit={handleAdd}>
-          <DialogContent>
-            <TextField
-              label='City Name'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='cityName'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              required
-            />
-            <TextField
-              label='State Name'
-              onChange={(e) => handleChange(e)}
-              name='stateId'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              required
-              select
-              SelectProps={{
-                MenuProps: {
-                  style: {height: '300px'},
-                },
-              }}
-            >
-              {states.map((option) => (
-                <MenuItem key={option.id} value={option.id}>
-                  {option.name}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              label='Status'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='status'
-              fullWidth
-              variant='standard'
-              required
-              margin='dense'
-              select
-            >
-              {status.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </DialogContent>
-          <Button type='submit' className='button' size='lg' variant='success'>
-            Save
-          </Button>
-        </form>
+
+        <DialogContent>
+          <TextField
+            label='City Name'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='cityName'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['cityName']}
+          </span>
+          <TextField
+            label='State Name'
+            onChange={(e) => handleChange(e)}
+            name='stateId'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            select
+            SelectProps={{
+              MenuProps: {
+                style: {height: '300px'},
+              },
+            }}
+          >
+            {states.map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['stateId']}
+          </span>
+          <TextField
+            label='Status'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='status'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            select
+          >
+            {status.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['status']}
+          </span>
+        </DialogContent>
+        <Button onClick={handleAdd} className='button' size='lg' variant='success'>
+          Save
+        </Button>
       </Dialog>
     </>
   )
