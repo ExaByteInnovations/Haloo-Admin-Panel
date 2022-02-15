@@ -12,6 +12,7 @@ import {City} from '../pages/service-info/City'
 import {State} from '../pages/service-info/State'
 import {Customers} from '../pages/userManagement/Customers'
 import {Vendors} from '../pages/userManagement/Vendors'
+import {Support} from '../pages/support/Support'
 
 export function PrivateRoutes() {
   return (
@@ -28,6 +29,7 @@ export function PrivateRoutes() {
         <Route path='/service-info/subcategory' component={SubCategory} />
         <Route path='/service-info/city' component={City} />
         <Route path='/service-info/state' component={State} />
+        <Route path='/support' component={Support} />
 
         <Redirect from='/auth' to='/dashboard' />
         <Redirect exact from='/' to='/dashboard' />
