@@ -36,3 +36,6 @@
 .add-button {
   font-weight: bold !important;
 }
+.status-btn {
+  padding: 5px 10px !important;
+}

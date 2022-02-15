@@ -59,6 +59,13 @@ export function AsideMenuMain() {
         <AsideMenuItem to='/service-info/state' title='State' hasBullet={true} />
       </AsideMenuItemWithSub>
 
+      <AsideMenuItem
+        to='/support'
+        icon='/media/icons/duotune/general/gen019.svg'
+        title='Support'
+        fontIcon='bi-layers'
+      />
+
       {/* <AsideMenuItem
         to='/builder'
         icon='/media/icons/duotune/general/gen019.svg'
