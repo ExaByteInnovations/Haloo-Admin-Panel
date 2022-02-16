@@ -13,6 +13,10 @@ import {State} from '../pages/service-info/State'
 import {Customers} from '../pages/userManagement/Customers'
 import {Vendors} from '../pages/userManagement/Vendors'
 import {Support} from '../pages/support/Support'
+import {MasterSettings} from '../pages/settings/MasterSettings'
+import {Email} from '../pages/settings/Email'
+import {SocialMedia} from '../pages/settings/SocialMedia'
+import {EditProfile} from '../pages/settings/EditProfile'
 
 export function PrivateRoutes() {
   return (
@@ -30,6 +34,10 @@ export function PrivateRoutes() {
         <Route path='/service-info/city' component={City} />
         <Route path='/service-info/state' component={State} />
         <Route path='/support' component={Support} />
+        <Route path='/settings/master-settings' component={MasterSettings} />
+        <Route path='/settings/email' component={Email} />
+        <Route path='/settings/social-media' component={SocialMedia} />
+        <Route path='/settings/edit-profile' component={EditProfile} />
 
         <Redirect from='/auth' to='/dashboard' />
         <Redirect exact from='/' to='/dashboard' />

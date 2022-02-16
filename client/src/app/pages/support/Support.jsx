@@ -22,8 +22,6 @@ const Support = () => {
     setShow(false)
   }
 
-  console.log(queryStatus, 'status')
-
   useEffect(() => {
     getSupport()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -48,7 +46,6 @@ const Support = () => {
       const response = await ApiPut(`support/support?_id=${rowId}`, {
         status: queryStatus,
       })
-      console.log(queryStatus, 'querystatus')
       if (response.status === 200) {
         toast.success('Updated Successfully')
         getSupport()
@@ -153,7 +150,7 @@ const Support = () => {
           <Modal.Body>Are you sure you want to change the status of this query</Modal.Body>
           <Modal.Footer>
             <Button variant='secondary' onClick={handleClose}>
-              cancel
+              Cancel
             </Button>
             <Button variant='danger' onClick={handleUpdate}>
               Update

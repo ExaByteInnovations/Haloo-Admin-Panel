@@ -33,9 +33,6 @@ const Vendors = () => {
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
 
-  console.log(inputValue, 'inputValue')
-  console.log(vendors, 'vendors')
-
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
@@ -86,7 +83,7 @@ const Vendors = () => {
     imageData.append('firstName', inputValue.firstName)
     imageData.append('lastName', inputValue.lastName)
     imageData.append('emailAddress', inputValue.emailAddress)
-    imageData.append('phoneNumber', inputValue.phoneNumber)
+    imageData.append('phone', inputValue.phone)
     imageData.append('city', inputValue.city)
     imageData.append('state', inputValue.state)
     imageData.append('address', inputValue.address)
@@ -119,7 +116,7 @@ const Vendors = () => {
     imageData.append('firstName', inputValue.firstName)
     imageData.append('lastName', inputValue.lastName)
     imageData.append('emailAddress', inputValue.emailAddress)
-    imageData.append('phoneNumber', inputValue.phoneNumber)
+    imageData.append('phone', inputValue.phone)
     imageData.append('city', inputValue.city)
     imageData.append('state', inputValue.state)
     imageData.append('address', inputValue.address)
@@ -185,7 +182,7 @@ const Vendors = () => {
     },
     {
       name: 'Phone Number',
-      selector: (row) => row.phoneNumber,
+      selector: (row) => row.phone,
       sortable: true,
       width: '150px',
     },
@@ -290,7 +287,7 @@ const Vendors = () => {
       firstName: vendor?.firstName,
       lastName: vendor?.lastName,
       emailAddress: vendor?.emailAddress,
-      phoneNumber: vendor?.phoneNumber,
+      phone: vendor?.phone,
       address: vendor?.address,
       city: vendor?.city,
       state: vendor?.state,
@@ -345,7 +342,7 @@ const Vendors = () => {
           <Modal.Body>Are you sure you want to delete this row</Modal.Body>
           <Modal.Footer>
             <Button variant='secondary' onClick={handleClose}>
-              cancel
+              Cancel
             </Button>
             <Button
               variant='danger'
@@ -425,12 +422,12 @@ const Vendors = () => {
             <TextField
               label='Phone Number'
               type={'tel'}
-              name='phoneNumber'
+              name='phone'
               onChange={handleChange}
               variant='standard'
               margin='dense'
               fullWidth
-              value={inputValue?.phoneNumber}
+              value={inputValue?.phone}
             />
             <TextField
               label='Address'
@@ -566,7 +563,7 @@ const Vendors = () => {
             <TextField
               label='Phone Number'
               type={'tel'}
-              name='phoneNumber'
+              name='phone'
               onChange={(e) => handleChange(e)}
               variant='standard'
               margin='dense'

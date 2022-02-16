@@ -66,6 +66,18 @@ export function AsideMenuMain() {
         fontIcon='bi-layers'
       />
 
+      <AsideMenuItemWithSub
+        to='/settings'
+        icon='/media/icons/duotune/communication/com006.svg'
+        title={intl.formatMessage({id: 'MENU.SETTINGS'})}
+        fontIcon='bi-app-indicator'
+      >
+        <AsideMenuItem to='/settings/edit-profile' title='Edit Profile' hasBullet={true} />
+        <AsideMenuItem to='/settings/master-settings' title='Master Settings' hasBullet={true} />
+        <AsideMenuItem to='/settings/email' title='Email' hasBullet={true} />
+        <AsideMenuItem to='/settings/social-media' title='Social Media' hasBullet={true} />
+      </AsideMenuItemWithSub>
+
       {/* <AsideMenuItem
         to='/builder'
         icon='/media/icons/duotune/general/gen019.svg'
