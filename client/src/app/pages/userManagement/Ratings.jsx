@@ -215,7 +215,7 @@ const Ratings = () => {
           <Modal.Body>Are you sure you want to delete this row</Modal.Body>
           <Modal.Footer>
             <Button variant='secondary' onClick={handleClose}>
-              cancel
+              Cancel
             </Button>
             <Button
               variant='danger'

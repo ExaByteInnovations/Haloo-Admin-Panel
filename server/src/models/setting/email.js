@@ -1,11 +1,13 @@
 var mongoose = require('mongoose');
 
-const emailSchema = new mongoose.Schema({
+const emailSchema = new mongoose.Schema(
+  {
     administratorEmailAddress: {
-        type: String, required: true,
+      type: String,
+      required: true,
     },
     supportEmailAddress: {
-        type: Number,
+      type: String,
     },
     notificationEmailAddress: {
       type: String,
@@ -23,10 +25,10 @@ const emailSchema = new mongoose.Schema({
       type: Number,
     },
   },
-    {
-      timestamps: true
-    });
-  
-  const Email = mongoose.model('email', emailSchema)
-  module.exports = Email;
+  {
+    timestamps: true,
+  }
+);
 
+const Email = mongoose.model('email', emailSchema);
+module.exports = Email;
