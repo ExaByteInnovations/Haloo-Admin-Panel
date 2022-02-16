@@ -18,12 +18,14 @@ const EditProfile = () => {
   const [initialValues, setInitialValues] = useState({})
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
+  const [errors, setErrors] = useState({})
 
   console.log(inputValue, 'inputValue')
 
   const handleClose = () => {
     setShow(false)
     setInputValue(initialValues)
+    setErrors({})
   }
 
   useEffect(() => {
@@ -45,39 +47,78 @@ const EditProfile = () => {
     }
   }
 
-  const handleUpdate = async () => {
-    const imageData = new FormData()
-    imageData.append('profileImage', inputValue.profileImage)
-    imageData.append('name', inputValue.name)
-    imageData.append('email', inputValue.email)
-    imageData.append('userRole', inputValue.userRole)
-    imageData.append('status', inputValue.status)
-    try {
-      setLoading(true)
-      const response = await ApiPut(`usermanagement/admin?_id=${inputValue?._id}`, imageData)
+  const validateForm = () => {
+    let formIsValid = true
+    let errors = {}
 
-      if (response.status === 200) {
-        toast.success('Updated Successfully')
-        getEditProfile()
-        // console.log(inputValue, 'inputValue')
-        dispatch({
-          type: 'UPDATE_SUCCESS',
-          payload: inputValue,
-        })
+    if (inputValue && !inputValue.profileImage) {
+      formIsValid = false
+      errors['profileImage'] = '*Please Select Image !'
+    }
+    if (inputValue && !inputValue.name) {
+      formIsValid = false
+      errors['name'] = '*Please Enter Name!'
+    }
+    if (inputValue && !inputValue.email) {
+      formIsValid = false
+      errors['email'] = '*Please Enter Email!'
+    }
+    if (inputValue && !inputValue.userRole) {
+      formIsValid = false
+      errors['userRole'] = '*Please Select User Role!'
+    }
+    if (inputValue && !inputValue.status) {
+      formIsValid = false
+      errors['status'] = '*Please Select Status!'
+    }
+
+    setErrors(errors)
+    console.log('errors', errors)
+    if (formIsValid) setShow(true)
+    return formIsValid
+  }
+
+  const handleUpdate = async () => {
+    if (validateForm()) {
+      const imageData = new FormData()
+      imageData.append('profileImage', inputValue.profileImage)
+      imageData.append('name', inputValue.name)
+      imageData.append('email', inputValue.email)
+      imageData.append('userRole', inputValue.userRole)
+      imageData.append('status', inputValue.status)
+
+      try {
+        setLoading(true)
+        const response = await ApiPut(`usermanagement/admin?_id=${inputValue?._id}`, imageData)
+
+        if (response.status === 200) {
+          toast.success('Updated Successfully')
+          getEditProfile()
+          // console.log(inputValue, 'inputValue')
+          dispatch({
+            type: 'UPDATE_SUCCESS',
+            payload: inputValue,
+          })
+        }
+        setLoading(false)
+        handleClose()
+      } catch (err) {
+        toast.error(err.message)
+        setLoading(false)
+        handleClose()
       }
-      setLoading(false)
-      handleClose()
-    } catch (err) {
-      toast.error(err.message)
-      setLoading(false)
-      handleClose()
     }
   }
 
   const handleChange = (e) => {
     const {name, value, files} = e.target
-    if (files) setInputValue({...inputValue, [name]: files[0]})
-    else setInputValue({...inputValue, [name]: value})
+    if (files) {
+      setInputValue({...inputValue, [name]: files[0]})
+      setErrors({...errors, [name]: ''})
+    } else {
+      setInputValue({...inputValue, [name]: value})
+      setErrors({...errors, [name]: ''})
+    }
   }
 
   const status = [
@@ -137,6 +178,15 @@ const EditProfile = () => {
             margin='dense'
             value={inputValue?.name}
           />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['name']}
+          </span>
           <TextField
             className='admin-field'
             label='Email'
@@ -147,6 +197,15 @@ const EditProfile = () => {
             margin='dense'
             value={inputValue?.email}
           />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['email']}
+          </span>
           <TextField
             className='admin-field'
             label='User Role'
@@ -157,6 +216,15 @@ const EditProfile = () => {
             margin='dense'
             value={inputValue?.userRole}
           />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['userRole']}
+          </span>
           {/* <TextField
             className='admin-field'
             label='Status'
@@ -192,13 +260,24 @@ const EditProfile = () => {
             margin='dense'
             //   value={inputValue?.profileImage}
           />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['profileImage']}
+          </span>
 
           <Box className='settings-btn-wrapper'>
             <Button
               className='button settings-btn-save'
               size='lg'
               variant='success'
-              onClick={() => setShow(true)}
+              onClick={() => {
+                validateForm()
+              }}
             >
               Save
             </Button>
