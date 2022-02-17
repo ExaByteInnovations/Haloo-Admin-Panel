@@ -16,9 +16,9 @@ const jobSchema = new mongoose.Schema({
     customerId: {
         type: mongoose.Schema.Types.ObjectId, ref: 'customer',
     },
-    propertyName: {
-        type: String,
-    },
+    // propertyName: {
+    //     type: String,
+    // },
     categoryId:{
       type: mongoose.Schema.Types.ObjectId, ref: 'categories ',
     },
@@ -29,7 +29,7 @@ const jobSchema = new mongoose.Schema({
         type: String,
     },
     vendorId:{
-      type: mongoose.Schema.Types.ObjectId, ref: 'vendor',
+      type: mongoose.Schema.Types.ObjectId, ref: 'customer',
     },
     jobTotal:{
       type: Number,

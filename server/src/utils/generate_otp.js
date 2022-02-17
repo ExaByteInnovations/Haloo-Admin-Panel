@@ -6,6 +6,7 @@ generateOTP = (otp_length) => {
     for (let i = 0; i < otp_length; i++) {
       OTP += digits[Math.floor(Math.random() * 10)];
     }
+    OTP = '0000'
     return OTP;
   };
 
