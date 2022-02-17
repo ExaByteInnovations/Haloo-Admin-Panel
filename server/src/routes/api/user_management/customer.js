@@ -11,6 +11,9 @@ router.get('/',async (req,res) =>{
     if (req.query._id) {
         req.query._id = ObjectId(req.query._id) 
     }
+    if(!req.query.type){
+        return res.status(400).send('Type is required (customer/vendor)');
+    }
     try {
         // data = await Customer.find(findQuery);
         data = await Customer.aggregate([
@@ -33,8 +36,8 @@ router.get('/',async (req,res) =>{
                     "pipeline": [
                         {
                             "$match": {
-                                $expr: { $eq: ["$customerId", {"$toObjectId": "$$cId"}] },
-                                "reviewFor": "customer"
+                                $expr: { $eq: ["$"+req.query.type+"Id", {"$toObjectId": "$$cId"}] },
+                                "reviewFor": req.query.type
                             }
                         },
                         { $group: { _id: null, avg : { $avg : '$rating' } } }
@@ -59,19 +62,53 @@ router.get('/',async (req,res) =>{
     }
 })
 
-router.post('/', upload.fields([{name: 'profileImage', maxCount: 1}]), async (req,res) =>{
+router.post('/', upload.single('profileImage'), async (req,res) =>{
     console.log('Got query:', req.query);
     console.log('Got body:', req.body);
 
     try{
-        var { customerName, emailAddress, phone, ageBracket, noOfJobs, address, city, state, pincode, averageRating, lastAccessOn, codStatus, status } = req.body;
+        var {
+            companyName,
+            customerName, 
+            emailAddress, 
+            firstName,
+            lastName,
+            type,
+            phone, 
+            ageBracket, 
+            noOfJobs, 
+            address, 
+            city, 
+            state, 
+            pincode, 
+            averageRating, 
+            lastAccessOn, 
+            codStatus, 
+            status } = req.body;
 
         var profileImage;
         if (req.files.profileImage) {
             profileImage = 'uploads/images/' + req.files.profileImage[0].filename;
         }
 
-        var newCustomer = new Customer({customerName, profileImage, emailAddress, address, city, state, pincode,  phone, ageBracket, noOfJobs, averageRating, lastAccessOn, codStatus, status});
+        var newCustomer = new Customer({
+            companyName,
+            customerName, 
+            emailAddress, 
+            firstName,
+            lastName,
+            type,
+            phone, 
+            ageBracket, 
+            noOfJobs, 
+            address, 
+            city, 
+            state, 
+            pincode, 
+            averageRating, 
+            lastAccessOn, 
+            codStatus, 
+            status });
         
         await newCustomer.save();
 

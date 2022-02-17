@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Job = require('../../models/job');
+const StaticFile = require('../../models/static_file');
 
 router.get("/" ,async function(req,res){
     console.log('Got query:', req.query);
@@ -12,41 +12,9 @@ router.get("/" ,async function(req,res){
     try {
         // data = await Job.find(findQuery);
 
-        data = await Job.aggregate([
+        data = await StaticFile.aggregate([
             {
                 $match : req.query
-            },
-            {
-                $lookup: {
-                    from: 'customers',
-                    localField: 'customerId',
-                    foreignField: '_id',
-                    as: 'customerDetails'
-                },
-            },
-            {
-                $lookup: {
-                    from: 'customers',
-                    localField: 'vendorId',
-                    foreignField: '_id',
-                    as: 'vendorDetails'
-                }
-            },
-            {
-                $lookup: {
-                    from: 'categories ',
-                    localField: 'categoryId',
-                    foreignField: '_id',
-                    as: 'categoryDetails'
-                }
-            },
-            {
-                $lookup: {
-                    from: 'subcategories  ',
-                    localField: 'subCategoryId',
-                    foreignField: '_id',
-                    as: 'subcategoryDetails'
-                }
             }
         ]);
 
@@ -62,9 +30,9 @@ router.post("/" ,async function(req,res){
     console.log('Got query:', req.query);
     console.log('Got body:', req.body);
 
-    var { quote, jobTitle, city, customerId, propertyName, categoryId, subCategoryId, status, vendorId, jobTotal } = req.body;
+    var { srNO, pageName, action } = req.body;
 
-    var item = new Job({ quote, jobTitle, city, customerId, propertyName, categoryId, subCategoryId, status, vendorId, jobTotal });
+    var item = new StaticFile({ srNO, pageName, action });
     
     item.save( item )
         .then(function(item){
@@ -86,7 +54,7 @@ router.delete("/" ,async function(req,res){
         res.send({error: "Please provide an id"});
     }else{
         //  remove eleemnt id id mongodb
-        Job.remove({_id:_id})
+        StaticFile.remove({_id:_id})
         .then(function(item){
                 res.sendStatus(200);
         }).catch((error) => {
@@ -105,7 +73,7 @@ router.put("/" ,async function(req,res){
         res.send({error: "Please provide an id"});
     }else{
         //  update element in mongodb put
-        Job.updateOne({_id:_id}, {$set: req.body})
+        StaticFile.updateOne({_id:_id}, {$set: req.body})
         .then(function(item){
                 res.sendStatus(200);
         }).catch((error) => {

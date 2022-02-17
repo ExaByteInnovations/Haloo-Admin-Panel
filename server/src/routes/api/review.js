@@ -33,7 +33,7 @@ router.get("/" ,async function(req,res){
             },
             {
                 $lookup: {
-                    from: 'vendors',
+                    from: 'customers',
                     localField: 'vendorId',
                     foreignField: '_id',
                     as: 'vendorDetails'

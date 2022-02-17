@@ -2,10 +2,27 @@ var mongoose = require('mongoose');
 
 const customerSchema = new mongoose.Schema({
     customerName: {
-        type: String, required: true,
+        type: String,
     },
     profileImage: {
         type: String,
+    },
+    companyName: {
+        type: String,
+    },
+    firstName: {
+        type: String,
+    },
+    lastName: {
+        type: String,
+    },
+    type: {
+        type: String,
+        enum : ['customer','vendor'],
+    },
+    online: {
+        type: Boolean,
+        default: false,
     },
     emailAddress: {
         type: String,

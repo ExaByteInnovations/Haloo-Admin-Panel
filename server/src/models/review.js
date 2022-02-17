@@ -5,7 +5,7 @@ const reviewSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId, ref: 'customer',
     },
     vendorId :{
-      type: mongoose.Schema.Types.ObjectId, ref: 'vendor',
+      type: mongoose.Schema.Types.ObjectId, ref: 'customer',
     },
     jobId :{
       type: mongoose.Schema.Types.ObjectId, ref: 'job',

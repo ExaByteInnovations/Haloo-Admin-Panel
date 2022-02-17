@@ -23,7 +23,7 @@ router.post('/generate_otp', async (req,res) =>{
         // customer.otp_expiry = Date.now() + (60 * 1000);
         await vendor.save();
         console.log(otp);
-        return res.send({data:{vendorId:vendor._id, otp}});
+        return res.send({data:{vendorId:vendor._id }});
         // return res.status(400).send({error: "Phone number already registered"});
     }else{
         otp = generate_otp(4);
