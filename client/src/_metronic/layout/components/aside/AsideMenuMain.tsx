@@ -29,11 +29,11 @@ export function AsideMenuMain() {
         />
         <AsideMenuItem to='/user-management/customers' title='Customers' hasBullet={true} />
         <AsideMenuItem to='/user-management/vendors' title='Vendors' hasBullet={true} />
-        {/* <AsideMenuItem
-          to='/user-management/customers'
-          title='Reviews And Ratings'
+        <AsideMenuItem
+          to='/user-management/cod-enable-requests'
+          title='COD Enable Requests'
           hasBullet={true}
-        /> */}
+        />
       </AsideMenuItemWithSub>
 
       <AsideMenuItemWithSub
@@ -73,6 +73,7 @@ export function AsideMenuMain() {
         fontIcon='bi-app-indicator'
       >
         <AsideMenuItem to='/settings/edit-profile' title='Edit Profile' hasBullet={true} />
+        <AsideMenuItem to='/settings/change-password' title='Change Password' hasBullet={true} />
         <AsideMenuItem to='/settings/master-settings' title='Master Settings' hasBullet={true} />
         <AsideMenuItem to='/settings/email' title='Email' hasBullet={true} />
         <AsideMenuItem to='/settings/social-media' title='Social Media' hasBullet={true} />
