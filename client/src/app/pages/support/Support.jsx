@@ -21,7 +21,7 @@ const Support = () => {
   const handleClose = () => {
     setShow(false)
   }
-
+  console.log(support, 'support')
   useEffect(() => {
     getSupport()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -113,9 +113,10 @@ const Support = () => {
   const data = support?.map((sup) => {
     return {
       id: sup?._id,
-      customerName: sup?.customerDetails[0]?.customerName,
-      phoneNumber: sup?.customerDetails[0]?.phone,
-      emailAddress: sup?.customerDetails[0]?.emailAddress,
+      customerName: sup?.customerDetails[0]?.customerName || 'Mayank',
+      query: sup?.query,
+      phoneNumber: sup?.customerDetails[0]?.phone || 9876543210,
+      emailAddress: sup?.customerDetails[0]?.emailAddress || 'mayank@gmail.com',
       postedDate: moment(sup?.createdAt).format('DD MMM YY hh:mmA'),
       status: sup?.status?.charAt(0)?.toUpperCase() + sup?.status?.substr(1)?.toLowerCase(),
     }
