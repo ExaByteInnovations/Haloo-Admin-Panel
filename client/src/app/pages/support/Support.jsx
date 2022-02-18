@@ -113,10 +113,10 @@ const Support = () => {
   const data = support?.map((sup) => {
     return {
       id: sup?._id,
-      customerName: sup?.customerDetails[0]?.customerName || 'Mayank',
+      customerName: sup?.customerDetails[0]?.customerName,
       query: sup?.query,
-      phoneNumber: sup?.customerDetails[0]?.phone || 9876543210,
-      emailAddress: sup?.customerDetails[0]?.emailAddress || 'mayank@gmail.com',
+      phoneNumber: sup?.customerDetails[0]?.phone,
+      emailAddress: sup?.customerDetails[0]?.emailAddress,
       postedDate: moment(sup?.createdAt).format('DD MMM YY hh:mmA'),
       status: sup?.status?.charAt(0)?.toUpperCase() + sup?.status?.substr(1)?.toLowerCase(),
     }
