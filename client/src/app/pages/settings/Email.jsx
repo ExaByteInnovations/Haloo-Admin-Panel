@@ -99,7 +99,7 @@ const Email = () => {
           name='administratorEmailAddress'
           variant='filled'
           margin='dense'
-          value={inputValue?.administratorEmailAddress}
+          value={inputValue?.administratorEmailAddress || ''}
         />
         <TextField
           className='settings-field'
@@ -109,7 +109,7 @@ const Email = () => {
           name='supportEmailAddress'
           variant='filled'
           margin='dense'
-          value={inputValue?.supportEmailAddress}
+          value={inputValue?.supportEmailAddress || ''}
         />
         <TextField
           className='settings-field'
@@ -119,7 +119,7 @@ const Email = () => {
           name='notificationEmailAddress'
           variant='filled'
           margin='dense'
-          value={inputValue?.notificationEmailAddress}
+          value={inputValue?.notificationEmailAddress || ''}
         />
         <TextField
           className='settings-field'
@@ -139,7 +139,7 @@ const Email = () => {
           name='smtpServerUserName'
           variant='filled'
           margin='dense'
-          value={inputValue?.smtpServerUserName}
+          value={inputValue?.smtpServerUserName || ''}
         />
         <TextField
           className='settings-field'
@@ -149,7 +149,7 @@ const Email = () => {
           name='smtpServerPassword'
           variant='filled'
           margin='dense'
-          value={inputValue?.smtpServerPassword}
+          value={inputValue?.smtpServerPassword || ''}
         />
         <TextField
           className='settings-field'

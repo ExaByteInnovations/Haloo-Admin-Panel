@@ -124,9 +124,9 @@ router.put(
       }
 
       //  update element in mongodb put
-      Admin.updateOne({ _id: _id }, { $set: req.body })
+      Admin.findByIdAndUpdate({ _id: _id }, { $set: req.body }, { new: true })
         .then((item) => {
-          res.sendStatus(200);
+          res.status(200).json(item);
         })
         .catch((error) => {
           //error handle

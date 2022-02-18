@@ -28,7 +28,7 @@ const SocialMedia = () => {
   const getSocialMedia = async () => {
     try {
       setLoading(true)
-      const response = await ApiGet(`setting/socail_media`)
+      const response = await ApiGet(`setting/socialmedia`)
       if (response.status === 200) {
         setInputValue(...response.data.data)
         setInitialValues(...response.data.data)
@@ -43,7 +43,7 @@ const SocialMedia = () => {
   const handleUpdate = async () => {
     try {
       setLoading(true)
-      const response = await ApiPut(`setting/social_media?_id=${inputValue?._id}`, inputValue)
+      const response = await ApiPut(`setting/socialmedia?_id=${inputValue?._id}`, inputValue)
 
       if (response.status === 200) {
         toast.success('Updated Successfully')
@@ -101,7 +101,7 @@ const SocialMedia = () => {
           name='facebookPageUrl'
           variant='filled'
           margin='dense'
-          value={inputValue?.facebookPageUrl}
+          value={inputValue?.facebookPageUrl || ''}
         />
         <TextField
           className='settings-field'
@@ -111,7 +111,7 @@ const SocialMedia = () => {
           name='linkedInUrl'
           variant='filled'
           margin='dense'
-          value={inputValue?.linkedInUrl}
+          value={inputValue?.linkedInUrl || ''}
         />
         <TextField
           className='settings-field'
@@ -121,7 +121,7 @@ const SocialMedia = () => {
           name='InstagramUrl'
           variant='filled'
           margin='dense'
-          value={inputValue?.InstagramUrl}
+          value={inputValue?.InstagramUrl || ''}
         />
         <TextField
           className='settings-field'
@@ -131,7 +131,7 @@ const SocialMedia = () => {
           name='youtubeUrl'
           variant='filled'
           margin='dense'
-          value={inputValue?.youtubeUrl}
+          value={inputValue?.youtubeUrl || ''}
         />
         <TextField
           className='settings-field'
@@ -141,7 +141,7 @@ const SocialMedia = () => {
           name='fbApplicationId'
           variant='filled'
           margin='dense'
-          value={inputValue?.fbApplicationId}
+          value={inputValue?.fbApplicationId || ''}
         />
         <TextField
           className='settings-field'
@@ -151,7 +151,7 @@ const SocialMedia = () => {
           name='fbSecretId'
           variant='filled'
           margin='dense'
-          value={inputValue?.fbSecretId}
+          value={inputValue?.fbSecretId || ''}
         />
         <TextField
           className='settings-field'
@@ -171,7 +171,7 @@ const SocialMedia = () => {
           name='googleSecretKey'
           variant='filled'
           margin='dense'
-          value={inputValue?.googleSecretKey}
+          value={inputValue?.googleSecretKey || ''}
         />
         <TextField
           className='settings-field'
@@ -181,7 +181,7 @@ const SocialMedia = () => {
           name='googlePlayStoreUrl'
           variant='filled'
           margin='dense'
-          value={inputValue?.googlePlayStoreUrl}
+          value={inputValue?.googlePlayStoreUrl || ''}
         />
         <TextField
           className='settings-field'
@@ -191,7 +191,7 @@ const SocialMedia = () => {
           name='appleAppStoreUrl'
           variant='filled'
           margin='dense'
-          value={inputValue?.appleAppStoreUrl}
+          value={inputValue?.appleAppStoreUrl || ''}
         />
         <Box className='settings-btn-wrapper'>
           <Button

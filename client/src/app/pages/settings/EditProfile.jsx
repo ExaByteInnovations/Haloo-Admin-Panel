@@ -19,7 +19,7 @@ const EditProfile = () => {
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
   const [errors, setErrors] = useState({})
-  // const [profileImage, setProfileImage] = useState(user?.profileImage)
+  const [profileImage, setProfileImage] = useState(user?.profileImage)
 
   const handleClose = () => {
     setShow(false)
@@ -80,7 +80,7 @@ const EditProfile = () => {
   const handleUpdate = async () => {
     if (validateForm()) {
       const imageData = new FormData()
-      imageData.append('profileImage', inputValue.profileImage)
+      imageData.append('profileImage', profileImage)
       imageData.append('name', inputValue.name)
       imageData.append('email', inputValue.email)
       imageData.append('userRole', inputValue.userRole)
@@ -89,13 +89,12 @@ const EditProfile = () => {
       try {
         setLoading(true)
         const response = await ApiPut(`usermanagement/admin?_id=${user?._id}`, imageData)
-        console.log(response, 'response')
         if (response.status === 200) {
           toast.success('Updated Successfully')
           getEditProfile()
           dispatch({
             type: 'UPDATE_SUCCESS',
-            payload: {...inputValue},
+            payload: response?.data,
           })
         }
         setLoading(false)
@@ -110,13 +109,13 @@ const EditProfile = () => {
 
   const handleChange = (e) => {
     const {name, value, files} = e.target
-    if (files) {
-      setInputValue({...inputValue, [name]: files[0]})
-      setErrors({...errors, [name]: ''})
-    } else {
-      setInputValue({...inputValue, [name]: value})
-      setErrors({...errors, [name]: ''})
-    }
+    // if (files) {
+    //   setInputValue({...inputValue, [name]: files[0]})
+    //   setErrors({...errors, [name]: ''})
+    // } else {
+    setInputValue({...inputValue, [name]: value})
+    setErrors({...errors, [name]: ''})
+    // }
   }
 
   const status = [
@@ -174,7 +173,7 @@ const EditProfile = () => {
             name='name'
             variant='filled'
             margin='dense'
-            value={inputValue?.name}
+            value={inputValue?.name || ''}
           />
           <span
             style={{
@@ -193,7 +192,7 @@ const EditProfile = () => {
             name='email'
             variant='filled'
             margin='dense'
-            value={inputValue?.email}
+            value={inputValue?.email || ''}
           />
           <span
             style={{
@@ -212,7 +211,7 @@ const EditProfile = () => {
             name='userRole'
             variant='filled'
             margin='dense'
-            value={inputValue?.userRole}
+            value={inputValue?.userRole || ''}
           />
           <span
             style={{
@@ -251,7 +250,7 @@ const EditProfile = () => {
             className='admin-field'
             label='Profile Image'
             type={'file'}
-            onChange={(e) => handleChange(e)}
+            onChange={(e) => setProfileImage(e.target.files[0])}
             name='profileImage'
             variant='filled'
             margin='dense'

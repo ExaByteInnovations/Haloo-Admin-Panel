@@ -17,6 +17,8 @@ import {MasterSettings} from '../pages/settings/MasterSettings'
 import {Email} from '../pages/settings/Email'
 import {SocialMedia} from '../pages/settings/SocialMedia'
 import {EditProfile} from '../pages/settings/EditProfile'
+import {Password} from '../pages/settings/Password'
+import {CodEnable} from '../pages/userManagement/CodEnable'
 
 export function PrivateRoutes() {
   return (
@@ -26,6 +28,7 @@ export function PrivateRoutes() {
         <Route path='/user-management/reviews-and-ratings' component={Ratings} />
         <Route path='/user-management/customers' component={Customers} />
         <Route path='/user-management/vendors' component={Vendors} />
+        <Route path='/user-management/cod-enable-requests' component={CodEnable} />
         <Route path='/jobs/open-jobs' component={OpenJobs} />
         <Route path='/jobs/completed-jobs' component={CompletedJobs} />
         <Route path='/jobs/disputed-jobs' component={DisputedJobs} />
@@ -38,6 +41,7 @@ export function PrivateRoutes() {
         <Route path='/settings/email' component={Email} />
         <Route path='/settings/social-media' component={SocialMedia} />
         <Route path='/settings/edit-profile' component={EditProfile} />
+        <Route path='/settings/change-password' component={Password} />
 
         <Redirect from='/auth' to='/dashboard' />
         <Redirect exact from='/' to='/dashboard' />

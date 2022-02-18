@@ -101,7 +101,7 @@ const MasterSettings = () => {
           name='copyrightText'
           variant='filled'
           margin='dense'
-          value={inputValue?.copyrightText}
+          value={inputValue?.copyrightText || ''}
         />
         <TextField
           className='settings-field'
@@ -111,7 +111,7 @@ const MasterSettings = () => {
           name='siteControlPanelTitle'
           variant='filled'
           margin='dense'
-          value={inputValue?.siteControlPanelTitle}
+          value={inputValue?.siteControlPanelTitle || ''}
         />
         <TextField
           className='settings-field'
@@ -121,7 +121,7 @@ const MasterSettings = () => {
           name='validImageExtensions'
           variant='filled'
           margin='dense'
-          value={inputValue?.validImageExtensions}
+          value={inputValue?.validImageExtensions || ''}
         />
         <TextField
           className='settings-field'
