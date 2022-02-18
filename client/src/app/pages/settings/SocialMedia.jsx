@@ -18,6 +18,7 @@ const SocialMedia = () => {
 
   const handleClose = () => {
     setShow(false)
+    setInputValue(initialValues)
   }
 
   useEffect(() => {
@@ -82,13 +83,7 @@ const SocialMedia = () => {
           </Modal.Header>
           <Modal.Body>Are you sure you want to Update the Social Media Settings</Modal.Body>
           <Modal.Footer>
-            <Button
-              variant='secondary'
-              onClick={() => {
-                handleClose()
-                setInputValue(initialValues)
-              }}
-            >
+            <Button variant='secondary' onClick={handleClose}>
               Cancel
             </Button>
             <Button variant='danger' onClick={handleUpdate}>

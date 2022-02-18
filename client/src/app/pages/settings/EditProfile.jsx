@@ -14,13 +14,12 @@ import {AuthContext} from '../../auth/authContext'
 const EditProfile = () => {
   const intl = useIntl()
   const {user, dispatch} = useContext(AuthContext)
-  const [inputValue, setInputValue] = useState({})
+  const [inputValue, setInputValue] = useState({...user})
   const [initialValues, setInitialValues] = useState({})
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
   const [errors, setErrors] = useState({})
-
-  console.log(inputValue, 'inputValue')
+  // const [profileImage, setProfileImage] = useState(user?.profileImage)
 
   const handleClose = () => {
     setShow(false)
@@ -51,10 +50,10 @@ const EditProfile = () => {
     let formIsValid = true
     let errors = {}
 
-    if (inputValue && !inputValue.profileImage) {
-      formIsValid = false
-      errors['profileImage'] = '*Please Select Image !'
-    }
+    // if (inputValue && !inputValue.profileImage) {
+    //   formIsValid = false
+    //   errors['profileImage'] = '*Please Select Image !'
+    // }
     if (inputValue && !inputValue.name) {
       formIsValid = false
       errors['name'] = '*Please Enter Name!'
@@ -89,15 +88,14 @@ const EditProfile = () => {
 
       try {
         setLoading(true)
-        const response = await ApiPut(`usermanagement/admin?_id=${inputValue?._id}`, imageData)
-
+        const response = await ApiPut(`usermanagement/admin?_id=${user?._id}`, imageData)
+        console.log(response, 'response')
         if (response.status === 200) {
           toast.success('Updated Successfully')
           getEditProfile()
-          // console.log(inputValue, 'inputValue')
           dispatch({
             type: 'UPDATE_SUCCESS',
-            payload: inputValue,
+            payload: {...inputValue},
           })
         }
         setLoading(false)
@@ -225,7 +223,7 @@ const EditProfile = () => {
           >
             {errors['userRole']}
           </span>
-          {/* <TextField
+          <TextField
             className='admin-field'
             label='Status'
             type={'text'}
@@ -233,22 +231,21 @@ const EditProfile = () => {
             name='status'
             variant='filled'
             margin='dense'
-            value={
-              inputValue?.status?.charAt(0)?.toUpperCase() +
-              inputValue?.status?.substr(1)?.toLowerCase()
-            }
+            value={`${inputValue?.status?.charAt(0)?.toUpperCase()}${inputValue?.status
+              ?.substr(1)
+              ?.toLowerCase()}`}
             defaultValue={
               inputValue?.status?.charAt(0)?.toUpperCase() +
               inputValue?.status?.substr(1)?.toLowerCase()
             }
             select
           >
-            {status.map((option, index) => (
-              <MenuItem key={index} value={option.value}>
+            {status.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
                 {option.label}
               </MenuItem>
             ))}
-          </TextField> */}
+          </TextField>
           <TextField
             InputLabelProps={{shrink: true}}
             className='admin-field'
@@ -258,7 +255,6 @@ const EditProfile = () => {
             name='profileImage'
             variant='filled'
             margin='dense'
-            //   value={inputValue?.profileImage}
           />
           <span
             style={{
