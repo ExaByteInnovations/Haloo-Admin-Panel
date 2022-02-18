@@ -29,7 +29,7 @@ const EditProfile = () => {
 
   useEffect(() => {
     getEditProfile()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const getEditProfile = async () => {
     try {
@@ -50,10 +50,6 @@ const EditProfile = () => {
     let formIsValid = true
     let errors = {}
 
-    // if (inputValue && !inputValue.profileImage) {
-    //   formIsValid = false
-    //   errors['profileImage'] = '*Please Select Image !'
-    // }
     if (inputValue && !inputValue.name) {
       formIsValid = false
       errors['name'] = '*Please Enter Name!'
@@ -108,14 +104,9 @@ const EditProfile = () => {
   }
 
   const handleChange = (e) => {
-    const {name, value, files} = e.target
-    // if (files) {
-    //   setInputValue({...inputValue, [name]: files[0]})
-    //   setErrors({...errors, [name]: ''})
-    // } else {
+    const {name, value} = e.target
     setInputValue({...inputValue, [name]: value})
     setErrors({...errors, [name]: ''})
-    // }
   }
 
   const status = [
