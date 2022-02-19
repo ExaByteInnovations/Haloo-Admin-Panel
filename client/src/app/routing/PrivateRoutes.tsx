@@ -18,6 +18,8 @@ import {Email} from '../pages/settings/Email'
 import {SocialMedia} from '../pages/settings/SocialMedia'
 import {EditProfile} from '../pages/settings/EditProfile'
 import {Password} from '../pages/settings/Password'
+import {StaticPages} from '../pages/settings/StaticPages'
+import {Editor} from '../components/Editor'
 import {CodEnable} from '../pages/userManagement/CodEnable'
 
 export function PrivateRoutes() {
@@ -42,6 +44,8 @@ export function PrivateRoutes() {
         <Route path='/settings/social-media' component={SocialMedia} />
         <Route path='/settings/edit-profile' component={EditProfile} />
         <Route path='/settings/change-password' component={Password} />
+        <Route path='/settings/static-pages' component={StaticPages} />
+        <Route path='/settings/editor' component={Editor} />
 
         <Redirect from='/auth' to='/dashboard' />
         <Redirect exact from='/' to='/dashboard' />
