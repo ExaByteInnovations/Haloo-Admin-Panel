@@ -88,3 +88,10 @@
   margin-bottom: 20px !important;
   width: 70% !important;
 }
+
+.editor {
+  height: 100% !important;
+}
+.ck-editor__editable {
+  min-height: 55vh;
+}
