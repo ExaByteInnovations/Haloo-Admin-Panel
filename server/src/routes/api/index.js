@@ -10,6 +10,8 @@ MainRouter.use('/auth', require('./auth'));
 MainRouter.use('/setting', auth, require('./setting'));
 MainRouter.use('/support', auth, require('./support'));
 MainRouter.use('/staticfile', auth, require('./static_file'));
+MainRouter.use('/', auth, require('./provider'));
+MainRouter.use('/', auth, require('./customer'));
 MainRouter.get('/', auth, (req, res) => { console.log('req.user',req.user);res.send('Hello World!'); });
 
 module.exports = MainRouter;

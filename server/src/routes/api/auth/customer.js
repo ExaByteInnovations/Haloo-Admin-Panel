@@ -13,16 +13,22 @@ router.post('/generate_otp', async (req,res) =>{
 
     let { phone } = req.body;
 
+    if (!phone) {
+        return res.status(400).send({error: 'Phone number is required'});
+    }
+
     // check if phone number is already registered
     let customer = await Customer.findOne({phone});
+
+    console.log('customer', customer);
 
     if (customer) {
         otp = generate_otp(4);
         customer.otp = otp;
-        // customer.otp_expiry = Date.now() + (60 * 1000);
+        customer.otpExpiry = Date.now() + (2 * 60 * 1000);
         await customer.save();
         console.log(otp);
-        return res.send({data:{_id:customer._id }});
+        return res.send({data:{_id:customer._id, newUser:false }});
         // return res.status(400).send({error: "Phone number already registered"});
     }else{
         otp = generate_otp(4);
@@ -32,7 +38,7 @@ router.post('/generate_otp', async (req,res) =>{
         });
         await customer.save();
         console.log(otp);
-        return res.send({data:{_id:customer._id, otp}});
+        return res.send({data:{_id:customer._id , newUser: true }});
     }
 })
 
@@ -40,17 +46,34 @@ router.post('/generate_otp', async (req,res) =>{
 
 router.post("/verify_otp", async (req, res) => {
 
-    let { _id, otp } = req.body;
+    let { _id, otp, type } = req.body;
 
     let customer = await Customer.findOne({_id:_id});
     console.log(customer);
 
     if (customer) {
+
+        if (!customer.type) {
+            if (!type || type != 'vendor' || type != 'customer'){
+                return res.status(400).send({error:'Type is required (vendor/customer)'});
+            }
+            customer.type = type;
+        }
+        // check otp generated
+        if (!(customer.otp || customer.otpExpiry)) {
+            return res.status(400).send({error: "OTP not generated"});
+        }
+
+        // check if otp is expired
+        if (customer.otpExpiry < Date.now()) {
+            return res.status(400).send({error: "OTP expired"});
+        }
         if (customer.otp == otp) {
             // customer.otp_expiry = Date.now() + (60 * 1000);
             customer.otp = null;
+            customer.otpExpiry = null;
             // save jws token
-            let token = jwt.sign({ _id: customer._id, logintype:'customer',  }, 'config.TOKEN_KEY', { expiresIn: '30d' });
+            let token = jwt.sign({ _id: customer._id, loginType:'user',  }, 'config.TOKEN_KEY', { expiresIn: '30d' });
             customer.token = token;
             await customer.save();
             return res.send({data:{customer:customer}});

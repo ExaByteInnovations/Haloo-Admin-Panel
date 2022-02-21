@@ -61,8 +61,14 @@ const customerSchema = new mongoose.Schema({
         type: String 
     },
     otp: {
-        type: Number,
+        type: String,
     },
+    otpExpiry: {
+        type: Date,
+    },
+    jobskills: [{
+        type: String
+    }],
 
     status: {
         type: String,
