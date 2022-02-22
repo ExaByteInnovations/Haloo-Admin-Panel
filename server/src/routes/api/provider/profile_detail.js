@@ -2,9 +2,13 @@ const express = require('express');
 const router = express.Router();
 const Customer = require('../../../models/user_management/customer');
 const fs = require('fs');
-const upload = require('../../../controller/multer');
+const upload = require('../../../controller/multer').single('profileImage');
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
+const multer = require('multer');
+const { Console } = require('console');
+
+
 
 router.get('/',async (req,res) =>{
     console.log('user details', req.user);
@@ -159,16 +163,13 @@ router.delete("/" ,async function(req,res){
     }
 });
 
-router.put("/", upload.fields([{name: 'profileImage', maxCount: 1}]) ,async function(req,res){
-    console.log('Got query:', req.query);
-    console.log('Got body:', req.body);
-    console.log('Got files:', req.files);
-    console.log('req.files.profileImage', req.files.profileImage);
+router.put("/" ,async function(req,res){
+
+    console.log('user details', req.user);
     var _id = req.user._id;
 
-    
     if (req.user.loginType != 'user'){
-       return res.status(400).send({error:'Invalid login type'});
+        return res.status(400).send({error:'Invalid login type'});
     }
     if(!_id){
         return res.status(400).send({error:'Unable to get id from token please relogin'});
@@ -179,8 +180,27 @@ router.put("/", upload.fields([{name: 'profileImage', maxCount: 1}]) ,async func
     console.log(data);
     if (!data){
         return res.send({error: "No customer found"});
-    }else{
-        // validate pincode
+    }
+
+    upload(req, res, async function (err) {
+        if (err instanceof multer.MulterError) {
+          // A Multer error occurred when uploading.
+          console.log('A Multer error occurred when uploading.');
+          console.log(err);
+          
+          return res.send({error: 'Only .png, .jpg and .jpeg format allowed with maxsize 1Mb!'});
+        } else if (err) {
+          // An unknown error occurred when uploading.
+          console.log('A Multer error occurred when uploading.');
+          console.log(err);
+          return res.send({error: 'Only .png, .jpg and .jpeg format allowed with maxsize 1Mb!'});
+        }
+       
+        console.log(req.file)
+        console.log('Got query:', req.query);
+        console.log('Got body:', req.body);
+
+
         if(req.body.pincode){
             var pincode = req.body.pincode;
             console.log('pincode', pincode);
@@ -190,38 +210,112 @@ router.put("/", upload.fields([{name: 'profileImage', maxCount: 1}]) ,async func
             }
         }
         // validate phone
-        if(req.body.phone){
-            var phone = req.body.phone;
-            var phoneRegex = /^\d{10}$/;
-            if(!phoneRegex.test(phone)){
-                return res.status(400).send({error:'Invalid phone'});
+        // if(req.body.phone){
+        //     var phone = req.body.phone;
+        //     var phoneRegex = /^\d{10}$/;
+        //     if(!phoneRegex.test(phone)){
+        //         return res.status(400).send({error:'Invalid phone'});
+        //     }
+        // }
+        
+        
+        // check type
+        if(req.body.type){
+            var type = req.body.type;
+            if(type != 'customer' && type != 'vendor'){
+                return res.status(400).send({error:'Invalid type (customer/vendor)'});
+            }
+        }
+        // check online
+        if(req.body.online){
+            var online = req.body.online;
+            if(online != false && online != true){
+                return res.status(400).send({error:'Invalid online (true/false)'});
+            }
+        }
+        // check jobskills
+        if(req.body.jobskills){
+            var jobskills = req.body.jobskills;
+            if(!Array.isArray(jobskills)){
+                return res.status(400).send({error:'Invalid jobskills (array)'});
             }
         }
 
-        if (req.files.profileImage) {
-            req.body.profileImage = 'uploads/images/' + req.files.profileImage[0].filename;
+        console.log(req.file);
+        if (req.file) {
+            req.body.profileImage = 'uploads/images/' + req.file.filename;
             if (data.profileImage) {
                     fs.unlink(data.profileImage, (err) => {
                         if (err) {
                             console.log(err);
                         };
-                        console.log('successfully deleted profileImage');
+                        console.log({data:'successfully deleted profileImage'});
                     });
                 
             }
             
         }
+        
+        var update_query = { };
+        if(req.body.customerName && req.body.customerName != data.customerName){
+            update_query.customerName = req.body.customerName;
+        }
+
+        // if(req.body.phone && req.body.phone != data.phone){
+        //     update_query.phone = req.body.phone;
+        // }
+
+        if(req.body.type && req.body.type != data.type){
+            update_query.type = req.body.type;
+        }
+
+        if(req.body.online && req.body.online != data.online){
+            update_query.online = req.body.online;
+        }
+
+        if(req.body.jobSkills && req.body.jobSkills != data.jobSkills){
+            update_query.jobSkills = req.body.jobSkills;
+        }
+
+        if(req.body.pincode && req.body.pincode != data.pincode){
+            update_query.pincode = req.body.pincode;
+        }
+
+        if(req.body.profileImage){
+            update_query.profileImage = req.body.profileImage;
+        }
+
+        if(req.body.address && req.body.address != data.address){
+            update_query.address = req.body.address;
+        }
+
+        if(req.body.city && req.body.city != data.city){
+            update_query.city = req.body.city;
+        }
+
+        if(req.body.state && req.body.state != data.state){
+            update_query.state = req.body.state;
+        }
+
+        if(req.body.companyName && req.body.companyName != data.companyName){
+            update_query.companyName = req.body.companyName;
+        }
+
+
+
+
 
         //  update element in mongodb put
-        Customer.updateOne({_id:_id}, {$set: req.body})
+        Customer.updateOne({_id:_id}, {$set: update_query})
         .then((item) => {
-                res.sendStatus(200);
+            return res.sendStatus(200);
         }).catch((error) => {
             //error handle
             console.log(error);
-            res.status(400).send({error: error});       
+            return res.status(400).send({error: error});       
         });
-    }
+        // }
+    });
 });
 
 module.exports = router;

@@ -13,8 +13,7 @@ router.get("/" ,async function(req,res){
        return res.status(400).send({error:'Invalid login type'});
     }
     if(!req.user._id){
-        return res.status(400).send({error:'Unable to get id from token please relogin'});
-    
+        return res.status(400).send({error:'Unable to get id from token please relogin'});   
     }
 
     if (req.query._id) {

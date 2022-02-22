@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 
+
 const jobSchema = new mongoose.Schema({
     quote: {
       type: Number, 

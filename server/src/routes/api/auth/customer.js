@@ -114,7 +114,7 @@ router.post("/logout", auth, async (req, res) => {
         return res.status(200).send({data: "Successfully logged out"});
         
     }else{
-        return res.status(400).send({error: "Invalid Customer Id"});
+        return res.status(400).send({error: "Invalid Customer Id from token please relogin"});
     }
   });
 
