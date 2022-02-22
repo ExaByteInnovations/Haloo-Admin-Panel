@@ -12,6 +12,15 @@ import {City} from '../pages/service-info/City'
 import {State} from '../pages/service-info/State'
 import {Customers} from '../pages/userManagement/Customers'
 import {Vendors} from '../pages/userManagement/Vendors'
+import {Support} from '../pages/support/Support'
+import {MasterSettings} from '../pages/settings/MasterSettings'
+import {Email} from '../pages/settings/Email'
+import {SocialMedia} from '../pages/settings/SocialMedia'
+import {EditProfile} from '../pages/settings/EditProfile'
+import {Password} from '../pages/settings/Password'
+import {StaticPages} from '../pages/settings/StaticPages'
+import {TextEditor} from '../components/TextEditor'
+import {CodEnable} from '../pages/userManagement/CodEnable'
 
 export function PrivateRoutes() {
   return (
@@ -21,6 +30,7 @@ export function PrivateRoutes() {
         <Route path='/user-management/reviews-and-ratings' component={Ratings} />
         <Route path='/user-management/customers' component={Customers} />
         <Route path='/user-management/vendors' component={Vendors} />
+        <Route path='/user-management/cod-enable-requests' component={CodEnable} />
         <Route path='/jobs/open-jobs' component={OpenJobs} />
         <Route path='/jobs/completed-jobs' component={CompletedJobs} />
         <Route path='/jobs/disputed-jobs' component={DisputedJobs} />
@@ -28,6 +38,14 @@ export function PrivateRoutes() {
         <Route path='/service-info/subcategory' component={SubCategory} />
         <Route path='/service-info/city' component={City} />
         <Route path='/service-info/state' component={State} />
+        <Route path='/support' component={Support} />
+        <Route path='/settings/master-settings' component={MasterSettings} />
+        <Route path='/settings/email' component={Email} />
+        <Route path='/settings/social-media' component={SocialMedia} />
+        <Route path='/settings/edit-profile' component={EditProfile} />
+        <Route path='/settings/change-password' component={Password} />
+        <Route path='/settings/static-pages' component={StaticPages} />
+        <Route path='/settings/editor' component={TextEditor} />
 
         <Redirect from='/auth' to='/dashboard' />
         <Redirect exact from='/' to='/dashboard' />

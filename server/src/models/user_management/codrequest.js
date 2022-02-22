@@ -1,18 +1,20 @@
 var mongoose = require('mongoose');
 
-const codRequestSchema = new mongoose.Schema({
+const codRequestSchema = new mongoose.Schema(
+  {
     customerId: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'customer'
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'customer',
     },
     status: {
       type: String,
-      default: 'pending',
+      default: 'disabled',
     },
   },
-    {
-      timestamps: true
-    });
-  
-  const CodRequest = mongoose.model('codRequest', codRequestSchema)
-  module.exports = CodRequest;
+  {
+    timestamps: true,
+  }
+);
 
+const CodRequest = mongoose.model('codRequest', codRequestSchema);
+module.exports = CodRequest;

@@ -33,6 +33,65 @@
   justify-content: flex-end;
   margin-bottom: 10px;
 }
+
 .add-button {
   font-weight: bold !important;
+}
+
+.status-btn {
+  padding: 5px 10px !important;
+}
+
+.settings-form {
+  display: flex !important;
+  flex: 2;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.settings-field {
+  margin-bottom: 20px !important;
+  width: 50% !important;
+}
+
+.settings-btn-wrapper {
+  display: flex !important;
+}
+.settings-btn-save {
+  margin-right: 10px !important;
+  border-radius: 5px !important;
+}
+.admin-wrapper {
+  display: flex !important;
+  flex-direction: row !important;
+}
+
+.admin-profile-image-wrapper {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+.admin-profile-image {
+  width: 250px;
+  height: 250px;
+  object-fit: contain;
+  border-radius: 50%;
+  border: 1px solid black;
+  box-shadow: 0 0 13px gray;
+}
+
+.admin-field {
+  margin-bottom: 20px !important;
+  width: 70% !important;
+}
+
+.editor {
+  height: 100% !important;
+}
+.ck-editor__editable {
+  min-height: 55vh;
 }
