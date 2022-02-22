@@ -1,13 +1,25 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import {useContext} from 'react'
 import {AuthContext} from '../../../../app/auth/authContext'
+import {ApiPost} from '../../../../helpers/API/ApiData'
+import {toast} from 'react-toastify'
+import * as authUtil from '../../../../utils/auth.util'
 
 const HeaderUserMenu = () => {
   const {user, dispatch} = useContext(AuthContext)
-  const logout = () => {
-    dispatch({
-      type: 'LOGOUT',
-    })
+  const logout = async () => {
+    try {
+      const response = await ApiPost('auth/admin/logout', {email: user?.email})
+      if (response.status === 200) {
+        dispatch({
+          type: 'LOGOUT',
+        })
+        authUtil.logout()
+        toast.success(response.data)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
 
   return (

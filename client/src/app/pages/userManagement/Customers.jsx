@@ -32,12 +32,14 @@ const Customers = () => {
   const [inputValue, setInputValue] = useState({})
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
+  const [errors, setErrors] = useState({})
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
     setShow(false)
     setAddOpen(false)
+    setErrors({})
   }
 
   useEffect(() => {
@@ -47,7 +49,7 @@ const Customers = () => {
   const getCustomers = async () => {
     try {
       setLoading(true)
-      const response = await ApiGet(`usermanagement/customer`)
+      const response = await ApiGet(`usermanagement/customer?type=customer`)
       if (response.status === 200) {
         setCustomers(response.data.data)
       }
@@ -76,11 +78,48 @@ const Customers = () => {
     }
   }
 
+  const validateForm = () => {
+    let formIsValid = true
+    let errors = {}
+
+    if (inputValue && !inputValue.customerName) {
+      formIsValid = false
+      errors['customerName'] = '*Please Enter Customer Name!'
+    }
+    if (inputValue && !inputValue.phone) {
+      formIsValid = false
+      errors['phone'] = '*Please Enter Phone Number!'
+    }
+    // if (inputValue && !inputValue.profileImage) {
+    //   formIsValid = false
+    //   errors['profileImage'] = '*Please Select ProfileImage!'
+    // }
+    if (inputValue && !inputValue.city) {
+      formIsValid = false
+      errors['city'] = '*Please Enter City!'
+    }
+    if (inputValue && !inputValue.state) {
+      formIsValid = false
+      errors['state'] = '*Please Enter State!'
+    }
+    if (inputValue && !inputValue.pincode) {
+      formIsValid = false
+      errors['pincode'] = '*Please Enter Pincode!'
+    }
+    if (inputValue && !inputValue.address) {
+      formIsValid = false
+      errors['address'] = '*Please Enter Address!'
+    }
+    setErrors(errors)
+    return formIsValid
+  }
+
   const handleUpdate = async () => {
+    // if (validateForm()) {
     const imageData = new FormData()
-    imageData.append('profileImage', inputValue.profileImage)
+    // imageData.append('profileImage', inputValue.profileImage)
     imageData.append('customerName', inputValue.customerName)
-    imageData.append('emailAddress', inputValue.emailAddress)
+    // imageData.append('emailAddress', inputValue.emailAddress)
     imageData.append('city', inputValue.city)
     imageData.append('phone', inputValue.phone)
     imageData.append('state', inputValue.state)
@@ -88,13 +127,13 @@ const Customers = () => {
     // imageData.append('averageRating', inputValue.averageRating)
     imageData.append('address', inputValue.address)
     imageData.append('pincode', inputValue.pincode)
-    imageData.append('country', inputValue.country)
-    imageData.append('status', inputValue.status)
-    imageData.append('codStatus', inputValue.codStatus)
+    // imageData.append('country', inputValue.country)
+    // imageData.append('status', inputValue.status)
+    // imageData.append('codStatus', inputValue.codStatus)
     // imageData.append('lastAccessOn', inputValue.lastAccessOn)
     try {
       setLoading(true)
-      const response = await ApiPut(`usermanagement/customer?_id=${rowId}`, imageData)
+      const response = await ApiPut(`usermanagement/customer?_id=${rowId}`, inputValue)
 
       if (response.status === 200) {
         toast.success('Updated Successfully')
@@ -108,67 +147,78 @@ const Customers = () => {
       setLoading(false)
       handleClose()
     }
+    // }
   }
 
   const handleAdd = async () => {
-    const imageData = new FormData()
-    imageData.append('profileImage', inputValue.profileImage)
-    imageData.append('customerName', inputValue.customerName)
-    imageData.append('emailAddress', inputValue.emailAddress)
-    imageData.append('city', inputValue.city)
-    imageData.append('phone', inputValue.phone)
-    imageData.append('state', inputValue.state)
-    // imageData.append('ageBracket', inputValue.ageBracket)
-    // imageData.append('averageRating', inputValue.averageRating)
-    imageData.append('address', inputValue.address)
-    imageData.append('pincode', inputValue.pincode)
-    imageData.append('country', inputValue.country)
-    imageData.append('status', inputValue.status)
-    imageData.append('codStatus', inputValue.codStatus)
-    // imageData.append('lastAccessOn', inputValue.lastAccessOn)
+    if (validateForm()) {
+      const imageData = new FormData()
+      // imageData.append('profileImage', inputValue.profileImage)
+      imageData.append('customerName', inputValue.customerName)
+      // imageData.append('emailAddress', inputValue.emailAddress)
+      imageData.append('city', inputValue.city)
+      imageData.append('phone', inputValue.phone)
+      imageData.append('state', inputValue.state)
+      // imageData.append('ageBracket', inputValue.ageBracket)
+      // imageData.append('averageRating', inputValue.averageRating)
+      imageData.append('address', inputValue.address)
+      imageData.append('pincode', inputValue.pincode)
+      // imageData.append('country', inputValue.country)
+      // imageData.append('status', inputValue.status)
+      // imageData.append('codStatus', inputValue.codStatus)
+      // imageData.append('lastAccessOn', inputValue.lastAccessOn)
 
-    try {
-      setLoading(true)
-      const response = await ApiPost(`usermanagement/customer`, imageData)
-      if (response.status === 200) {
-        toast.success('Added Successfully')
-        getCustomers()
-        setInputValue({})
+      try {
+        setLoading(true)
+        const response = await ApiPost(`usermanagement/customer?type=customer`, {
+          ...inputValue,
+          type: 'customer',
+        })
+        if (response.status === 200) {
+          toast.success('Added Successfully')
+          getCustomers()
+          setInputValue({})
+        }
+        setLoading(false)
+        handleClose()
+      } catch (err) {
+        toast.error(err.message)
+        setLoading(false)
+        handleClose()
       }
-      setLoading(false)
-      handleClose()
-    } catch (err) {
-      toast.error(err.message)
-      setLoading(false)
-      handleClose()
     }
   }
 
   const handleChange = (e) => {
     const {name, value, files} = e.target
-    if (files) setInputValue({...inputValue, [name]: files[0]})
-    else setInputValue({...inputValue, [name]: value})
+    if (files) {
+      setInputValue({...inputValue, [name]: files[0]})
+      setErrors({...errors, [name]: ''})
+    } else {
+      setInputValue({...inputValue, [name]: value})
+      setErrors({...errors, [name]: ''})
+    }
   }
 
   const columns = [
-    {
-      name: 'Profile Image',
-      cell: (row) => {
-        return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.profileImage} />
-      },
-    },
+    // {
+    //   name: 'Profile Image',
+    //   cell: (row) => {
+    //     return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.profileImage} />
+    //   },
+    // },
     {
       name: 'Customer Name',
       selector: (row) => row.customerName,
       sortable: true,
       width: '200px',
     },
-    {
-      name: 'Email Address',
-      selector: (row) => row.emailAddress,
-      sortable: true,
-      width: '200px',
-    },
+    // {
+    //   name: 'Email Address',
+    //   selector: (row) => row.emailAddress,
+    //   sortable: true,
+    //   width: '200px',
+    // },
     {
       name: 'Phone',
       selector: (row) => row.phone,
@@ -176,13 +226,10 @@ const Customers = () => {
       width: '150px',
     },
     {
-      name: 'Address',
-      selector: (row) => row.address,
-      cell: (row) => {
-        return <Box>{row.address}</Box>
-      },
+      name: 'Postal Code',
+      selector: (row) => row.pincode,
       sortable: true,
-      width: '200px',
+      width: '150px',
     },
     {
       name: 'City',
@@ -197,64 +244,62 @@ const Customers = () => {
       width: '150px',
     },
     {
-      name: 'Postal Code',
-      selector: (row) => row.pincode,
+      name: 'Address',
+      selector: (row) => row.address,
+      cell: (row) => {
+        return <Box>{row.address}</Box>
+      },
       sortable: true,
-      width: '150px',
+      width: '200px',
     },
+
     // {
-    //   name: 'Age Bracket',
-    //   selector: (row) => row.ageBracket,
+    //   name: 'No. of Jobs',
+    //   selector: (row) => row.noOfJobs,
     //   sortable: true,
     //   width: '150px',
     // },
-    {
-      name: 'No. of Jobs',
-      selector: (row) => row.noOfJobs,
-      sortable: true,
-      width: '150px',
-    },
-    {
-      name: 'Average Rating',
-      selector: (row) => row.avgRating,
-      cell: (row) => (
-        <>
-          {[...Array(row.rating)].map(() => (
-            <div className='rating'>
-              <div className='rating-label me-2 checked'>
-                <i className='bi bi-star-fill fs-5'></i>
-              </div>
-            </div>
-          ))}
-        </>
-      ),
-      sortable: true,
-      width: '150px',
-    },
+    // {
+    //   name: 'Average Rating',
+    //   selector: (row) => row.avgRating,
+    //   cell: (row) => (
+    //     <>
+    //       {[...Array(row.rating)].map(() => (
+    //         <div className='rating'>
+    //           <div className='rating-label me-2 checked'>
+    //             <i className='bi bi-star-fill fs-5'></i>
+    //           </div>
+    //         </div>
+    //       ))}
+    //     </>
+    //   ),
+    //   sortable: true,
+    //   width: '150px',
+    // },
     {
       name: 'Member Since',
       selector: (row) => row.memberSince,
       sortable: true,
       width: '150px',
     },
-    {
-      name: 'Last Access',
-      selector: (row) => row.lastAccessOn,
-      sortable: true,
-      width: '150px',
-    },
-    {
-      name: 'COD Status',
-      selector: (row) => row.codStatus,
-      sortable: true,
-      width: '150px',
-    },
-    {
-      name: 'Status',
-      selector: (row) => row.status,
-      sortable: true,
-      width: '150px',
-    },
+    // {
+    //   name: 'Last Access',
+    //   selector: (row) => row.lastAccessOn,
+    //   sortable: true,
+    //   width: '150px',
+    // },
+    // {
+    //   name: 'COD Status',
+    //   selector: (row) => row.codStatus,
+    //   sortable: true,
+    //   width: '150px',
+    // },
+    // {
+    //   name: 'Status',
+    //   selector: (row) => row.status,
+    //   sortable: true,
+    //   width: '150px',
+    // },
     {
       name: 'Action',
       cell: (row) => {
@@ -285,31 +330,31 @@ const Customers = () => {
   const data = customers?.map((customer) => {
     return {
       id: customer?._id,
-      profileImage: customer?.profileImage,
+      // profileImage: customer?.profileImage,
       customerName: customer?.customerName,
-      emailAddress: customer?.emailAddress,
+      // emailAddress: customer?.emailAddress,
       phone: customer?.phone,
       city: customer?.city,
       state: customer?.state,
       pincode: customer?.pincode,
       address: customer?.address,
       // ageBracket: customer?.ageBracket,
-      noOfJobs: customer?.noOfJobs,
-      avgRating: customer?.avgRating,
+      // noOfJobs: customer?.noOfJobs,
+      // avgRating: customer?.avgRating,
       memberSince: moment(customer?.createdAt).format('DD MMM YY hh:mmA'),
-      lastAccessOn: moment(customer?.lastAccessOn).format('DD MMM YY hh:mmA'),
-      codStatus:
-        customer?.codStatus?.charAt(0)?.toUpperCase() +
-        customer?.codStatus?.substr(1)?.toLowerCase(),
-      status:
-        customer?.status?.charAt(0)?.toUpperCase() + customer?.status?.substr(1)?.toLowerCase(),
+      // lastAccessOn: moment(customer?.lastAccessOn).format('DD MMM YY hh:mmA'),
+      // codStatus:
+      //   customer?.codStatus?.charAt(0)?.toUpperCase() +
+      //   customer?.codStatus?.substr(1)?.toLowerCase(),
+      // status:
+      //   customer?.status?.charAt(0)?.toUpperCase() + customer?.status?.substr(1)?.toLowerCase(),
     }
   })
 
-  const status = [
-    {label: 'Active', value: 'Active'},
-    {label: 'Inactive', value: 'Inactive'},
-  ]
+  // const status = [
+  //   {label: 'Active', value: 'Active'},
+  //   {label: 'Inactive', value: 'Inactive'},
+  // ]
 
   if (loading) {
     return (
@@ -373,29 +418,38 @@ const Customers = () => {
             </Box>
           </Box>
         </DialogTitle>
-        <form onSubmit={handleUpdate}>
-          <DialogContent>
-            <TextField
-              InputLabelProps={{shrink: true}}
-              label='Profile Image'
-              type={'file'}
-              onChange={(e) => handleChange(e)}
-              name='profileImage'
-              fullWidth
-              variant='standard'
-              margin='dense'
-            />
-            <TextField
-              label='Customer Name'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='customerName'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              value={inputValue?.customerName}
-            />
-            <TextField
+        {/* <form onSubmit={handleUpdate}> */}
+        <DialogContent>
+          {/* <TextField
+            InputLabelProps={{shrink: true}}
+            label='Profile Image'
+            type={'file'}
+            onChange={(e) => handleChange(e)}
+            name='profileImage'
+            fullWidth
+            variant='standard'
+            margin='dense'
+          /> */}
+          <TextField
+            label='Customer Name'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='customerName'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={inputValue?.customerName}
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['customerName']}
+          </span>
+          {/* <TextField
               label='Email Address'
               type={'email'}
               onChange={(e) => handleChange(e)}
@@ -404,58 +458,103 @@ const Customers = () => {
               variant='standard'
               margin='dense'
               value={inputValue?.emailAddress}
-            />
-            <TextField
-              label='phone'
-              type={'tel'}
-              onChange={(e) => handleChange(e)}
-              name='phone'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              value={inputValue?.phone}
-            />
-            <TextField
-              label='Address'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='address'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              value={inputValue?.address}
-            />
-            <TextField
-              label='City'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='city'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              value={inputValue?.city}
-            />
-            <TextField
-              label='State'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='state'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              value={inputValue?.state}
-            />
-            <TextField
-              label='Postal Code'
-              inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
-              onChange={(e) => handleChange(e)}
-              name='pincode'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              value={inputValue?.pincode}
-            />
-            {/* <TextField
+            /> */}
+          <TextField
+            label='phone'
+            type={'tel'}
+            onChange={(e) => handleChange(e)}
+            name='phone'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={inputValue?.phone}
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['phone']}
+          </span>
+          <TextField
+            label='Postal Code'
+            inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
+            onChange={(e) => handleChange(e)}
+            name='pincode'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={inputValue?.pincode}
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['pincode']}
+          </span>
+          <TextField
+            label='City'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='city'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={inputValue?.city}
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['city']}
+          </span>
+          <TextField
+            label='State'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='state'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={inputValue?.state}
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['state']}
+          </span>
+          <TextField
+            label='Address'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='address'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            value={inputValue?.address}
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['address']}
+          </span>
+          {/* <TextField
               label='Age Bracket'
               type={'text'}
               onChange={(e) => handleChange(e)}
@@ -465,7 +564,7 @@ const Customers = () => {
               margin='dense'
               value={inputValue?.ageBracket}
             /> */}
-            {/* <TextField
+          {/* <TextField
               label='Average Rating'
               onChange={(e) => handleChange(e)}
               name='avgRating'
@@ -482,7 +581,7 @@ const Customers = () => {
                 </MenuItem>
               ))}
             </TextField> */}
-            <TextField
+          {/* <TextField
               label='Cod Status'
               onChange={(e) => handleChange(e)}
               name='codStatus'
@@ -521,12 +620,12 @@ const Customers = () => {
                   {option.label}
                 </MenuItem>
               ))}
-            </TextField>
-          </DialogContent>
-          <Button className='button' size='lg' variant='success' type='submit'>
-            Save
-          </Button>
-        </form>
+            </TextField> */}
+        </DialogContent>
+        <Button className='button' size='lg' variant='success' onClick={handleUpdate}>
+          Save
+        </Button>
+        {/* </form> */}
       </Dialog>
 
       <Dialog open={addOpen} onClose={handleClose} fullWidth maxWidth='xs'>
@@ -540,30 +639,39 @@ const Customers = () => {
             </Box>
           </Box>
         </DialogTitle>
-        <form onSubmit={handleAdd}>
-          <DialogContent>
-            <TextField
-              InputLabelProps={{shrink: true}}
-              label='Profile Image'
-              type={'file'}
-              onChange={(e) => handleChange(e)}
-              name='profileImage'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              required
-            />
-            <TextField
-              label='Customer Name'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='customerName'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              required
-            />
-            <TextField
+        {/* <form onSubmit={handleAdd}> */}
+        <DialogContent>
+          {/* <TextField
+            InputLabelProps={{shrink: true}}
+            label='Profile Image'
+            type={'file'}
+            onChange={(e) => handleChange(e)}
+            name='profileImage'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            required
+          /> */}
+          <TextField
+            label='Customer Name'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='customerName'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            required
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['customerName']}
+          </span>
+          {/* <TextField
               label='Email Address'
               type={'email'}
               onChange={(e) => handleChange(e)}
@@ -572,58 +680,103 @@ const Customers = () => {
               variant='standard'
               margin='dense'
               required
-            />
-            <TextField
-              label='phone'
-              type={'tel'}
-              onChange={(e) => handleChange(e)}
-              name='phone'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              required
-            />
-            <TextField
-              label='Address'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='address'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              required
-            />
-            <TextField
-              label='City'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='city'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              required
-            />
-            <TextField
-              label='State'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='state'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              required
-            />
-            <TextField
-              label='Postal Code'
-              inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
-              onChange={(e) => handleChange(e)}
-              name='pincode'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              required
-            />
-            {/* <TextField
+            /> */}
+          <TextField
+            label='phone'
+            type={'tel'}
+            onChange={(e) => handleChange(e)}
+            name='phone'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            required
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['phone']}
+          </span>
+          <TextField
+            label='Postal Code'
+            inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
+            onChange={(e) => handleChange(e)}
+            name='pincode'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            required
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['pincode']}
+          </span>
+          <TextField
+            label='City'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='city'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            required
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['city']}
+          </span>
+          <TextField
+            label='State'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='state'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            required
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['state']}
+          </span>
+          <TextField
+            label='Address'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='address'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            required
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['address']}
+          </span>
+          {/* <TextField
               label='Age Bracket'
               type={'text'}
               onChange={(e) => handleChange(e)}
@@ -633,7 +786,7 @@ const Customers = () => {
               margin='dense'
               required
             /> */}
-            {/* <TextField
+          {/* <TextField
               label='Average Rating'
               onChange={(e) => handleChange(e)}
               name='avgRating'
@@ -649,7 +802,7 @@ const Customers = () => {
                 </MenuItem>
               ))}
             </TextField> */}
-            <TextField
+          {/* <TextField
               label='Cod Status'
               onChange={(e) => handleChange(e)}
               name='codStatus'
@@ -680,12 +833,12 @@ const Customers = () => {
                   {option.label}
                 </MenuItem>
               ))}
-            </TextField>
-          </DialogContent>
-          <Button className='button' size='lg' variant='success' type='submit'>
-            Save
-          </Button>
-        </form>
+            </TextField> */}
+        </DialogContent>
+        <Button className='button' size='lg' variant='success' onClick={handleAdd}>
+          Save
+        </Button>
+        {/* </form> */}
       </Dialog>
     </>
   )

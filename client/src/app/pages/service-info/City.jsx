@@ -112,31 +112,30 @@ const City = () => {
     }
 
     setErrors(errors)
-    console.log('errors', errors)
     return formIsValid
   }
 
   const handleUpdate = async () => {
-    if (validateForm()) {
-      try {
-        setLoading(true)
-        const response = await ApiPut(`serviceinfo/city?_id=${rowId}`, inputValue)
-        if (response.status === 200) {
-          toast.success('Updated Successfully')
-          setInputValue({})
-          getCities()
-          handleClose()
-          setLoading(false)
-        } else {
-          setLoading(false)
-          handleClose()
-        }
-      } catch (err) {
-        toast.error(err.message)
+    // if (validateForm()) {
+    try {
+      setLoading(true)
+      const response = await ApiPut(`serviceinfo/city?_id=${rowId}`, inputValue)
+      if (response.status === 200) {
+        toast.success('Updated Successfully')
+        setInputValue({})
+        getCities()
+        handleClose()
+        setLoading(false)
+      } else {
         setLoading(false)
         handleClose()
       }
+    } catch (err) {
+      toast.error(err.message)
+      setLoading(false)
+      handleClose()
     }
+    // }
   }
 
   const handleAdd = async () => {
@@ -406,6 +405,7 @@ const City = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            required
           />
           <span
             style={{
@@ -423,6 +423,7 @@ const City = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            required
             select
             SelectProps={{
               MenuProps: {
@@ -453,6 +454,7 @@ const City = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            required
             select
           >
             {status.map((option) => (

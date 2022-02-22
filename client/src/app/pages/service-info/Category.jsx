@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useIntl} from 'react-intl'
 import {Edit, Delete} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
@@ -32,6 +32,25 @@ const Category = () => {
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
   const [errors, setErrors] = useState({})
+
+  console.log(categories, 'categories')
+
+  // const [filterText, setFilterText] = useState('')
+  // const [resetPaginationToggle, setResetPaginationToggle] = useState(false)
+  // const filteredItems = categories.filter(
+  //   (item) =>
+  //     item.categoryName && item.categoryName.toLowerCase().includes(filterText.toLowerCase())
+  // )
+
+  // const subHeaderComponentMemo = useMemo(() => {
+  //   return (
+  //     <TextField
+  //       variant='outlined'
+  //       onChange={(e) => setFilterText(e.target.value)}
+  //       value={filterText}
+  //     />
+  //   )
+  // }, [filterText, resetPaginationToggle])
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
@@ -78,30 +97,30 @@ const Category = () => {
   }
 
   const handleUpdate = async () => {
-    if (validateForm()) {
-      const imageData = new FormData()
-      imageData.append('image', inputValue.image)
-      imageData.append('hoverImage', inputValue.hoverImage)
-      imageData.append('categoryName', inputValue.categoryName)
-      imageData.append('sequenceNumber', inputValue.sequenceNumber)
-      imageData.append('status', inputValue.status)
-      try {
-        setLoading(true)
-        const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, imageData)
-        if (response.status === 200) {
-          toast.success('Updated Successfully')
-          setInputValue({})
-          setErrors({})
-          getCategories()
-        }
-        setLoading(false)
-        handleClose()
-      } catch (err) {
-        toast.error(err.message)
-        setLoading(false)
-        handleClose()
+    // if (validateForm()) {
+    const imageData = new FormData()
+    imageData.append('image', inputValue.image)
+    // imageData.append('hoverImage', inputValue.hoverImage)
+    imageData.append('categoryName', inputValue.categoryName)
+    imageData.append('sequenceNumber', inputValue.sequenceNumber)
+    imageData.append('status', inputValue.status)
+    try {
+      setLoading(true)
+      const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, imageData)
+      if (response.status === 200) {
+        toast.success('Updated Successfully')
+        setInputValue({})
+        setErrors({})
+        getCategories()
       }
+      setLoading(false)
+      handleClose()
+    } catch (err) {
+      toast.error(err.message)
+      setLoading(false)
+      handleClose()
     }
+    // }
   }
 
   const handleChange = (e) => {
@@ -131,10 +150,10 @@ const Category = () => {
       formIsValid = false
       errors['image'] = '*Please Select Image!'
     }
-    if (inputValue && !inputValue.hoverImage) {
-      formIsValid = false
-      errors['hoverImage'] = '*Please Select Hover Image!'
-    }
+    // if (inputValue && !inputValue.hoverImage) {
+    //   formIsValid = false
+    //   errors['hoverImage'] = '*Please Select Hover Image!'
+    // }
     if (inputValue && !inputValue.status) {
       formIsValid = false
       errors['status'] = '*Please Select Status!'
@@ -147,7 +166,7 @@ const Category = () => {
     if (validateForm()) {
       const imageData = new FormData()
       imageData.append('image', inputValue.image)
-      imageData.append('hoverImage', inputValue.hoverImage)
+      // imageData.append('hoverImage', inputValue.hoverImage)
       imageData.append('categoryName', inputValue.categoryName)
       imageData.append('sequenceNumber', inputValue.sequenceNumber)
       imageData.append('status', inputValue.status)
@@ -188,12 +207,12 @@ const Category = () => {
         return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.image} />
       },
     },
-    {
-      name: 'Hover Image',
-      cell: (row) => {
-        return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.hoverImage} />
-      },
-    },
+    // {
+    //   name: 'Hover Image',
+    //   cell: (row) => {
+    //     return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.hoverImage} />
+    //   },
+    // },
     {
       name: 'Status',
       selector: (row) => row.status,
@@ -231,7 +250,7 @@ const Category = () => {
       id: category?._id,
       categoryName: category?.categoryName,
       image: category?.image,
-      hoverImage: category?.hoverImage,
+      // hoverImage: category?.hoverImage,
       sequenceNumber: category?.sequenceNumber,
       status:
         category?.status?.charAt(0)?.toUpperCase() + category?.status?.substr(1)?.toLowerCase(),
@@ -267,6 +286,9 @@ const Category = () => {
         fixedHeader
         fixedHeaderScrollHeight='55vh'
         pagination
+        // paginationResetDefaultPage={resetPaginationToggle}
+        // subHeader
+        // subHeaderComponent={subHeaderComponentMemo}
         highlightOnHover
         responsive
         striped
@@ -333,7 +355,6 @@ const Category = () => {
             fullWidth
             variant='standard'
             margin='dense'
-            type={'number'}
             value={inputValue?.sequenceNumber}
           />
           <span
@@ -364,7 +385,7 @@ const Category = () => {
           >
             {errors['image']}
           </span>
-          <TextField
+          {/* <TextField
             InputLabelProps={{shrink: true}}
             label='Hover Image'
             type={'file'}
@@ -382,7 +403,7 @@ const Category = () => {
             }}
           >
             {errors['hoverImage']}
-          </span>
+          </span> */}
           <TextField
             label='Status'
             type={'text'}
@@ -456,7 +477,6 @@ const Category = () => {
             onChange={(e) => handleChange(e)}
             name='sequenceNumber'
             fullWidth
-            type={'number'}
             variant='standard'
             margin='dense'
           />
@@ -488,7 +508,7 @@ const Category = () => {
           >
             {errors['image']}
           </span>
-          <TextField
+          {/* <TextField
             InputLabelProps={{shrink: true}}
             label='Hover Image'
             type={'file'}
@@ -506,7 +526,7 @@ const Category = () => {
             }}
           >
             {errors['hoverImage']}
-          </span>
+          </span> */}
           <TextField
             label='Status'
             type={'text'}

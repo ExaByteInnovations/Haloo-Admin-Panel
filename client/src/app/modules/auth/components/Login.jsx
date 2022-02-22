@@ -7,6 +7,7 @@ import {useFormik} from 'formik'
 import {ApiPost} from '../../../../helpers/API/ApiData'
 import {AuthContext} from '../../../auth/authContext'
 import * as authUtil from '../../../../utils/auth.util'
+import {toast} from 'react-toastify'
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -21,8 +22,8 @@ const loginSchema = Yup.object().shape({
 })
 
 const initialValues = {
-  email: 'test@gmail.com',
-  password: 'test',
+  email: 'jay@gmail.com',
+  password: '1234',
 }
 
 /*
@@ -49,11 +50,13 @@ export function Login() {
               type: 'LOGIN_SUCCESS',
               payload: data,
             })
+            toast.success('Login Successful!')
           })
           .catch(() => {
             setLoading(false)
             setSubmitting(false)
             setStatus('The login detail is incorrect')
+            toast.error('Login Failed!')
           })
       }, 1000)
     },

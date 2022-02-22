@@ -84,10 +84,10 @@ const State = () => {
       formIsValid = false
       errors['stateName'] = '*Please Enter State Name !'
     }
-    if (inputValue && !inputValue.countryName) {
-      formIsValid = false
-      errors['countryName'] = '*Please Enter Country Name!'
-    }
+    // if (inputValue && !inputValue.countryName) {
+    //   formIsValid = false
+    //   errors['countryName'] = '*Please Enter Country Name!'
+    // }
     if (inputValue && !inputValue.status) {
       formIsValid = false
       errors['status'] = '*Please Select Status!'
@@ -153,11 +153,11 @@ const State = () => {
       selector: (row) => row.stateName,
       sortable: true,
     },
-    {
-      name: 'Country Name',
-      selector: (row) => row.countryName,
-      sortable: true,
-    },
+    // {
+    //   name: 'Country Name',
+    //   selector: (row) => row.countryName,
+    //   sortable: true,
+    // },
     {
       name: 'Status',
       selector: (row) => row.status,
@@ -194,7 +194,7 @@ const State = () => {
     return {
       id: state?._id,
       stateName: state?.stateName,
-      countryName: state?.countryName,
+      // countryName: state?.countryName,
       status: state?.status?.charAt(0)?.toUpperCase() + state?.status?.substr(1)?.toLowerCase(),
     }
   })
@@ -283,7 +283,7 @@ const State = () => {
           >
             {errors['stateName']}
           </span>
-          <TextField
+          {/* <TextField
             label='Country Name'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -301,7 +301,7 @@ const State = () => {
             }}
           >
             {errors['countryName']}
-          </span>
+          </span> */}
           <TextField
             label='Status'
             type={'text'}
@@ -376,7 +376,7 @@ const State = () => {
           >
             {errors['stateName']}
           </span>
-          <TextField
+          {/* <TextField
             label='Country Name'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -393,7 +393,7 @@ const State = () => {
             }}
           >
             {errors['countryName']}
-          </span>
+          </span> */}
           <TextField
             label='Status'
             type={'text'}

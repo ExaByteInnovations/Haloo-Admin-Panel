@@ -22,11 +22,11 @@ export function AsideMenuMain() {
         title={intl.formatMessage({id: 'MENU.USER_MANAGEMENT'})}
         fontIcon='bi-app-indicator'
       >
-        <AsideMenuItem
+        {/* <AsideMenuItem
           to='/user-management/reviews-and-ratings'
           title='Reviews And Ratings'
           hasBullet={true}
-        />
+        /> */}
         <AsideMenuItem to='/user-management/customers' title='Customers' hasBullet={true} />
         <AsideMenuItem to='/user-management/vendors' title='Vendors' hasBullet={true} />
         <AsideMenuItem
@@ -54,7 +54,7 @@ export function AsideMenuMain() {
         fontIcon='bi-app-indicator'
       >
         <AsideMenuItem to='/service-info/category' title='Category' hasBullet={true} />
-        <AsideMenuItem to='/service-info/subcategory' title='Subcategory' hasBullet={true} />
+        {/* <AsideMenuItem to='/service-info/subcategory' title='Subcategory' hasBullet={true} /> */}
         <AsideMenuItem to='/service-info/city' title='City' hasBullet={true} />
         <AsideMenuItem to='/service-info/state' title='State' hasBullet={true} />
       </AsideMenuItemWithSub>
