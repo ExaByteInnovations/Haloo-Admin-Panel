@@ -32,12 +32,14 @@ const Vendors = () => {
   const [inputValue, setInputValue] = useState({})
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
+  const [errors, setErrors] = useState({})
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
     setShow(false)
     setAddOpen(false)
+    setErrors({})
   }
 
   useEffect(() => {
@@ -47,7 +49,7 @@ const Vendors = () => {
   const getVendors = async () => {
     try {
       setLoading(true)
-      const response = await ApiGet(`usermanagement/vendor`)
+      const response = await ApiGet(`usermanagement/customer?type=vendor`)
       if (response.status === 200) {
         setVendors(response.data.data)
       }
@@ -61,7 +63,7 @@ const Vendors = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`usermanagement/vendor?_id=${rowId}`)
+      const response = await ApiDelete(`usermanagement/customer?_id=${rowId}`)
 
       if (response.status === 200) {
         getVendors()
@@ -76,13 +78,51 @@ const Vendors = () => {
     }
   }
 
+  const validateForm = () => {
+    let formIsValid = true
+    let errors = {}
+
+    if (inputValue && !inputValue.customerName) {
+      formIsValid = false
+      errors['customerName'] = '*Please Enter Vendor Name!'
+    }
+    if (inputValue && !inputValue.phone) {
+      formIsValid = false
+      errors['phone'] = '*Please Enter Phone Number!'
+    }
+    // if (inputValue && !inputValue.logo) {
+    //   formIsValid = false
+    //   errors['logo'] = '*Please Select Logo!'
+    // }
+    if (inputValue && !inputValue.city) {
+      formIsValid = false
+      errors['city'] = '*Please Enter City!'
+    }
+    if (inputValue && !inputValue.state) {
+      formIsValid = false
+      errors['state'] = '*Please Enter State!'
+    }
+    if (inputValue && !inputValue.pincode) {
+      formIsValid = false
+      errors['pincode'] = '*Please Enter Pincode!'
+    }
+    if (inputValue && !inputValue.address) {
+      formIsValid = false
+      errors['address'] = '*Please Enter Address!'
+    }
+    setErrors(errors)
+    return formIsValid
+  }
+
   const handleUpdate = async () => {
+    // if (validateForm()) {
     const imageData = new FormData()
     imageData.append('logo', inputValue.logo)
-    imageData.append('companyName', inputValue.companyName)
-    imageData.append('firstName', inputValue.firstName)
-    imageData.append('lastName', inputValue.lastName)
-    imageData.append('emailAddress', inputValue.emailAddress)
+    imageData.append('customerName', inputValue.customerName)
+    // imageData.append('companyName', inputValue.companyName)
+    // imageData.append('firstName', inputValue.firstName)
+    // imageData.append('lastName', inputValue.lastName)
+    // imageData.append('emailAddress', inputValue.emailAddress)
     imageData.append('phone', inputValue.phone)
     imageData.append('city', inputValue.city)
     imageData.append('state', inputValue.state)
@@ -90,10 +130,10 @@ const Vendors = () => {
     imageData.append('pincode', inputValue.pincode)
     // imageData.append('averageRating', inputValue.averageRating)
     // imageData.append('lastAccessOn', inputValue.lastAccessOn)
-    imageData.append('status', inputValue.status)
+    // imageData.append('status', inputValue.status)
     try {
       setLoading(true)
-      const response = await ApiPut(`usermanagement/vendor?_id=${rowId}`, imageData)
+      const response = await ApiPut(`usermanagement/customer?_id=${rowId}`, inputValue)
 
       if (response.status === 200) {
         toast.success('Updated Successfully')
@@ -107,79 +147,94 @@ const Vendors = () => {
       setLoading(false)
       handleClose()
     }
+    // }
   }
 
   const handleAdd = async () => {
-    const imageData = new FormData()
-    imageData.append('logo', inputValue.logo)
-    imageData.append('companyName', inputValue.companyName)
-    imageData.append('firstName', inputValue.firstName)
-    imageData.append('lastName', inputValue.lastName)
-    imageData.append('emailAddress', inputValue.emailAddress)
-    imageData.append('phone', inputValue.phone)
-    imageData.append('city', inputValue.city)
-    imageData.append('state', inputValue.state)
-    imageData.append('address', inputValue.address)
-    imageData.append('pincode', inputValue.pincode)
-    // imageData.append('averageRating', inputValue.averageRating)
-    // imageData.append('lastAccessOn', inputValue.lastAccessOn)
-    imageData.append('status', inputValue.status)
+    if (validateForm()) {
+      const imageData = new FormData()
+      imageData.append('logo', inputValue.logo)
+      imageData.append('customerName', inputValue.customerName)
+      // imageData.append('companyName', inputValue.companyName)
+      // imageData.append('firstName', inputValue.firstName)
+      // imageData.append('lastName', inputValue.lastName)
+      // imageData.append('emailAddress', inputValue.emailAddress)
+      imageData.append('phone', inputValue.phone)
+      imageData.append('city', inputValue.city)
+      imageData.append('state', inputValue.state)
+      imageData.append('address', inputValue.address)
+      imageData.append('pincode', inputValue.pincode)
+      // imageData.append('averageRating', inputValue.averageRating)
+      // imageData.append('lastAccessOn', inputValue.lastAccessOn)
+      // imageData.append('status', inputValue.status)
 
-    try {
-      setLoading(true)
-      const response = await ApiPost(`usermanagement/vendor`, imageData)
-      if (response.status === 200) {
-        toast.success('Added Successfully')
-        getVendors()
-        setInputValue({})
+      try {
+        setLoading(true)
+        const response = await ApiPost(`usermanagement/customer`, {...inputValue, type: 'vendor'})
+        if (response.status === 200) {
+          toast.success('Added Successfully')
+          getVendors()
+          setInputValue({})
+        }
+        setLoading(false)
+        handleClose()
+      } catch (err) {
+        toast.error(err.message)
+        setLoading(false)
+        handleClose()
       }
-      setLoading(false)
-      handleClose()
-    } catch (err) {
-      toast.error(err.message)
-      setLoading(false)
-      handleClose()
     }
   }
 
   const handleChange = (e) => {
     const {name, value, files} = e.target
-    if (files) setInputValue({...inputValue, [name]: files[0]})
-    else setInputValue({...inputValue, [name]: value})
+    if (files) {
+      setInputValue({...inputValue, [name]: files[0]})
+      setErrors({...errors, [name]: ''})
+    } else {
+      setInputValue({...inputValue, [name]: value})
+      setErrors({...errors, [name]: ''})
+    }
   }
 
   const columns = [
+    // {
+    //   name: 'Logo',
+    //   cell: (row) => {
+    //     return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.logo} />
+    //   },
+    // },
+    // {
+    //   name: 'Company Name',
+    //   selector: (row) => row.companyName,
+    //   sortable: true,
+    //   width: '200px',
+    // },
+    // {
+    //   name: 'First Name',
+    //   selector: (row) => row.firstName,
+    //   sortable: true,
+    //   width: '150px',
+    // },
+    // {
+    //   name: 'Last Name',
+    //   selector: (row) => row.lastName,
+    //   sortable: true,
+    //   width: '150px',
+    // },
     {
-      name: 'Logo',
-      cell: (row) => {
-        return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.logo} />
-      },
-    },
-    {
-      name: 'Company Name',
-      selector: (row) => row.companyName,
-      sortable: true,
-      width: '200px',
-    },
-    {
-      name: 'First Name',
-      selector: (row) => row.firstName,
+      name: 'Vendor Name',
+      selector: (row) => row.customerName,
       sortable: true,
       width: '150px',
     },
-    {
-      name: 'Last Name',
-      selector: (row) => row.lastName,
-      sortable: true,
-      width: '150px',
-    },
-    {
-      name: 'Email Address',
-      selector: (row) => row.emailAddress,
-      cell: (row) => <Box>{row.emailAddress}</Box>,
-      sortable: true,
-      width: '200px',
-    },
+    // {
+    //   name: 'Email Address',
+    //   selector: (row) => row.emailAddress,
+    //   cell: (row) => <Box>{row.emailAddress}</Box>,
+    //   sortable: true,
+    //   width: '200px',
+    // },
     {
       name: 'Phone Number',
       selector: (row) => row.phone,
@@ -187,11 +242,10 @@ const Vendors = () => {
       width: '150px',
     },
     {
-      name: 'Address',
-      selector: (row) => row.address,
-      cell: (row) => <Box>{row.address}</Box>,
+      name: 'Postal Code',
+      selector: (row) => row.pincode,
       sortable: true,
-      width: '200px',
+      width: '150px',
     },
     {
       name: 'City',
@@ -206,52 +260,53 @@ const Vendors = () => {
       width: '150px',
     },
     {
-      name: 'Postal Code',
-      selector: (row) => row.pincode,
+      name: 'Address',
+      selector: (row) => row.address,
+      cell: (row) => <Box>{row.address}</Box>,
       sortable: true,
-      width: '150px',
+      width: '200px',
     },
-    {
-      name: 'No. of Jobs',
-      selector: (row) => row.noOfJobs,
-      sortable: true,
-      width: '150px',
-    },
-    {
-      name: 'Average Rating',
-      selector: (row) => row.averageRating,
-      cell: (row) => (
-        <>
-          {[...Array(row.rating)].map(() => (
-            <div className='rating'>
-              <div className='rating-label me-2 checked'>
-                <i className='bi bi-star-fill fs-5'></i>
-              </div>
-            </div>
-          ))}
-        </>
-      ),
-      sortable: true,
-      width: '150px',
-    },
+    // {
+    //   name: 'No. of Jobs',
+    //   selector: (row) => row.noOfJobs,
+    //   sortable: true,
+    //   width: '150px',
+    // },
+    // {
+    //   name: 'Average Rating',
+    //   selector: (row) => row.averageRating,
+    //   cell: (row) => (
+    //     <>
+    //       {[...Array(row.rating)].map(() => (
+    //         <div className='rating'>
+    //           <div className='rating-label me-2 checked'>
+    //             <i className='bi bi-star-fill fs-5'></i>
+    //           </div>
+    //         </div>
+    //       ))}
+    //     </>
+    //   ),
+    //   sortable: true,
+    //   width: '150px',
+    // },
     {
       name: 'Member Since',
       selector: (row) => row.memberSince,
       sortable: true,
       width: '200px',
     },
-    {
-      name: 'Last Access',
-      selector: (row) => row.lastAccess,
-      sortable: true,
-      width: '200px',
-    },
-    {
-      name: 'Status',
-      selector: (row) => row.status,
-      sortable: true,
-      width: '150px',
-    },
+    // {
+    //   name: 'Last Access',
+    //   selector: (row) => row.lastAccess,
+    //   sortable: true,
+    //   width: '200px',
+    // },
+    // {
+    //   name: 'Status',
+    //   selector: (row) => row.status,
+    //   sortable: true,
+    //   width: '150px',
+    // },
     {
       name: 'Action',
       cell: (row) => {
@@ -282,28 +337,29 @@ const Vendors = () => {
   const data = vendors?.map((vendor) => {
     return {
       id: vendor?._id,
-      logo: vendor?.logo,
-      companyName: vendor?.companyName,
-      firstName: vendor?.firstName,
-      lastName: vendor?.lastName,
-      emailAddress: vendor?.emailAddress,
+      // logo: vendor?.logo,
+      customerName: vendor?.customerName,
+      // companyName: vendor?.companyName,
+      // firstName: vendor?.firstName,
+      // lastName: vendor?.lastName,
+      // emailAddress: vendor?.emailAddress,
       phone: vendor?.phone,
       address: vendor?.address,
       city: vendor?.city,
       state: vendor?.state,
       pincode: vendor?.pincode,
-      noOfJobs: vendor?.noOfJobs,
-      averageRating: vendor?.averageRating,
+      // noOfJobs: vendor?.noOfJobs,
+      // averageRating: vendor?.averageRating,
       memberSince: moment(vendor?.createdAt).format('DD MMM YY hh:mmA'),
-      lastAccess: moment(vendor?.lastAccess).format('DD MMM YY hh:mmA'),
-      status: vendor?.status?.charAt(0)?.toUpperCase() + vendor?.status?.substr(1)?.toLowerCase(),
+      // lastAccess: moment(vendor?.lastAccess).format('DD MMM YY hh:mmA'),
+      // status: vendor?.status?.charAt(0)?.toUpperCase() + vendor?.status?.substr(1)?.toLowerCase(),
     }
   })
 
-  const status = [
-    {label: 'Active', value: 'Active'},
-    {label: 'Inactive', value: 'Inactive'},
-  ]
+  // const status = [
+  //   {label: 'Active', value: 'Active'},
+  //   {label: 'Inactive', value: 'Inactive'},
+  // ]
 
   if (loading) {
     return (
@@ -367,19 +423,29 @@ const Vendors = () => {
             </Box>
           </Box>
         </DialogTitle>
-        <form onSubmit={handleUpdate}>
-          <DialogContent>
-            <TextField
-              InputLabelProps={{shrink: true}}
-              label='Logo'
-              name='logo'
-              type={'file'}
-              onChange={handleChange}
-              variant='standard'
-              margin='dense'
-              fullWidth
-            />
-            <TextField
+        {/* <form onSubmit={handleUpdate}> */}
+        <DialogContent>
+          {/* <TextField
+            InputLabelProps={{shrink: true}}
+            label='Logo'
+            name='logo'
+            type={'file'}
+            onChange={handleChange}
+            variant='standard'
+            margin='dense'
+            fullWidth
+            required
+          /> */}
+          {/* <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['logo']}
+          </span> */}
+          {/* <TextField
               label='Company Name'
               type={'text'}
               name='companyName'
@@ -387,6 +453,7 @@ const Vendors = () => {
               variant='standard'
               margin='dense'
               fullWidth
+              required
               value={inputValue?.companyName}
             />
             <TextField
@@ -397,9 +464,10 @@ const Vendors = () => {
               variant='standard'
               margin='dense'
               fullWidth
+              required
               value={inputValue?.firstName}
-            />
-            <TextField
+            /> */}
+          {/* <TextField
               label='Last Name'
               type={'text'}
               name='lastName'
@@ -407,9 +475,30 @@ const Vendors = () => {
               variant='standard'
               margin='dense'
               fullWidth
+              required
               value={inputValue?.lastName}
-            />
-            <TextField
+            /> */}
+          <TextField
+            label='Vendor Name'
+            type={'text'}
+            name='customerName'
+            onChange={handleChange}
+            variant='standard'
+            margin='dense'
+            fullWidth
+            required
+            value={inputValue?.customerName}
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['customerName']}
+          </span>
+          {/* <TextField
               label='Email Address'
               type={'email'}
               name='emailAddress'
@@ -417,65 +506,117 @@ const Vendors = () => {
               variant='standard'
               margin='dense'
               fullWidth
+              required
               value={inputValue?.emailAddress}
-            />
-            <TextField
-              label='Phone Number'
-              type={'tel'}
-              name='phone'
-              onChange={handleChange}
-              variant='standard'
-              margin='dense'
-              fullWidth
-              value={inputValue?.phone}
-            />
-            <TextField
-              label='Address'
-              type={'text'}
-              name='address'
-              onChange={handleChange}
-              variant='standard'
-              margin='dense'
-              fullWidth
-              value={inputValue?.address}
-            />
-            <TextField
-              label='City'
-              type={'text'}
-              name='city'
-              onChange={handleChange}
-              variant='standard'
-              margin='dense'
-              fullWidth
-              value={inputValue?.city}
-            />
-            <TextField
-              label='State'
-              type={'text'}
-              name='state'
-              onChange={handleChange}
-              variant='standard'
-              margin='dense'
-              fullWidth
-              value={inputValue?.state}
-            />
-            <TextField
-              label='Postal Code'
-              inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
-              name='pincode'
-              onChange={handleChange}
-              variant='standard'
-              margin='dense'
-              fullWidth
-              value={inputValue?.pincode}
-            />
-            <TextField
+            /> */}
+          <TextField
+            label='Phone Number'
+            type={'tel'}
+            name='phone'
+            onChange={handleChange}
+            variant='standard'
+            margin='dense'
+            fullWidth
+            required
+            value={inputValue?.phone}
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['phone']}
+          </span>
+          <TextField
+            label='Postal Code'
+            inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
+            name='pincode'
+            onChange={handleChange}
+            variant='standard'
+            margin='dense'
+            fullWidth
+            required
+            value={inputValue?.pincode}
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['pincode']}
+          </span>
+          <TextField
+            label='City'
+            type={'text'}
+            name='city'
+            onChange={handleChange}
+            variant='standard'
+            margin='dense'
+            fullWidth
+            required
+            value={inputValue?.city}
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['city']}
+          </span>
+          <TextField
+            label='State'
+            type={'text'}
+            name='state'
+            onChange={handleChange}
+            variant='standard'
+            margin='dense'
+            fullWidth
+            required
+            value={inputValue?.state}
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['state']}
+          </span>
+          <TextField
+            label='Address'
+            type={'text'}
+            name='address'
+            onChange={handleChange}
+            variant='standard'
+            margin='dense'
+            fullWidth
+            required
+            value={inputValue?.address}
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['address']}
+          </span>
+          {/* <TextField
               label='Status'
               name='status'
               onChange={handleChange}
               variant='standard'
               margin='dense'
               fullWidth
+              required
               select
               value={inputValue?.status}
               defaultValue={
@@ -488,12 +629,12 @@ const Vendors = () => {
                   {option.label}
                 </MenuItem>
               ))}
-            </TextField>
-          </DialogContent>
-          <Button className='button' size='lg' variant='success' type='submit'>
-            Save
-          </Button>
-        </form>
+            </TextField> */}
+        </DialogContent>
+        <Button className='button' size='lg' variant='success' onClick={handleUpdate}>
+          Save
+        </Button>
+        {/* </form> */}
       </Dialog>
 
       <Dialog open={addOpen} onClose={handleClose} fullWidth maxWidth='xs'>
@@ -507,20 +648,29 @@ const Vendors = () => {
             </Box>
           </Box>
         </DialogTitle>
-        <form onSubmit={handleAdd}>
-          <DialogContent>
-            <TextField
-              InputLabelProps={{shrink: true}}
-              label='Logo'
-              name='logo'
-              type={'file'}
-              onChange={(e) => handleChange(e)}
-              variant='standard'
-              margin='dense'
-              fullWidth
-              required
-            />
-            <TextField
+        {/* <form onSubmit={handleAdd}> */}
+        <DialogContent>
+          {/* <TextField
+            InputLabelProps={{shrink: true}}
+            label='Logo'
+            name='logo'
+            type={'file'}
+            onChange={(e) => handleChange(e)}
+            variant='standard'
+            margin='dense'
+            fullWidth
+            required
+          /> */}
+          {/* <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['logo']}
+          </span> */}
+          {/* <TextField
               label='Company Name'
               type={'text'}
               name='companyName'
@@ -529,8 +679,8 @@ const Vendors = () => {
               margin='dense'
               fullWidth
               required
-            />
-            <TextField
+            /> */}
+          {/* <TextField
               label='First Name'
               type={'text'}
               name='firstName'
@@ -539,8 +689,8 @@ const Vendors = () => {
               margin='dense'
               fullWidth
               required
-            />
-            <TextField
+            /> */}
+          {/* <TextField
               label='Last Name'
               type={'text'}
               name='lastName'
@@ -549,8 +699,27 @@ const Vendors = () => {
               margin='dense'
               fullWidth
               required
-            />
-            <TextField
+            /> */}
+          <TextField
+            label='Vendor Name'
+            type={'text'}
+            name='customerName'
+            onChange={(e) => handleChange(e)}
+            variant='standard'
+            margin='dense'
+            fullWidth
+            required
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['customerName']}
+          </span>
+          {/* <TextField
               label='Email Address'
               type={'email'}
               name='emailAddress'
@@ -559,58 +728,103 @@ const Vendors = () => {
               margin='dense'
               fullWidth
               required
-            />
-            <TextField
-              label='Phone Number'
-              type={'tel'}
-              name='phone'
-              onChange={(e) => handleChange(e)}
-              variant='standard'
-              margin='dense'
-              fullWidth
-              required
-            />
-            <TextField
-              label='Address'
-              type={'text'}
-              name='address'
-              onChange={(e) => handleChange(e)}
-              variant='standard'
-              margin='dense'
-              fullWidth
-              required
-            />
-            <TextField
-              label='City'
-              type={'text'}
-              name='city'
-              onChange={(e) => handleChange(e)}
-              variant='standard'
-              margin='dense'
-              fullWidth
-              required
-            />
-            <TextField
-              label='State'
-              type={'text'}
-              name='state'
-              onChange={(e) => handleChange(e)}
-              variant='standard'
-              margin='dense'
-              fullWidth
-              required
-            />
-            <TextField
-              label='Postal Code'
-              inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
-              name='pincode'
-              onChange={(e) => handleChange(e)}
-              variant='standard'
-              margin='dense'
-              fullWidth
-              required
-            />
-            <TextField
+            /> */}
+          <TextField
+            label='Phone Number'
+            type={'tel'}
+            name='phone'
+            onChange={(e) => handleChange(e)}
+            variant='standard'
+            margin='dense'
+            fullWidth
+            required
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['phone']}
+          </span>
+          <TextField
+            label='Postal Code'
+            inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
+            name='pincode'
+            onChange={(e) => handleChange(e)}
+            variant='standard'
+            margin='dense'
+            fullWidth
+            required
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['pincode']}
+          </span>
+          <TextField
+            label='City'
+            type={'text'}
+            name='city'
+            onChange={(e) => handleChange(e)}
+            variant='standard'
+            margin='dense'
+            fullWidth
+            required
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['city']}
+          </span>
+          <TextField
+            label='State'
+            type={'text'}
+            name='state'
+            onChange={(e) => handleChange(e)}
+            variant='standard'
+            margin='dense'
+            fullWidth
+            required
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['state']}
+          </span>
+          <TextField
+            label='Address'
+            type={'text'}
+            name='address'
+            onChange={(e) => handleChange(e)}
+            variant='standard'
+            margin='dense'
+            fullWidth
+            required
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['address']}
+          </span>
+          {/* <TextField
               label='Status'
               name='status'
               onChange={(e) => handleChange(e)}
@@ -625,12 +839,12 @@ const Vendors = () => {
                   {option.label}
                 </MenuItem>
               ))}
-            </TextField>
-          </DialogContent>
-          <Button className='button' size='lg' variant='success' type='submit'>
-            Save
-          </Button>
-        </form>
+            </TextField> */}
+        </DialogContent>
+        <Button className='button' size='lg' variant='success' onClick={handleAdd}>
+          Save
+        </Button>
+        {/* </form> */}
       </Dialog>
     </>
   )

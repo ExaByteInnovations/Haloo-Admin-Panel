@@ -43,7 +43,7 @@ const OpenJobs = () => {
   const getJobs = async () => {
     setLoading(true)
     try {
-      const response = await ApiGet(`job?status=Pending`)
+      const response = await ApiGet(`job?status=pending`)
       if (response.status === 200) {
         setJobs(response.data.data)
       }
@@ -100,12 +100,12 @@ const OpenJobs = () => {
       sortable: true,
       width: '200px',
     },
-    {
-      name: 'Quote',
-      selector: (row) => row.quote,
-      sortable: true,
-      width: '150px',
-    },
+    // {
+    //   name: 'Quote',
+    //   selector: (row) => row.quote,
+    //   sortable: true,
+    //   width: '150px',
+    // },
     {
       name: 'City',
       selector: (row) => row.city,
@@ -124,18 +124,18 @@ const OpenJobs = () => {
       sortable: true,
       width: '150px',
     },
-    {
-      name: 'Property Name',
-      selector: (row) => row.propertyName,
-      sortable: true,
-      width: '150px',
-    },
-    {
-      name: 'Category/Subcategory',
-      selector: (row) => row.categorySubcategory,
-      sortable: true,
-      width: '200px',
-    },
+    // {
+    //   name: 'Property Name',
+    //   selector: (row) => row.propertyName,
+    //   sortable: true,
+    //   width: '150px',
+    // },
+    // {
+    //   name: 'Category/Subcategory',
+    //   selector: (row) => row.categorySubcategory,
+    //   sortable: true,
+    //   width: '200px',
+    // },
     {
       name: 'Vendor',
       selector: (row) => row.vendor,
@@ -185,22 +185,22 @@ const OpenJobs = () => {
     return {
       id: job?._id,
       jobTitle: job?.jobTitle,
-      quote: job?.quote,
-      city: job?.city,
+      // quote: job?.quote,
+      city: job?.job?.customerDetails[0]?.city,
       jobTotal: job?.jobTotal,
       customer: job?.customerDetails[0]?.customerName,
-      propertyName: job?.propertyName,
-      categorySubcategory: job?.category || job?.subCategory,
-      vendor: job?.vendorDetails[0]?.companyName,
+      // propertyName: job?.propertyName,
+      // categorySubcategory: job?.category || job?.subCategory,
+      vendor: job?.vendorDetails[0]?.customerName,
       postedDate: moment(job?.createdAt).format('DD MMM YY hh:mmA'),
-      status: job?.status?.charAt(0)?.toUpperCase() + job?.status?.substr(1)?.toLowerCase(),
+      status: job?.status?.toLowerCase(),
     }
   })
 
   const status = [
-    {label: 'Pending', value: 'Pending'},
-    {label: 'Completed', value: 'Completed'},
-    {label: 'Disputed', value: 'Disputed'},
+    {label: 'pending', value: 'pending'},
+    {label: 'completed', value: 'completed'},
+    {label: 'disputed', value: 'disputed'},
   ]
 
   if (loading) {
@@ -268,7 +268,7 @@ const OpenJobs = () => {
             margin='dense'
             value={inputValue?.jobTitle}
           />
-          <TextField
+          {/* <TextField
             label='Quote'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -277,8 +277,8 @@ const OpenJobs = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.quote}
-          />
-          <TextField
+          /> */}
+          {/* <TextField
             label='City'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -287,7 +287,7 @@ const OpenJobs = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.city}
-          />
+          /> */}
           <TextField
             label='Job Total'
             inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
@@ -308,7 +308,7 @@ const OpenJobs = () => {
             margin='dense'
             value={inputValue?.customer}
           /> */}
-          <TextField
+          {/* <TextField
             label='Property Name'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -317,8 +317,8 @@ const OpenJobs = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.propertyName}
-          />
-          <TextField
+          /> */}
+          {/* <TextField
             label='Category / Subcategory'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -327,7 +327,7 @@ const OpenJobs = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.categorySubcategory}
-          />
+          /> */}
           {/* <TextField
             label='Vendor'
             type={'text'}
@@ -347,11 +347,11 @@ const OpenJobs = () => {
             variant='standard'
             margin='dense'
             select
-            value={inputValue?.status}
-            defaultValue={
-              inputValue?.status?.charAt(0)?.toUpperCase() +
-              inputValue?.status?.substr(1)?.toLowerCase()
-            }
+            value={inputValue?.status?.toLowerCase()}
+            // defaultValue={
+            //   inputValue?.status?.charAt(0)?.toUpperCase() +
+            //   inputValue?.status?.substr(1)?.toLowerCase()
+            // }
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>

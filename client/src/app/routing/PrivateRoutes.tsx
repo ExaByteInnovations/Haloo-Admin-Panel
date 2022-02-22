@@ -2,12 +2,12 @@ import {Suspense} from 'react'
 import {Redirect, Route, Switch} from 'react-router-dom'
 import {FallbackView} from '../../_metronic/partials'
 import {DashboardWrapper} from '../pages/dashboard/DashboardWrapper'
-import {Ratings} from '../pages/userManagement/Ratings'
+// import {Ratings} from '../pages/userManagement/Ratings'
 import {OpenJobs} from '../pages/jobs/OpenJobs'
 import {CompletedJobs} from '../pages/jobs/CompletedJobs'
 import {DisputedJobs} from '../pages/jobs/DisputedJobs'
 import {Category} from '../pages/service-info/Category'
-import {SubCategory} from '../pages/service-info/SubCategory'
+// import {SubCategory} from '../pages/service-info/SubCategory'
 import {City} from '../pages/service-info/City'
 import {State} from '../pages/service-info/State'
 import {Customers} from '../pages/userManagement/Customers'
@@ -27,7 +27,7 @@ export function PrivateRoutes() {
     <Suspense fallback={<FallbackView />}>
       <Switch>
         <Route path='/dashboard' component={DashboardWrapper} />
-        <Route path='/user-management/reviews-and-ratings' component={Ratings} />
+        {/* <Route path='/user-management/reviews-and-ratings' component={Ratings} /> */}
         <Route path='/user-management/customers' component={Customers} />
         <Route path='/user-management/vendors' component={Vendors} />
         <Route path='/user-management/cod-enable-requests' component={CodEnable} />
@@ -35,7 +35,7 @@ export function PrivateRoutes() {
         <Route path='/jobs/completed-jobs' component={CompletedJobs} />
         <Route path='/jobs/disputed-jobs' component={DisputedJobs} />
         <Route path='/service-info/category' component={Category} />
-        <Route path='/service-info/subcategory' component={SubCategory} />
+        {/* <Route path='/service-info/subcategory' component={SubCategory} /> */}
         <Route path='/service-info/city' component={City} />
         <Route path='/service-info/state' component={State} />
         <Route path='/support' component={Support} />
