@@ -48,7 +48,7 @@ const customerSchema = new mongoose.Schema({
         type: String,
     },
     pincode: {
-        type: Number,
+        type: String,
     },
     lastAccessOn: {
         type: Date,
@@ -61,8 +61,14 @@ const customerSchema = new mongoose.Schema({
         type: String 
     },
     otp: {
-        type: Number,
+        type: String,
     },
+    otpExpiry: {
+        type: Date,
+    },
+    jobSkills: [{
+        type: String
+    }],
 
     status: {
         type: String,

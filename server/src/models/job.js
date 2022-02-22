@@ -27,12 +27,16 @@ const jobSchema = new mongoose.Schema({
     },
     status:{
         type: String,
+        default: 'pending',
     },
     vendorId:{
       type: mongoose.Schema.Types.ObjectId, ref: 'customer',
     },
     jobTotal:{
       type: Number,
+    },
+    otp:{
+      type: String,
     },
   },
     {

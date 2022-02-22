@@ -62,7 +62,7 @@ router.get('/',async (req,res) =>{
     }
 })
 
-router.post('/', upload.single('profileImage'), async (req,res) =>{
+router.post('/', async (req,res) =>{
     console.log('Got query:', req.query);
     console.log('Got body:', req.body);
 
@@ -86,10 +86,10 @@ router.post('/', upload.single('profileImage'), async (req,res) =>{
             codStatus, 
             status } = req.body;
 
-        var profileImage;
-        if (req.files.profileImage) {
-            profileImage = 'uploads/images/' + req.files.profileImage[0].filename;
-        }
+        // var profileImage;
+        // if (req.files.profileImage) {
+        //     profileImage = 'uploads/images/' + req.files.profileImage[0].filename;
+        // }
 
         var newCustomer = new Customer({
             companyName,
@@ -129,12 +129,12 @@ router.delete("/" ,async function(req,res){
         //  remove element by id
         Customer.findOneAndDelete({_id:_id})
         .then((item) => {
-                if (item.profileImage) {
-                    fs.unlink(item.profileImage, (err) => {
-                        if (err) throw err;
-                        console.log('successfully deleted profileImage');
-                    });
-                }
+                // if (item.profileImage) {
+                //     fs.unlink(item.profileImage, (err) => {
+                //         if (err) throw err;
+                //         console.log('successfully deleted profileImage');
+                //     });
+                // }
                 res.sendStatus(200);
         }).catch((error) => {
             //error handle
@@ -144,7 +144,7 @@ router.delete("/" ,async function(req,res){
     }
 });
 
-router.put("/", upload.fields([{name: 'profileImage', maxCount: 1}]) ,async function(req,res){
+router.put("/" ,async function(req,res){ //upload.fields([{name: 'profileImage', maxCount: 1}])
     console.log('Got query:', req.query);
     console.log('Got body:', req.body);
     var _id = req.query._id;
@@ -160,16 +160,16 @@ router.put("/", upload.fields([{name: 'profileImage', maxCount: 1}]) ,async func
         res.send({error: "Please provide an id"});
     }else{
 
-        if (req.files.profileImage) {
-            req.body.profileImage = 'uploads/images/' + req.files.profileImage[0].filename;
-            if (data.profileImage) {
-                fs.unlink(data.profileImage, (err) => {
-                    if (err) throw err;
-                    console.log('successfully deleted profileImage');
-                });
-            }
+        // if (req.files.profileImage) {
+        //     req.body.profileImage = 'uploads/images/' + req.files.profileImage[0].filename;
+        //     if (data.profileImage) {
+        //         fs.unlink(data.profileImage, (err) => {
+        //             if (err) throw err;
+        //             console.log('successfully deleted profileImage');
+        //         });
+        //     }
             
-        }
+        // }
 
         //  update element in mongodb put
         Customer.updateOne({_id:_id}, {$set: req.body})
