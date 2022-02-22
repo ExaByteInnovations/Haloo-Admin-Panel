@@ -35,7 +35,7 @@ router.get('/provider',async (req,res) =>{
                 search_query.city = city;
             }
             if(jobSkill){
-                search_query.jobskills = new RegExp(jobSkill, 'i')
+                search_query.jobSkills = new RegExp(jobSkill, 'i')
             }
             if(_id){
                 search_query._id = ObjectId(_id);
@@ -83,7 +83,7 @@ router.get('/provider',async (req,res) =>{
             res.send({data:data});
         }   catch (error) {
             console.log(error);
-            res.sendStatus(400);
+            res.status(400).send({error: error}); 
         }
     }else{
         res.status(400).send('Invalid login type');

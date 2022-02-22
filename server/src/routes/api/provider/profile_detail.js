@@ -12,7 +12,7 @@ router.get('/',async (req,res) =>{
     console.log('Got body:', req.user.loginType);
     if(req.user.loginType == 'user'){
         if(!req.user._id){
-            return res.status(400).send('Unable to get id from token please relogin');
+            return res.status(400).send({error:'Unable to get id from token please relogin'});
         }
 
         if (req.user._id) {
@@ -58,14 +58,16 @@ router.get('/',async (req,res) =>{
             ]);
 
 
-
+            if(data.length){
+                return res.status(200).send({data:data[0]});
+            }
             res.send({data:data});
         }   catch (error) {
             console.log(error);
-            res.sendStatus(400);
+            res.status(400).send({error: error}); 
         }
     }else{
-        res.status(400).send('Invalid login type');
+        res.status(400).send({error:'Invalid login type'});
     }
 })
 
@@ -133,7 +135,7 @@ router.delete("/" ,async function(req,res){
 
     
     if (req.user.loginType != 'user'){
-       return res.status(400).send('Invalid login type');
+       return res.status(400).send({ error:'Invalid login type' });
     }
     if(!_id){
         return res.status(400).send('Unable to get id from token please relogin');
@@ -152,7 +154,7 @@ router.delete("/" ,async function(req,res){
         }).catch((error) => {
             //error handle
             console.log(error);
-            res.sendStatus(400);       
+            res.status(400).send({error: error});    
         });
     }
 });
@@ -166,10 +168,10 @@ router.put("/", upload.fields([{name: 'profileImage', maxCount: 1}]) ,async func
 
     
     if (req.user.loginType != 'user'){
-       return res.status(400).send('Invalid login type');
+       return res.status(400).send({error:'Invalid login type'});
     }
     if(!_id){
-        return res.status(400).send('Unable to get id from token please relogin');
+        return res.status(400).send({error:'Unable to get id from token please relogin'});
     }
     data = await Customer.findOne({
         _id: _id
@@ -178,6 +180,23 @@ router.put("/", upload.fields([{name: 'profileImage', maxCount: 1}]) ,async func
     if (!data){
         return res.send({error: "No customer found"});
     }else{
+        // validate pincode
+        if(req.body.pincode){
+            var pincode = req.body.pincode;
+            console.log('pincode', pincode);
+            var pincodeRegex = /^\d{6}$/;
+            if(!pincodeRegex.test(pincode)){
+                return res.status(400).send({error:'Invalid pincode'});
+            }
+        }
+        // validate phone
+        if(req.body.phone){
+            var phone = req.body.phone;
+            var phoneRegex = /^\d{10}$/;
+            if(!phoneRegex.test(phone)){
+                return res.status(400).send({error:'Invalid phone'});
+            }
+        }
 
         if (req.files.profileImage) {
             req.body.profileImage = 'uploads/images/' + req.files.profileImage[0].filename;
@@ -200,7 +219,7 @@ router.put("/", upload.fields([{name: 'profileImage', maxCount: 1}]) ,async func
         }).catch((error) => {
             //error handle
             console.log(error);
-            res.sendStatus(400);       
+            res.status(400).send({error: error});       
         });
     }
 });

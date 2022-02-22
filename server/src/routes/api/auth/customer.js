@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const upload = require('../../../controller/multer');
 const config = process.env;
 const generate_otp = require('../../../utils/generate_otp');
+const auth = require('../../../middleware/auth');
 
 router.post('/generate_otp', async (req,res) =>{
     console.log('Got query:', req.query);
@@ -15,6 +16,10 @@ router.post('/generate_otp', async (req,res) =>{
 
     if (!phone) {
         return res.status(400).send({error: 'Phone number is required'});
+    }
+    // check phone number is int or not
+    if(phone.length != 10 || isNaN(phone)){
+        return res.status(400).send({error: 'Phone number must be 10 digits'});
     }
 
     // check if phone number is already registered
@@ -54,7 +59,10 @@ router.post("/verify_otp", async (req, res) => {
     if (customer) {
 
         if (!customer.type) {
-            if (!type || type != 'vendor' || type != 'customer'){
+            console.log('customer.type', customer.type);
+            console.log('type', type);
+            console.log(type != 'vendor' || type != 'customer')
+            if ((!type) || !(type == 'vendor' || type == 'customer')){
                 return res.status(400).send({error:'Type is required (vendor/customer)'});
             }
             customer.type = type;
@@ -76,7 +84,7 @@ router.post("/verify_otp", async (req, res) => {
             let token = jwt.sign({ _id: customer._id, loginType:'user',  }, 'config.TOKEN_KEY', { expiresIn: '30d' });
             customer.token = token;
             await customer.save();
-            return res.send({data:{customer:customer}});
+            return res.send({ data:customer });
         }else{
             return res.status(400).send({error: "Invalid OTP"});
         }
@@ -85,9 +93,16 @@ router.post("/verify_otp", async (req, res) => {
     }
   });
 
-router.post("/logout", async (req, res) => {
+router.post("/logout", auth, async (req, res) => {
 
-    let { _id } = req.body;
+    var _id = req.user._id;
+
+    if (req.user.loginType != 'user'){
+        return res.status(400).send({error:'Invalid login type'});
+    }
+    if(!_id){
+        return res.status(400).send({error:'Unable to get id from token please relogin'});
+    }
 
     let customer = await Customer.findOne({_id:_id});
     console.log(customer);

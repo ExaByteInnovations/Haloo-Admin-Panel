@@ -10,10 +10,10 @@ router.get("/" ,async function(req,res){
 
     
     if (req.user.loginType != 'user'){
-       return res.status(400).send('Invalid login type');
+       return res.status(400).send({error:'Invalid login type'});
     }
     if(!req.user._id){
-        return res.status(400).send('Unable to get id from token please relogin');
+        return res.status(400).send({error:'Unable to get id from token please relogin'});
     
     }
 
@@ -66,7 +66,7 @@ router.get("/" ,async function(req,res){
         res.send({data:data});
     }   catch (error) {
         console.log(error);
-        res.sendStatus(400);
+        res.status(400).send({error: error}); 
     }
 });
 
@@ -100,7 +100,7 @@ router.post("/" ,async function(req,res){
         }).catch((error) => {
             //error handle
             console.log(error);
-            res.sendStatus(400);       
+            res.status(400).send({error: error});       
         });   
 
 });
@@ -127,7 +127,7 @@ router.delete("/" ,async function(req,res){
         }).catch((error) => {
             //error handle
             console.log(error);
-            res.sendStatus(400);       
+            res.status(400).send({error: error});      
         });
     }
 });
@@ -157,7 +157,7 @@ router.put("/" ,async function(req,res){
         }).catch((error) => {
             //error handle
             console.log(error);
-            res.sendStatus(400);       
+            res.status(400).send({error: error});       
         });
     }
 });
@@ -203,7 +203,7 @@ router.post('/verify_otp', (req, res) => {
     }).catch((error) => {
         //error handle
         console.log(error);
-        res.sendStatus(400);       
+        res.status(400).send({error: error});  
     });
         
     
