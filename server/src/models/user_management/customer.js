@@ -10,12 +10,12 @@ const customerSchema = new mongoose.Schema({
     companyName: {
         type: String,
     },
-    firstName: {
-        type: String,
-    },
-    lastName: {
-        type: String,
-    },
+    // firstName: {
+    //     type: String,
+    // },
+    // lastName: {
+    //     type: String,
+    // },
     type: {
         type: String,
         enum : ['customer','vendor'],
@@ -24,9 +24,9 @@ const customerSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    emailAddress: {
-        type: String,
-    },
+    // emailAddress: {
+    //     type: String,
+    // },
     city: {
         type: String,
     },
@@ -38,12 +38,12 @@ const customerSchema = new mongoose.Schema({
     state: {
         type: String,
     },
-    ageBracket: {
-        type: String,
-    },
-    averageRating: {
-        type: Number,
-    },
+    // ageBracket: {
+    //     type: String,
+    // },
+    // averageRating: {
+    //     type: Number,
+    // },
     address: {
         type: String,
     },
