@@ -14,6 +14,7 @@ import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
 import ClearIcon from '@mui/icons-material/Clear'
 import userImage from '../../../assets/user.png'
+import _ from 'lodash'
 import {
   Box,
   CircularProgress,
@@ -24,10 +25,13 @@ import {
 } from '@material-ui/core'
 import '../../App.css'
 import {Image} from 'react-bootstrap-v5'
+import {Chip} from '@mui/material'
 
 const Vendors = () => {
   const intl = useIntl()
   const [vendors, setVendors] = useState([])
+  const [skills, setSkills] = useState([])
+  const [categories, setCategories] = useState([])
   const [open, setOpen] = useState(false)
   const [addOpen, setAddOpen] = useState(false)
   const [rowId, setRowId] = useState('')
@@ -64,6 +68,23 @@ const Vendors = () => {
     }
   }
 
+  const getCategories = async () => {
+    setLoading(true)
+    try {
+      const response = await ApiGet(`serviceinfo/category`)
+      if (response.status === 200) {
+        setCategories(
+          response?.data?.data?.map((category) => {
+            return {name: category?.categoryName, id: category?._id}
+          })
+        )
+      }
+      setLoading(false)
+    } catch (err) {
+      setLoading(false)
+    }
+  }
+
   const handleDelete = async () => {
     try {
       setLoading(true)
@@ -72,6 +93,7 @@ const Vendors = () => {
       if (response.status === 200) {
         getVendors()
         toast.success('Deleted Successfully')
+        setSkills([])
       }
       setLoading(false)
       setShow(false)
@@ -114,6 +136,10 @@ const Vendors = () => {
       formIsValid = false
       errors['address'] = '*Please Enter Address!'
     }
+    if (_.isEmpty(skills)) {
+      formIsValid = false
+      errors['jobSkills'] = '*Please Select Job Skills!'
+    }
     setErrors(errors)
     return formIsValid
   }
@@ -131,11 +157,15 @@ const Vendors = () => {
       // imageData.append('status', inputValue.status)
       try {
         setLoading(true)
-        const response = await ApiPut(`usermanagement/customer?_id=${rowId}`, imageData)
+        const response = await ApiPut(`usermanagement/customer?_id=${rowId}`, {
+          ...imageData,
+          jobSkills: skills,
+        })
 
         if (response.status === 200) {
           toast.success('Updated Successfully')
           setInputValue({})
+          setSkills([])
           getVendors()
         }
         setLoading(false)
@@ -163,11 +193,15 @@ const Vendors = () => {
 
       try {
         setLoading(true)
-        const response = await ApiPost(`usermanagement/customer`, imageData)
+        const response = await ApiPost(`usermanagement/customer`, {
+          ...imageData,
+          jobSkills: skills,
+        })
         if (response.status === 200) {
           toast.success('Added Successfully')
           getVendors()
           setInputValue({})
+          setSkills([])
         }
         setLoading(false)
         handleClose()
@@ -190,6 +224,19 @@ const Vendors = () => {
     }
   }
 
+  const handleSkills = (e) => {
+    const {
+      target: {value},
+    } = e
+    setSkills(typeof value === 'string' ? value.split(',') : value)
+  }
+
+  const handleSkillDelete = (skill) => {
+    console.log(skill, 'skill')
+    const newSkills = skills.filter((item) => item !== skill)
+    setSkills(newSkills)
+  }
+
   const columns = [
     {
       name: 'Profile Image',
@@ -205,6 +252,7 @@ const Vendors = () => {
     {
       name: 'Vendor Name',
       selector: (row) => row.customerName,
+      cell: (row) => <Box>{row.customerName}</Box>,
       sortable: true,
       width: '150px',
     },
@@ -239,12 +287,30 @@ const Vendors = () => {
       sortable: true,
       width: '200px',
     },
-    // {
-    //   name: 'No. of Jobs',
-    //   selector: (row) => row.noOfJobs,
-    //   sortable: true,
-    //   width: '150px',
-    // },
+    {
+      name: 'No. of Jobs',
+      selector: (row) => row.noOfJobs,
+      sortable: true,
+      width: '150px',
+    },
+    {
+      name: 'Job Skills',
+      selector: (row) => row.jobSkills,
+      cell: (row) => (
+        <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1}}>
+          {row.jobSkills.map((skill) => (
+            <Chip
+              key={skill}
+              label={skill.trim().charAt(0).toUpperCase() + skill.trim().substr(1).toLowerCase()}
+              sx={{color: '#000', backgroundColor: '#f5cb5c', fontWeight: 'bold'}}
+            />
+          ))}
+        </Box>
+      ),
+      sortable: true,
+      width: '200px',
+    },
+
     {
       name: 'Member Since',
       selector: (row) => row.memberSince,
@@ -268,6 +334,8 @@ const Vendors = () => {
                 handleOpen()
                 setInputValue(row)
                 setRowId(row.id)
+                getCategories()
+                setSkills(row.jobSkills)
               }}
             />
             <Delete
@@ -294,8 +362,9 @@ const Vendors = () => {
       city: vendor?.city,
       state: vendor?.state,
       pincode: vendor?.pincode,
-      // noOfJobs: vendor?.noOfJobs,
+      noOfJobs: vendor?.noOfJobs,
       memberSince: moment(vendor?.createdAt).format('DD MMM YY hh:mmA'),
+      jobSkills: vendor?.jobSkills,
       // status: vendor?.status?.charAt(0)?.toUpperCase() + vendor?.status?.substr(1)?.toLowerCase(),
     }
   })
@@ -359,7 +428,15 @@ const Vendors = () => {
         {intl.formatMessage({id: 'MENU.USER_MANAGEMENT.VENDORS'})}
       </PageTitle>
       <Box className='add-button-wrapper'>
-        <Button className='add-button' variant='success' onClick={() => setAddOpen(true)}>
+        <Button
+          className='add-button'
+          variant='success'
+          onClick={() => {
+            setAddOpen(true)
+            getCategories()
+            setSkills([])
+          }}
+        >
           Add New +
         </Button>
       </Box>
@@ -563,6 +640,53 @@ const Vendors = () => {
                 </MenuItem>
               ))}
             </TextField> */}
+          <TextField
+            label='Job Skills'
+            helperText='Select max upto 5 skills'
+            name='jobSkills'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            select
+            required
+            SelectProps={{
+              multiple: true,
+              value: skills,
+              onChange: handleSkills,
+              MenuProps: {
+                style: {height: '300px'},
+              },
+              renderValue: (selected) => (
+                <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1}}>
+                  {selected.map((value) => (
+                    <Chip
+                      key={value}
+                      label={value}
+                      onDelete={() => handleSkillDelete(value)}
+                      onMouseDown={(event) => {
+                        event.stopPropagation()
+                      }}
+                    />
+                  ))}
+                </Box>
+              ),
+            }}
+          >
+            {categories?.map((option) => (
+              <MenuItem key={option.id} value={option.name}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['jobSkills']}
+          </span>
         </DialogContent>
         <Button className='button' size='lg' variant='success' onClick={handleUpdate}>
           Save
@@ -731,6 +855,53 @@ const Vendors = () => {
                 </MenuItem>
               ))}
             </TextField> */}
+          <TextField
+            label='Job Skills'
+            helperText='Select max upto 5 skills'
+            name='jobSkills'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            select
+            required
+            SelectProps={{
+              multiple: true,
+              value: skills,
+              onChange: handleSkills,
+              MenuProps: {
+                style: {height: '300px'},
+              },
+              renderValue: (selected) => (
+                <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1}}>
+                  {selected.map((value) => (
+                    <Chip
+                      key={value}
+                      label={value}
+                      onDelete={() => handleSkillDelete(value)}
+                      onMouseDown={(event) => {
+                        event.stopPropagation()
+                      }}
+                    />
+                  ))}
+                </Box>
+              ),
+            }}
+          >
+            {categories?.map((option) => (
+              <MenuItem key={option.id} value={option.name}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['jobSkills']}
+          </span>
         </DialogContent>
         <Button className='button' size='lg' variant='success' onClick={handleAdd}>
           Save

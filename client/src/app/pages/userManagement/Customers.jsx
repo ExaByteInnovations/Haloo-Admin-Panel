@@ -207,6 +207,7 @@ const Customers = () => {
     {
       name: 'Customer Name',
       selector: (row) => row.customerName,
+      cell: (row) => <Box>{row.customerName}</Box>,
       sortable: true,
       width: '200px',
     },
@@ -243,13 +244,12 @@ const Customers = () => {
       sortable: true,
       width: '200px',
     },
-
-    // {
-    //   name: 'No. of Jobs',
-    //   selector: (row) => row.noOfJobs,
-    //   sortable: true,
-    //   width: '150px',
-    // },
+    {
+      name: 'No. of Jobs',
+      selector: (row) => row.noOfJobs,
+      sortable: true,
+      width: '150px',
+    },
     {
       name: 'Member Since',
       selector: (row) => row.memberSince,
@@ -293,7 +293,7 @@ const Customers = () => {
       state: customer?.state,
       pincode: customer?.pincode,
       address: customer?.address,
-      // noOfJobs: customer?.noOfJobs,
+      noOfJobs: customer?.noOfJobs,
       memberSince: moment(customer?.createdAt).format('DD MMM YY hh:mmA'),
       // codStatus:
       //   customer?.codStatus?.charAt(0)?.toUpperCase() +
