@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
@@ -12,6 +12,8 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
+import ClearIcon from '@mui/icons-material/Clear'
+import userImage from '../../../assets/user.png'
 import {
   Box,
   CircularProgress,
@@ -33,6 +35,8 @@ const Customers = () => {
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
   const [errors, setErrors] = useState({})
+  const [filterText, setFilterText] = useState('')
+  const [resetPaginationToggle, setResetPaginationToggle] = useState(false)
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
@@ -90,10 +94,10 @@ const Customers = () => {
       formIsValid = false
       errors['phone'] = '*Please Enter Phone Number!'
     }
-    // if (inputValue && !inputValue.profileImage) {
-    //   formIsValid = false
-    //   errors['profileImage'] = '*Please Select ProfileImage!'
-    // }
+    if (inputValue && !inputValue.profileImage && addOpen) {
+      formIsValid = false
+      errors['profileImage'] = '*Please Select ProfileImage!'
+    }
     if (inputValue && !inputValue.city) {
       formIsValid = false
       errors['city'] = '*Please Enter City!'
@@ -104,7 +108,7 @@ const Customers = () => {
     }
     if (inputValue && !inputValue.pincode) {
       formIsValid = false
-      errors['pincode'] = '*Please Enter Pincode!'
+      errors['pincode'] = '*Please Enter Postal Code!'
     }
     if (inputValue && !inputValue.address) {
       formIsValid = false
@@ -115,65 +119,53 @@ const Customers = () => {
   }
 
   const handleUpdate = async () => {
-    // if (validateForm()) {
-    const imageData = new FormData()
-    // imageData.append('profileImage', inputValue.profileImage)
-    imageData.append('customerName', inputValue.customerName)
-    // imageData.append('emailAddress', inputValue.emailAddress)
-    imageData.append('city', inputValue.city)
-    imageData.append('phone', inputValue.phone)
-    imageData.append('state', inputValue.state)
-    // imageData.append('ageBracket', inputValue.ageBracket)
-    // imageData.append('averageRating', inputValue.averageRating)
-    imageData.append('address', inputValue.address)
-    imageData.append('pincode', inputValue.pincode)
-    // imageData.append('country', inputValue.country)
-    // imageData.append('status', inputValue.status)
-    // imageData.append('codStatus', inputValue.codStatus)
-    // imageData.append('lastAccessOn', inputValue.lastAccessOn)
-    try {
-      setLoading(true)
-      const response = await ApiPut(`usermanagement/customer?_id=${rowId}`, inputValue)
+    if (validateForm()) {
+      const imageData = new FormData()
+      imageData.append('profileImage', inputValue.profileImage)
+      imageData.append('customerName', inputValue.customerName)
+      imageData.append('city', inputValue.city)
+      imageData.append('phone', inputValue.phone)
+      imageData.append('state', inputValue.state)
+      imageData.append('address', inputValue.address)
+      imageData.append('pincode', inputValue.pincode)
+      // imageData.append('status', inputValue.status)
+      // imageData.append('codStatus', inputValue.codStatus)
+      try {
+        setLoading(true)
+        const response = await ApiPut(`usermanagement/customer?_id=${rowId}`, imageData)
 
-      if (response.status === 200) {
-        toast.success('Updated Successfully')
-        setInputValue({})
-        getCustomers()
+        if (response.status === 200) {
+          toast.success('Updated Successfully')
+          setInputValue({})
+          getCustomers()
+        }
+        setLoading(false)
+        handleClose()
+      } catch (err) {
+        toast.error(err.message)
+        setLoading(false)
+        handleClose()
       }
-      setLoading(false)
-      handleClose()
-    } catch (err) {
-      toast.error(err.message)
-      setLoading(false)
-      handleClose()
     }
-    // }
   }
 
   const handleAdd = async () => {
     if (validateForm()) {
       const imageData = new FormData()
-      // imageData.append('profileImage', inputValue.profileImage)
-      imageData.append('customerName', inputValue.customerName)
-      // imageData.append('emailAddress', inputValue.emailAddress)
-      imageData.append('city', inputValue.city)
-      imageData.append('phone', inputValue.phone)
-      imageData.append('state', inputValue.state)
-      // imageData.append('ageBracket', inputValue.ageBracket)
-      // imageData.append('averageRating', inputValue.averageRating)
-      imageData.append('address', inputValue.address)
-      imageData.append('pincode', inputValue.pincode)
-      // imageData.append('country', inputValue.country)
-      // imageData.append('status', inputValue.status)
-      // imageData.append('codStatus', inputValue.codStatus)
-      // imageData.append('lastAccessOn', inputValue.lastAccessOn)
+      imageData.append('profileImage', inputValue?.profileImage || '')
+      imageData.append('customerName', inputValue?.customerName)
+      imageData.append('city', inputValue?.city || '')
+      imageData.append('phone', inputValue?.phone)
+      imageData.append('state', inputValue?.state || '')
+      imageData.append('address', inputValue?.address || '')
+      imageData.append('pincode', inputValue?.pincode || '')
+      imageData.append('type', 'customer')
+      // imageData.append('status', inputValue?.status)
+      // imageData.append('codStatus', inputValue?.codStatus)
 
       try {
         setLoading(true)
-        const response = await ApiPost(`usermanagement/customer?type=customer`, {
-          ...inputValue,
-          type: 'customer',
-        })
+        const response = await ApiPost(`usermanagement/customer?type=customer`, imageData)
         if (response.status === 200) {
           toast.success('Added Successfully')
           getCustomers()
@@ -201,24 +193,23 @@ const Customers = () => {
   }
 
   const columns = [
-    // {
-    //   name: 'Profile Image',
-    //   cell: (row) => {
-    //     return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.profileImage} />
-    //   },
-    // },
+    {
+      name: 'Profile Image',
+      cell: (row) => {
+        return (
+          <Image
+            className='image'
+            src={row.profileImage ? process.env.REACT_APP_SERVER_URL + row.profileImage : userImage}
+          />
+        )
+      },
+    },
     {
       name: 'Customer Name',
       selector: (row) => row.customerName,
       sortable: true,
       width: '200px',
     },
-    // {
-    //   name: 'Email Address',
-    //   selector: (row) => row.emailAddress,
-    //   sortable: true,
-    //   width: '200px',
-    // },
     {
       name: 'Phone',
       selector: (row) => row.phone,
@@ -259,47 +250,12 @@ const Customers = () => {
     //   sortable: true,
     //   width: '150px',
     // },
-    // {
-    //   name: 'Average Rating',
-    //   selector: (row) => row.avgRating,
-    //   cell: (row) => (
-    //     <>
-    //       {[...Array(row.rating)].map(() => (
-    //         <div className='rating'>
-    //           <div className='rating-label me-2 checked'>
-    //             <i className='bi bi-star-fill fs-5'></i>
-    //           </div>
-    //         </div>
-    //       ))}
-    //     </>
-    //   ),
-    //   sortable: true,
-    //   width: '150px',
-    // },
     {
       name: 'Member Since',
       selector: (row) => row.memberSince,
       sortable: true,
       width: '150px',
     },
-    // {
-    //   name: 'Last Access',
-    //   selector: (row) => row.lastAccessOn,
-    //   sortable: true,
-    //   width: '150px',
-    // },
-    // {
-    //   name: 'COD Status',
-    //   selector: (row) => row.codStatus,
-    //   sortable: true,
-    //   width: '150px',
-    // },
-    // {
-    //   name: 'Status',
-    //   selector: (row) => row.status,
-    //   sortable: true,
-    //   width: '150px',
-    // },
     {
       name: 'Action',
       cell: (row) => {
@@ -330,19 +286,15 @@ const Customers = () => {
   const data = customers?.map((customer) => {
     return {
       id: customer?._id,
-      // profileImage: customer?.profileImage,
+      profileImage: customer?.profileImage,
       customerName: customer?.customerName,
-      // emailAddress: customer?.emailAddress,
       phone: customer?.phone,
       city: customer?.city,
       state: customer?.state,
       pincode: customer?.pincode,
       address: customer?.address,
-      // ageBracket: customer?.ageBracket,
       // noOfJobs: customer?.noOfJobs,
-      // avgRating: customer?.avgRating,
       memberSince: moment(customer?.createdAt).format('DD MMM YY hh:mmA'),
-      // lastAccessOn: moment(customer?.lastAccessOn).format('DD MMM YY hh:mmA'),
       // codStatus:
       //   customer?.codStatus?.charAt(0)?.toUpperCase() +
       //   customer?.codStatus?.substr(1)?.toLowerCase(),
@@ -350,6 +302,46 @@ const Customers = () => {
       //   customer?.status?.charAt(0)?.toUpperCase() + customer?.status?.substr(1)?.toLowerCase(),
     }
   })
+
+  const filteredItems = data.filter(
+    (item) =>
+      (item.phone && item.phone.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.customerName && item.customerName.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.pincode && item.pincode.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.city && item.city.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.state && item.state.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.address && item.address.toLowerCase().includes(filterText.toLowerCase()))
+  )
+
+  const subHeaderComponentMemo = useMemo(() => {
+    const handleClear = () => {
+      if (filterText) {
+        setResetPaginationToggle(!resetPaginationToggle)
+        setFilterText('')
+      }
+    }
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          position: 'relative',
+          lineHeight: '1.5',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+        }}
+      >
+        <TextField
+          className='input-search'
+          placeholder='Search'
+          variant='outlined'
+          margin='dense'
+          onChange={(e) => setFilterText(e.target.value)}
+          value={filterText}
+        />
+        <ClearIcon className='input-clear-button' onClick={handleClear} />
+      </Box>
+    )
+  }, [filterText, resetPaginationToggle])
 
   // const status = [
   //   {label: 'Active', value: 'Active'},
@@ -369,17 +361,21 @@ const Customers = () => {
       <PageTitle breadcrumbs={[]}>
         {intl.formatMessage({id: 'MENU.USER_MANAGEMENT.CUSTOMERS'})}
       </PageTitle>
-      <Box className='add-button-wrapper' onClick={() => setAddOpen(true)}>
-        <Button className='add-button' variant='success'>
+      <Box className='add-button-wrapper'>
+        <Button className='add-button' variant='success' onClick={() => setAddOpen(true)}>
           Add New +
         </Button>
       </Box>
       <DataTable
         columns={columns}
-        data={data}
+        data={filteredItems}
         fixedHeader
-        fixedHeaderScrollHeight='55vh'
+        fixedHeaderScrollHeight='51vh'
         pagination
+        paginationResetDefaultPage={resetPaginationToggle}
+        subHeader
+        subHeaderComponent={subHeaderComponentMemo}
+        persistTableHead
         highlightOnHover
         responsive
         striped
@@ -418,9 +414,8 @@ const Customers = () => {
             </Box>
           </Box>
         </DialogTitle>
-        {/* <form onSubmit={handleUpdate}> */}
         <DialogContent>
-          {/* <TextField
+          <TextField
             InputLabelProps={{shrink: true}}
             label='Profile Image'
             type={'file'}
@@ -429,7 +424,7 @@ const Customers = () => {
             fullWidth
             variant='standard'
             margin='dense'
-          /> */}
+          />
           <TextField
             label='Customer Name'
             type={'text'}
@@ -439,6 +434,7 @@ const Customers = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.customerName}
+            required
           />
           <span
             style={{
@@ -449,18 +445,8 @@ const Customers = () => {
           >
             {errors['customerName']}
           </span>
-          {/* <TextField
-              label='Email Address'
-              type={'email'}
-              onChange={(e) => handleChange(e)}
-              name='emailAddress'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              value={inputValue?.emailAddress}
-            /> */}
           <TextField
-            label='phone'
+            label='Phone'
             type={'tel'}
             onChange={(e) => handleChange(e)}
             name='phone'
@@ -468,6 +454,7 @@ const Customers = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.phone}
+            required
           />
           <span
             style={{
@@ -487,6 +474,7 @@ const Customers = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.pincode}
+            required
           />
           <span
             style={{
@@ -506,6 +494,7 @@ const Customers = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.city}
+            required
           />
           <span
             style={{
@@ -525,6 +514,7 @@ const Customers = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.state}
+            required
           />
           <span
             style={{
@@ -544,6 +534,7 @@ const Customers = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.address}
+            required
           />
           <span
             style={{
@@ -554,33 +545,6 @@ const Customers = () => {
           >
             {errors['address']}
           </span>
-          {/* <TextField
-              label='Age Bracket'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='ageBracket'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              value={inputValue?.ageBracket}
-            /> */}
-          {/* <TextField
-              label='Average Rating'
-              onChange={(e) => handleChange(e)}
-              name='avgRating'
-              select
-              fullWidth
-              variant='standard'
-              margin='dense'
-              value={inputValue?.avgRating}
-              defaultValue={inputValue?.avgRating}
-            >
-              {[1, 2, 3, 4, 5].map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField> */}
           {/* <TextField
               label='Cod Status'
               onChange={(e) => handleChange(e)}
@@ -625,7 +589,6 @@ const Customers = () => {
         <Button className='button' size='lg' variant='success' onClick={handleUpdate}>
           Save
         </Button>
-        {/* </form> */}
       </Dialog>
 
       <Dialog open={addOpen} onClose={handleClose} fullWidth maxWidth='xs'>
@@ -639,9 +602,8 @@ const Customers = () => {
             </Box>
           </Box>
         </DialogTitle>
-        {/* <form onSubmit={handleAdd}> */}
         <DialogContent>
-          {/* <TextField
+          <TextField
             InputLabelProps={{shrink: true}}
             label='Profile Image'
             type={'file'}
@@ -651,7 +613,16 @@ const Customers = () => {
             variant='standard'
             margin='dense'
             required
-          /> */}
+          />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['profileImage']}
+          </span>
           <TextField
             label='Customer Name'
             type={'text'}
@@ -671,18 +642,8 @@ const Customers = () => {
           >
             {errors['customerName']}
           </span>
-          {/* <TextField
-              label='Email Address'
-              type={'email'}
-              onChange={(e) => handleChange(e)}
-              name='emailAddress'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              required
-            /> */}
           <TextField
-            label='phone'
+            label='Phone'
             type={'tel'}
             onChange={(e) => handleChange(e)}
             name='phone'
@@ -777,32 +738,6 @@ const Customers = () => {
             {errors['address']}
           </span>
           {/* <TextField
-              label='Age Bracket'
-              type={'text'}
-              onChange={(e) => handleChange(e)}
-              name='ageBracket'
-              fullWidth
-              variant='standard'
-              margin='dense'
-              required
-            /> */}
-          {/* <TextField
-              label='Average Rating'
-              onChange={(e) => handleChange(e)}
-              name='avgRating'
-              select
-              fullWidth
-              variant='standard'
-              margin='dense'
-              required
-            >
-              {[1, 2, 3, 4, 5].map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField> */}
-          {/* <TextField
               label='Cod Status'
               onChange={(e) => handleChange(e)}
               name='codStatus'
@@ -838,7 +773,6 @@ const Customers = () => {
         <Button className='button' size='lg' variant='success' onClick={handleAdd}>
           Save
         </Button>
-        {/* </form> */}
       </Dialog>
     </>
   )

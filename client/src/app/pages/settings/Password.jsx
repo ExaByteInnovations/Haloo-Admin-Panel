@@ -5,22 +5,17 @@ import {PageTitle} from '../../../_metronic/layout/core'
 import {ApiPost} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
 import {Button} from 'react-bootstrap'
-import {Modal} from 'react-bootstrap'
 import {Box, CircularProgress, TextField} from '@material-ui/core'
 import '../../App.css'
 import {AuthContext} from '../../auth/authContext'
+import * as authUtil from '../../../utils/auth.util'
 
 const Password = () => {
   const intl = useIntl()
   const {user, dispatch} = useContext(AuthContext)
   const [inputValue, setInputValue] = useState({})
   const [loading, setLoading] = useState(false)
-  const [show, setShow] = useState(false)
   const [errors, setErrors] = useState({})
-
-  const handleClose = () => {
-    setShow(false)
-  }
 
   const validateForm = () => {
     let formIsValid = true
@@ -55,6 +50,21 @@ const Password = () => {
     return formIsValid
   }
 
+  const logout = async () => {
+    try {
+      const response = await ApiPost('auth/admin/logout', {email: user?.email})
+      if (response.status === 200) {
+        dispatch({
+          type: 'LOGOUT',
+        })
+        authUtil.logout()
+        // toast.success(response.data)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
   const handleUpdate = async () => {
     if (validateForm()) {
       try {
@@ -71,16 +81,12 @@ const Password = () => {
             type: 'UPDATE_SUCCESS',
             payload: response.data,
           })
-          dispatch({
-            type: 'LOGOUT',
-          })
+          logout()
         }
         setLoading(false)
-        handleClose()
       } catch (err) {
         toast.error(err.message)
         setLoading(false)
-        handleClose()
       }
     }
   }
@@ -104,22 +110,6 @@ const Password = () => {
       <PageTitle breadcrumbs={[]}>
         {intl.formatMessage({id: 'MENU.SETTINGS.CHANGE_PASSWORD'})}
       </PageTitle>
-      {/* <Modal show={show} onHide={handleClose}>
-        <>
-          <Modal.Header closeButton>
-            <Modal.Title className='text-danger'>Alert!</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>Are you sure you want to Update the Password</Modal.Body>
-          <Modal.Footer>
-            <Button variant='secondary' onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button variant='danger' onClick={handleUpdate}>
-              Update
-            </Button>
-          </Modal.Footer>
-        </>
-      </Modal> */}
       <Box className='settings-form'>
         <TextField
           className='settings-field'

@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useIntl} from 'react-intl'
 import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
@@ -7,7 +7,8 @@ import {ApiGet, ApiPut} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
 import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
-import {Box, CircularProgress} from '@material-ui/core'
+import {Box, CircularProgress, TextField} from '@material-ui/core'
+import ClearIcon from '@mui/icons-material/Clear'
 import '../../App.css'
 
 const CodEnable = () => {
@@ -17,6 +18,8 @@ const CodEnable = () => {
   const [show, setShow] = useState(false)
   const [rowId, setRowId] = useState('')
   const [codStatus, setCodStatus] = useState('')
+  const [filterText, setFilterText] = useState('')
+  const [resetPaginationToggle, setResetPaginationToggle] = useState(false)
   const handleClose = () => {
     setShow(false)
   }
@@ -96,6 +99,40 @@ const CodEnable = () => {
     }
   })
 
+  const filteredItems = data.filter(
+    (item) => item.userName && item.userName.toLowerCase().includes(filterText.toLowerCase())
+  )
+
+  const subHeaderComponentMemo = useMemo(() => {
+    const handleClear = () => {
+      if (filterText) {
+        setResetPaginationToggle(!resetPaginationToggle)
+        setFilterText('')
+      }
+    }
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          position: 'relative',
+          lineHeight: '1.5',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+        }}
+      >
+        <TextField
+          className='input-search'
+          placeholder='Search by User Name'
+          variant='outlined'
+          margin='dense'
+          onChange={(e) => setFilterText(e.target.value)}
+          value={filterText}
+        />
+        <ClearIcon className='input-clear-button' onClick={handleClear} />
+      </Box>
+    )
+  }, [filterText, resetPaginationToggle])
+
   if (loading) {
     return (
       <Box className='loader'>
@@ -111,10 +148,14 @@ const CodEnable = () => {
       </PageTitle>
       <DataTable
         columns={columns}
-        data={data}
+        data={filteredItems}
         fixedHeader
         fixedHeaderScrollHeight='61vh'
         pagination
+        paginationResetDefaultPage={resetPaginationToggle}
+        subHeader
+        subHeaderComponent={subHeaderComponentMemo}
+        persistTableHead
         highlightOnHover
         responsive
         striped

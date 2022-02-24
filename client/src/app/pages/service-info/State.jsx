@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useIntl} from 'react-intl'
 import {Edit, Delete} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
@@ -9,6 +9,7 @@ import {toast} from 'react-toastify'
 import Dialog from '@material-ui/core/Dialog'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
+import ClearIcon from '@mui/icons-material/Clear'
 import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
 import {
@@ -32,6 +33,9 @@ const State = () => {
   const [inputValue, setInputValue] = useState({})
   const [errors, setErrors] = useState({})
 
+  const [filterText, setFilterText] = useState('')
+  const [resetPaginationToggle, setResetPaginationToggle] = useState(false)
+
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
@@ -53,7 +57,6 @@ const State = () => {
       }
       setLoading(false)
     } catch (err) {
-      console.log(err)
       toast.error(err.message)
       setLoading(false)
     }
@@ -94,7 +97,6 @@ const State = () => {
     }
 
     setErrors(errors)
-    console.log('errors', errors)
     return formIsValid
   }
 
@@ -199,6 +201,42 @@ const State = () => {
     }
   })
 
+  const filteredItems = data.filter(
+    (item) =>
+      (item.stateName && item.stateName.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.status && item.status.toLowerCase().includes(filterText.toLowerCase()))
+  )
+
+  const subHeaderComponentMemo = useMemo(() => {
+    const handleClear = () => {
+      if (filterText) {
+        setResetPaginationToggle(!resetPaginationToggle)
+        setFilterText('')
+      }
+    }
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          position: 'relative',
+          lineHeight: '1.5',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+        }}
+      >
+        <TextField
+          className='input-search'
+          placeholder='Search'
+          variant='outlined'
+          margin='dense'
+          onChange={(e) => setFilterText(e.target.value)}
+          value={filterText}
+        />
+        <ClearIcon className='input-clear-button' onClick={handleClear} />
+      </Box>
+    )
+  }, [filterText, resetPaginationToggle])
+
   const status = [
     {label: 'Active', value: 'Active'},
     {label: 'Inactive', value: 'Inactive'},
@@ -215,17 +253,21 @@ const State = () => {
   return (
     <>
       <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.SERVICE_INFO.STATE'})}</PageTitle>
-      <Box className='add-button-wrapper' onClick={() => setAddOpen(true)}>
-        <Button className='add-button' variant='success'>
+      <Box className='add-button-wrapper'>
+        <Button className='add-button' variant='success' onClick={() => setAddOpen(true)}>
           Add New +
         </Button>
       </Box>
       <DataTable
         columns={columns}
-        data={data}
+        data={filteredItems}
         fixedHeader
         fixedHeaderScrollHeight='61vh'
         pagination
+        paginationResetDefaultPage={resetPaginationToggle}
+        subHeader
+        subHeaderComponent={subHeaderComponentMemo}
+        persistTableHead
         highlightOnHover
         responsive
         striped
@@ -273,6 +315,7 @@ const State = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.stateName}
+            required
           />
           <span
             style={{
@@ -311,10 +354,7 @@ const State = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.status}
-            defaultValue={
-              inputValue?.status?.charAt(0)?.toUpperCase() +
-              inputValue?.status?.substr(1)?.toLowerCase()
-            }
+            required
             select
           >
             {status.map((option) => (
@@ -366,6 +406,7 @@ const State = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            required
           />
           <span
             style={{
@@ -403,6 +444,7 @@ const State = () => {
             variant='standard'
             margin='dense'
             select
+            required
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>

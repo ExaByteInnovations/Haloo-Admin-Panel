@@ -11,6 +11,7 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
+import ClearIcon from '@mui/icons-material/Clear'
 import {
   Box,
   CircularProgress,
@@ -33,24 +34,8 @@ const Category = () => {
   const [inputValue, setInputValue] = useState({})
   const [errors, setErrors] = useState({})
 
-  console.log(categories, 'categories')
-
-  // const [filterText, setFilterText] = useState('')
-  // const [resetPaginationToggle, setResetPaginationToggle] = useState(false)
-  // const filteredItems = categories.filter(
-  //   (item) =>
-  //     item.categoryName && item.categoryName.toLowerCase().includes(filterText.toLowerCase())
-  // )
-
-  // const subHeaderComponentMemo = useMemo(() => {
-  //   return (
-  //     <TextField
-  //       variant='outlined'
-  //       onChange={(e) => setFilterText(e.target.value)}
-  //       value={filterText}
-  //     />
-  //   )
-  // }, [filterText, resetPaginationToggle])
+  const [filterText, setFilterText] = useState('')
+  const [resetPaginationToggle, setResetPaginationToggle] = useState(false)
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
@@ -97,30 +82,30 @@ const Category = () => {
   }
 
   const handleUpdate = async () => {
-    // if (validateForm()) {
-    const imageData = new FormData()
-    imageData.append('image', inputValue.image)
-    // imageData.append('hoverImage', inputValue.hoverImage)
-    imageData.append('categoryName', inputValue.categoryName)
-    imageData.append('sequenceNumber', inputValue.sequenceNumber)
-    imageData.append('status', inputValue.status)
-    try {
-      setLoading(true)
-      const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, imageData)
-      if (response.status === 200) {
-        toast.success('Updated Successfully')
-        setInputValue({})
-        setErrors({})
-        getCategories()
+    if (validateForm()) {
+      const imageData = new FormData()
+      imageData.append('image', inputValue.image)
+      // imageData.append('hoverImage', inputValue.hoverImage)
+      imageData.append('categoryName', inputValue.categoryName)
+      imageData.append('sequenceNumber', inputValue.sequenceNumber)
+      imageData.append('status', inputValue.status)
+      try {
+        setLoading(true)
+        const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, imageData)
+        if (response.status === 200) {
+          toast.success('Updated Successfully')
+          setInputValue({})
+          setErrors({})
+          getCategories()
+        }
+        setLoading(false)
+        handleClose()
+      } catch (err) {
+        toast.error(err.message)
+        setLoading(false)
+        handleClose()
       }
-      setLoading(false)
-      handleClose()
-    } catch (err) {
-      toast.error(err.message)
-      setLoading(false)
-      handleClose()
     }
-    // }
   }
 
   const handleChange = (e) => {
@@ -146,7 +131,7 @@ const Category = () => {
       formIsValid = false
       errors['sequenceNumber'] = '*Please Enter Sequence Number!'
     }
-    if (inputValue && !inputValue.image) {
+    if (inputValue && !inputValue.image && addOpen) {
       formIsValid = false
       errors['image'] = '*Please Select Image!'
     }
@@ -191,15 +176,15 @@ const Category = () => {
 
   const columns = [
     {
+      name: 'Sequence Number',
+      selector: (row) => row.sequenceNumber,
+      sortable: true,
+    },
+    {
       name: 'Category Name',
       selector: (row) => row.categoryName,
       sortable: true,
       width: '200px',
-    },
-    {
-      name: 'Sequence Number',
-      selector: (row) => row.sequenceNumber,
-      sortable: true,
     },
     {
       name: 'Image',
@@ -257,6 +242,43 @@ const Category = () => {
     }
   })
 
+  const filteredItems = data.filter(
+    (item) =>
+      (item.categoryName && item.categoryName.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.sequenceNumber && item.sequenceNumber == filterText) ||
+      (item.status && item.status.toLowerCase().includes(filterText.toLowerCase()))
+  )
+
+  const subHeaderComponentMemo = useMemo(() => {
+    const handleClear = () => {
+      if (filterText) {
+        setResetPaginationToggle(!resetPaginationToggle)
+        setFilterText('')
+      }
+    }
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          position: 'relative',
+          lineHeight: '1.5',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+        }}
+      >
+        <TextField
+          className='input-search'
+          placeholder='Search'
+          variant='outlined'
+          margin='dense'
+          onChange={(e) => setFilterText(e.target.value)}
+          value={filterText}
+        />
+        <ClearIcon className='input-clear-button' onClick={handleClear} />
+      </Box>
+    )
+  }, [filterText, resetPaginationToggle])
+
   const status = [
     {label: 'Active', value: 'Active'},
     {label: 'Inactive', value: 'Inactive'},
@@ -275,20 +297,21 @@ const Category = () => {
       <PageTitle breadcrumbs={[]}>
         {intl.formatMessage({id: 'MENU.SERVICE_INFO.CATEGORY'})}
       </PageTitle>
-      <Box className='add-button-wrapper' onClick={() => setAddOpen(true)}>
-        <Button className='add-button' variant='success'>
+      <Box className='add-button-wrapper'>
+        <Button className='add-button' variant='success' onClick={() => setAddOpen(true)}>
           Add New +
         </Button>
       </Box>
       <DataTable
         columns={columns}
-        data={data}
+        data={filteredItems}
         fixedHeader
         fixedHeaderScrollHeight='55vh'
         pagination
-        // paginationResetDefaultPage={resetPaginationToggle}
-        // subHeader
-        // subHeaderComponent={subHeaderComponentMemo}
+        paginationResetDefaultPage={resetPaginationToggle}
+        subHeader
+        subHeaderComponent={subHeaderComponentMemo}
+        persistTableHead
         highlightOnHover
         responsive
         striped
@@ -336,6 +359,7 @@ const Category = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.categoryName}
+            required
           />
           <span
             style={{
@@ -356,6 +380,7 @@ const Category = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.sequenceNumber}
+            required
           />
           <span
             style={{
@@ -376,7 +401,7 @@ const Category = () => {
             variant='standard'
             margin='dense'
           />
-          <span
+          {/* <span
             style={{
               color: 'red',
               top: '5px',
@@ -384,7 +409,7 @@ const Category = () => {
             }}
           >
             {errors['image']}
-          </span>
+          </span> */}
           {/* <TextField
             InputLabelProps={{shrink: true}}
             label='Hover Image'
@@ -413,11 +438,8 @@ const Category = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.status}
-            defaultValue={
-              inputValue?.status?.charAt(0)?.toUpperCase() +
-              inputValue?.status?.substr(1)?.toLowerCase()
-            }
             select
+            required
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>
@@ -461,6 +483,7 @@ const Category = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            required
           />
           <span
             style={{
@@ -479,6 +502,7 @@ const Category = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            required
           />
           <span
             style={{
@@ -498,6 +522,7 @@ const Category = () => {
             fullWidth
             variant='standard'
             margin='dense'
+            required
           />
           <span
             style={{
@@ -536,6 +561,7 @@ const Category = () => {
             variant='standard'
             margin='dense'
             select
+            required
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>
