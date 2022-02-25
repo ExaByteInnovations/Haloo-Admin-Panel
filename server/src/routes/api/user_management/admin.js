@@ -78,7 +78,7 @@ router.delete('/', async function (req, res) {
       .then((item) => {
         if (item.profileImage) {
           fs.unlink(item.profileImage, (err) => {
-            if (err) throw err;
+            if (err) console.log(err);
             console.log('successfully deleted profileImage');
           });
         }
