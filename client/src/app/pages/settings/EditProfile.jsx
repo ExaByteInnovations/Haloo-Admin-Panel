@@ -68,7 +68,6 @@ const EditProfile = () => {
     }
 
     setErrors(errors)
-    console.log('errors', errors)
     if (formIsValid) setShow(true)
     return formIsValid
   }

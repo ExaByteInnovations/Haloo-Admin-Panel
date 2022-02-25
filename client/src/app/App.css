@@ -95,3 +95,17 @@
 .ck-editor__editable {
   min-height: 55vh;
 }
+
+.input-search {
+  margin-right: 2px !important;
+  width: 180px !important;
+}
+.input-clear-button {
+  position: absolute;
+  right: 9px;
+  cursor: pointer;
+}
+.input-clear-button:hover {
+  transform: scale(1.1, 1.1) !important;
+  color: #b33030 !important;
+}

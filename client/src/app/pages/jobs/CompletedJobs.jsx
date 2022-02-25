@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
@@ -7,17 +7,18 @@ import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
 import {ApiGet, ApiDelete, ApiPut} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
-import Dialog from '@material-ui/core/Dialog'
-import IconButton from '@material-ui/core/IconButton'
-import CloseIcon from '@material-ui/icons/Close'
+import ClearIcon from '@mui/icons-material/Clear'
+// import Dialog from '@material-ui/core/Dialog'
+// import IconButton from '@material-ui/core/IconButton'
+// import CloseIcon from '@material-ui/icons/Close'
 import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
 import {
   Box,
   CircularProgress,
-  DialogContent,
-  DialogTitle,
-  MenuItem,
+  // DialogContent,
+  // DialogTitle,
+  // MenuItem,
   TextField,
 } from '@material-ui/core'
 import '../../App.css'
@@ -26,14 +27,16 @@ const CompletedJobs = () => {
   const intl = useIntl()
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(false)
-  const [open, setOpen] = useState(false)
+  // const [open, setOpen] = useState(false)
   const [show, setShow] = useState(false)
   const [rowId, setRowId] = useState('')
-  const [inputValue, setInputValue] = useState({})
+  const [filterText, setFilterText] = useState('')
+  const [resetPaginationToggle, setResetPaginationToggle] = useState(false)
+  // const [inputValue, setInputValue] = useState({})
 
-  const handleOpen = () => setOpen(true)
+  // const handleOpen = () => setOpen(true)
   const handleClose = () => {
-    setOpen(false)
+    // setOpen(false)
     setShow(false)
   }
 
@@ -72,26 +75,26 @@ const CompletedJobs = () => {
     }
   }
 
-  const handleUpdate = async (rowId) => {
-    try {
-      setLoading(true)
-      const response = await ApiPut(`job?_id=${rowId}`, inputValue)
-      if (response.status === 200) {
-        toast.success('Updated Successfully')
-        setInputValue({})
-        getJobs()
-      }
-      setLoading(false)
-    } catch (err) {
-      toast.error(err.message)
-      setLoading(false)
-    }
-  }
+  // const handleUpdate = async (rowId) => {
+  //   try {
+  //     setLoading(true)
+  //     const response = await ApiPut(`job?_id=${rowId}`, inputValue)
+  //     if (response.status === 200) {
+  //       toast.success('Updated Successfully')
+  //       setInputValue({})
+  //       getJobs()
+  //     }
+  //     setLoading(false)
+  //   } catch (err) {
+  //     toast.error(err.message)
+  //     setLoading(false)
+  //   }
+  // }
 
-  const handleChange = (e) => {
-    const {name, value} = e.target
-    setInputValue({...inputValue, [name]: value})
-  }
+  // const handleChange = (e) => {
+  //   const {name, value} = e.target
+  //   setInputValue({...inputValue, [name]: value})
+  // }
 
   const columns = [
     {
@@ -159,14 +162,14 @@ const CompletedJobs = () => {
       cell: (row) => {
         return (
           <>
-            <Edit
+            {/* <Edit
               className='icon'
               onClick={() => {
                 handleOpen()
                 setRowId(row.id)
                 setInputValue(row)
               }}
-            />
+            /> */}
             <Delete
               className='icon'
               color='error'
@@ -186,7 +189,7 @@ const CompletedJobs = () => {
       id: job?._id,
       jobTitle: job?.jobTitle,
       // quote: job?.quote,
-      city: job?.customerDetails[0]?.city,
+      city: job?.city,
       jobTotal: job?.jobTotal,
       customer: job?.customerDetails[0]?.customerName,
       // propertyName: job?.propertyName,
@@ -197,11 +200,51 @@ const CompletedJobs = () => {
     }
   })
 
-  const status = [
-    {label: 'pending', value: 'pending'},
-    {label: 'completed', value: 'completed'},
-    {label: 'disputed', value: 'disputed'},
-  ]
+  const filteredItems = data.filter(
+    (item) =>
+      (item.jobTitle && item.jobTitle.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.jobTotal &&
+        item.jobTotal.toString().toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.city && item.city.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.customer && item.customer.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.vendor && item.vendor.toLowerCase().includes(filterText.toLowerCase()))
+  )
+
+  const subHeaderComponentMemo = useMemo(() => {
+    const handleClear = () => {
+      if (filterText) {
+        setResetPaginationToggle(!resetPaginationToggle)
+        setFilterText('')
+      }
+    }
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          position: 'relative',
+          lineHeight: '1.5',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+        }}
+      >
+        <TextField
+          className='input-search'
+          placeholder='Search'
+          variant='outlined'
+          margin='dense'
+          onChange={(e) => setFilterText(e.target.value)}
+          value={filterText}
+        />
+        <ClearIcon className='input-clear-button' onClick={handleClear} />
+      </Box>
+    )
+  }, [filterText, resetPaginationToggle])
+
+  // const status = [
+  //   {label: 'pending', value: 'pending'},
+  //   {label: 'completed', value: 'completed'},
+  //   {label: 'disputed', value: 'disputed'},
+  // ]
 
   if (loading) {
     return (
@@ -216,10 +259,14 @@ const CompletedJobs = () => {
       <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.JOBS.COMPLETED_JOBS'})}</PageTitle>
       <DataTable
         columns={columns}
-        data={data}
+        data={filteredItems}
         fixedHeader
         fixedHeaderScrollHeight='61vh'
         pagination
+        paginationResetDefaultPage={resetPaginationToggle}
+        subHeader
+        subHeaderComponent={subHeaderComponentMemo}
+        persistTableHead
         highlightOnHover
         responsive
         striped
@@ -245,7 +292,7 @@ const CompletedJobs = () => {
           </Modal.Footer>
         </>
       </Modal>
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth='xs'>
+      {/* <Dialog open={open} onClose={handleClose} fullWidth maxWidth='xs'>
         <DialogTitle>
           <Box sx={{display: 'flex'}}>
             <Box flexGrow={1}>Edit Row</Box>
@@ -267,7 +314,7 @@ const CompletedJobs = () => {
             margin='dense'
             value={inputValue?.jobTitle}
           />
-          {/* <TextField
+          <TextField
             label='Quote'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -276,8 +323,8 @@ const CompletedJobs = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.quote}
-          /> */}
-          {/* <TextField
+          />
+          <TextField
             label='City'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -286,7 +333,7 @@ const CompletedJobs = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.city}
-          /> */}
+          />
           <TextField
             label='Job Total'
             inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
@@ -297,7 +344,7 @@ const CompletedJobs = () => {
             margin='dense'
             value={inputValue?.jobTotal}
           />
-          {/* <TextField
+          <TextField
             label='Customer'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -306,8 +353,8 @@ const CompletedJobs = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.customer}
-          /> */}
-          {/* <TextField
+          />
+          <TextField
             label='Property Name'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -316,8 +363,8 @@ const CompletedJobs = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.propertyName}
-          /> */}
-          {/* <TextField
+          />
+          <TextField
             label='Category / Subcategory'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -326,8 +373,8 @@ const CompletedJobs = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.categorySubcategory}
-          /> */}
-          {/* <TextField
+          />
+          <TextField
             label='Vendor'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -336,7 +383,7 @@ const CompletedJobs = () => {
             variant='standard'
             margin='dense'
             value={inputValue?.vendor}
-          /> */}
+          />
           <TextField
             label='Status'
             type={'text'}
@@ -347,7 +394,6 @@ const CompletedJobs = () => {
             margin='dense'
             select
             value={inputValue?.status?.toLowerCase()}
-            // defaultValue={inputValue?.status?.toLowerCase()}
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>
@@ -367,7 +413,7 @@ const CompletedJobs = () => {
         >
           Save
         </Button>
-      </Dialog>
+      </Dialog> */}
     </>
   )
 }
