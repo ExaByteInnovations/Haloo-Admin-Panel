@@ -33,6 +33,9 @@ router.post('/generate_otp', async (req,res) =>{
         customer.otpExpiry = Date.now() + (2 * 60 * 1000);
         await customer.save();
         console.log(otp);
+        if(!customer.type){
+            return res.send({data:{_id:customer._id, newUser:true }});
+        }
         return res.send({data:{_id:customer._id, newUser:false }});
         // return res.status(400).send({error: "Phone number already registered"});
     }else{

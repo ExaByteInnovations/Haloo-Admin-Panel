@@ -74,6 +74,9 @@ const customerSchema = new mongoose.Schema({
         type: String,
         default: 'active',
     },
+    socketId: {
+        type: String,
+    }
   },
     {
       timestamps: true

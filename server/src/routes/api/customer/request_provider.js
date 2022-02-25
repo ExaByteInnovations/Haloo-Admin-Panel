@@ -83,6 +83,27 @@ router.post("/" ,async function(req,res){
     if(!_id){
         return res.status(400).send('Unable to get id from token please relogin');
     }
+    if(!req.body.vendorId){
+        return res.status(400).send('Please provide vendor id');
+    }
+    vendor_details = await Customer.findOne({_id:req.body.vendorId});
+    if(!vendor_details){
+        return res.status(400).send('Vendor not found');
+    }
+    //  if vendor socket id then send socket request to it
+    if(vendor_details.socketId){
+        var socket_id = vendor_details.socketId;
+        var socket_data = {
+            type:'request',
+            data:{
+                customerId:_id,
+                vendorId:req.body.vendorId,
+            }
+        }
+        console.log('socket_data',socket_data);
+        io.to(socket_id).emit('request',socket_data);
+    }
+
 
     var customerId = _id
 
