@@ -26,7 +26,6 @@ const Support = () => {
   const handleClose = () => {
     setShow(false)
   }
-  console.log(support, 'support')
   useEffect(() => {
     getSupport()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -40,7 +39,6 @@ const Support = () => {
       }
       setLoading(false)
     } catch (err) {
-      console.log(err)
       toast.error(err.message)
       setLoading(false)
     }

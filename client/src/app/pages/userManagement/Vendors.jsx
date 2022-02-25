@@ -147,20 +147,18 @@ const Vendors = () => {
   const handleUpdate = async () => {
     if (validateForm()) {
       const imageData = new FormData()
-      imageData.append('profileImage', inputValue.profileImage)
+      imageData.append('profileImage', inputValue.profileImage || '')
       imageData.append('customerName', inputValue.customerName)
       imageData.append('phone', inputValue.phone)
-      imageData.append('city', inputValue.city)
-      imageData.append('state', inputValue.state)
-      imageData.append('address', inputValue.address)
-      imageData.append('pincode', inputValue.pincode)
+      imageData.append('city', inputValue.city || '')
+      imageData.append('state', inputValue.state || '')
+      imageData.append('address', inputValue.address || '')
+      imageData.append('pincode', inputValue.pincode || '')
+      skills.forEach((skill) => imageData.append('jobSkills[]', skill || ''))
       // imageData.append('status', inputValue.status)
       try {
         setLoading(true)
-        const response = await ApiPut(`usermanagement/customer?_id=${rowId}`, {
-          ...imageData,
-          jobSkills: skills,
-        })
+        const response = await ApiPut(`usermanagement/customer?_id=${rowId}`, imageData)
 
         if (response.status === 200) {
           toast.success('Updated Successfully')
@@ -189,14 +187,12 @@ const Vendors = () => {
       imageData.append('address', inputValue?.address || '')
       imageData.append('pincode', inputValue?.pincode || '')
       imageData.append('type', 'vendor')
+      skills.forEach((skill) => imageData.append('jobSkills[]', skill || ''))
       // imageData.append('status', inputValue.status)
 
       try {
         setLoading(true)
-        const response = await ApiPost(`usermanagement/customer`, {
-          ...imageData,
-          jobSkills: skills,
-        })
+        const response = await ApiPost(`usermanagement/customer`, imageData)
         if (response.status === 200) {
           toast.success('Added Successfully')
           getVendors()

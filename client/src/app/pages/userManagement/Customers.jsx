@@ -121,13 +121,13 @@ const Customers = () => {
   const handleUpdate = async () => {
     if (validateForm()) {
       const imageData = new FormData()
-      imageData.append('profileImage', inputValue.profileImage)
+      imageData.append('profileImage', inputValue.profileImage || '')
       imageData.append('customerName', inputValue.customerName)
-      imageData.append('city', inputValue.city)
+      imageData.append('city', inputValue.city || '')
       imageData.append('phone', inputValue.phone)
-      imageData.append('state', inputValue.state)
-      imageData.append('address', inputValue.address)
-      imageData.append('pincode', inputValue.pincode)
+      imageData.append('state', inputValue.state || '')
+      imageData.append('address', inputValue.address || '')
+      imageData.append('pincode', inputValue.pincode || '')
       // imageData.append('status', inputValue.status)
       // imageData.append('codStatus', inputValue.codStatus)
       try {
