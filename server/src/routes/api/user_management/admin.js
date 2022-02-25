@@ -114,7 +114,7 @@ router.put(
           'uploads/images/' + req.files.profileImage[0].filename;
         if (data.profileImage) {
           fs.unlink(data.profileImage, (err) => {
-            if (err) throw err;
+            if (err) console.log(err);
             console.log('successfully deleted profileImage');
           });
         }

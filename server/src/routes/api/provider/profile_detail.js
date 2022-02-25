@@ -240,7 +240,7 @@ router.put("/" ,async function(req,res){
                 return res.status(400).send({error:'Invalid jobskills (array)'});
             }
         }
-
+        var profileImages
         console.log(req.file);
         if (req.file) {
             req.body.profileImage = 'uploads/images/' + req.file.filename;

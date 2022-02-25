@@ -12,38 +12,43 @@ router.get('/provider',async (req,res) =>{
     console.log('Got body:', req.user.loginType);
     if(req.user.loginType == 'user'){
         if(!req.user._id){
-            return res.status(400).send('Unable to get id from token please relogin');
+            return res.status(400).send({error : 'Unable to get id from token please relogin'});
         }
 
         if (req.user._id) {
             req.user._id = ObjectId(req.user._id) 
         }
+
+        if (req.query.online){
+            var online  = req.query.online
+            if(online != "true" && online != "false"){
+                return res.status(400).send({ error : 'online must be bool true/false' })
+            }
+            if(online == "true"){
+                req.query.online = true
+            }else{
+                req.query.online = false
+            }
+        }
+        
+        console.log('Got query:', req.query);     
+
+        
         try {
             // data = await Customer.find(findQuery);
-            var pincode = req.query.pincode;
-            var city = req.query.city;
-            var jobSkill = req.query.jobSkill;
-            var _id = req.query._id;
-            console.log('jobSkill', jobSkill);
-            search_query = {type:'vendor'}
             
             //add values from query search_query
-            if(pincode){
-                search_query.pincode = pincode;
+            if(req.query.jobSkill){
+                req.query.jobSkill = new RegExp(req.query.jobSkill, 'i')
             }
-            if(city){
-                search_query.city = city;
-            }
-            if(jobSkill){
-                search_query.jobSkills = new RegExp(jobSkill, 'i')
-            }
-            if(_id){
-                search_query._id = ObjectId(_id);
+
+            if(req.query._id){
+                req.query._id = ObjectId(req.query._id);
             }
 
             data = await Customer.aggregate([
                 {
-                    $match : search_query
+                    $match : { ...req.query, type:'vendor'}
                 },
                 {
                     $lookup: {
