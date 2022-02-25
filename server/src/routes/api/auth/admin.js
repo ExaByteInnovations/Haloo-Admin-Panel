@@ -32,7 +32,7 @@ router.post(
     });
 
     // Create token
-    const token = jwt.sign({ admin_id: admin._id, email }, 'config.TOKEN_KEY', {
+    const token = await jwt.sign({ admin_id: admin._id, email }, 'config.TOKEN_KEY', {
       expiresIn: '265d',
     });
     // save user token
@@ -78,10 +78,13 @@ router.post('/login', async (req, res) => {
       // save user token
       admin.token = token;
 
+      
+
       // user
+      await admin.save();
       return res.status(200).json(admin);
     }
-    res.status(400).send('Invalid Credentials');
+    return res.status(400).send('Invalid Credentials');
   } catch (err) {
     console.log(err);
   }
