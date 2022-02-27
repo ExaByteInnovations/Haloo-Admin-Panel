@@ -49,26 +49,26 @@ export function AsideMenuMain() {
 
       <AsideMenuItemWithSub
         to='/service-info'
-        icon='/media/icons/duotune/communication/com006.svg'
+        icon='/media/icons/duotune/general/gen008.svg'
         title={intl.formatMessage({id: 'MENU.SERVICE_INFO'})}
         fontIcon='bi-app-indicator'
       >
         <AsideMenuItem to='/service-info/category' title='Category' hasBullet={true} />
         {/* <AsideMenuItem to='/service-info/subcategory' title='Subcategory' hasBullet={true} /> */}
-        <AsideMenuItem to='/service-info/city' title='City' hasBullet={true} />
-        <AsideMenuItem to='/service-info/state' title='State' hasBullet={true} />
+        {/* <AsideMenuItem to='/service-info/city' title='City' hasBullet={true} /> */}
+        {/* <AsideMenuItem to='/service-info/state' title='State' hasBullet={true} /> */}
       </AsideMenuItemWithSub>
 
       <AsideMenuItem
         to='/support'
-        icon='/media/icons/duotune/general/gen019.svg'
+        icon='/media/icons/duotune/communication/com007.svg'
         title='Support'
         fontIcon='bi-layers'
       />
 
       <AsideMenuItemWithSub
         to='/settings'
-        icon='/media/icons/duotune/communication/com006.svg'
+        icon='/media/icons/duotune/coding/cod001.svg'
         title={intl.formatMessage({id: 'MENU.SETTINGS'})}
         fontIcon='bi-app-indicator'
       >

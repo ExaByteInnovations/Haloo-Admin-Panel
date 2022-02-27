@@ -100,7 +100,9 @@ const CodEnable = () => {
   })
 
   const filteredItems = data.filter(
-    (item) => item.userName && item.userName.toLowerCase().includes(filterText.toLowerCase())
+    (item) =>
+      (item.userName && item.userName.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.status && item.status.toLowerCase().includes(filterText.toLowerCase()))
   )
 
   const subHeaderComponentMemo = useMemo(() => {
@@ -122,7 +124,7 @@ const CodEnable = () => {
       >
         <TextField
           className='input-search'
-          placeholder='Search by User Name'
+          placeholder='Search'
           variant='outlined'
           margin='dense'
           onChange={(e) => setFilterText(e.target.value)}

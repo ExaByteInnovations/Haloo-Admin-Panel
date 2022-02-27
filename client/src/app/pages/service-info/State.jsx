@@ -445,6 +445,7 @@ const State = () => {
             margin='dense'
             select
             required
+            defaultValue={' '}
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>

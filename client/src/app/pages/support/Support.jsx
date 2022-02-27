@@ -127,7 +127,11 @@ const Support = () => {
 
   const filteredItems = data.filter(
     (item) =>
-      item?.phoneNumber && item?.phoneNumber.toLowerCase().includes(filterText.toLowerCase())
+      (item?.phoneNumber && item?.phoneNumber.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item?.customerName && item?.customerName.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item?.emailAddress && item?.emailAddress.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item?.query && item?.query.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item?.status && item?.status.toLowerCase().includes(filterText.toLowerCase()))
   )
   const subHeaderComponentMemo = useMemo(() => {
     const handleClear = () => {
@@ -148,7 +152,7 @@ const Support = () => {
       >
         <TextField
           className='input-search'
-          placeholder='Search by Customer Phone No.'
+          placeholder='Search'
           variant='outlined'
           margin='dense'
           onChange={(e) => setFilterText(e.target.value)}

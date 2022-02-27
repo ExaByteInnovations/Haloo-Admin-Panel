@@ -58,7 +58,6 @@ const City = () => {
       }
       setLoading(false)
     } catch (err) {
-      console.log(err)
       toast.error(err.message)
       setLoading(false)
     }
@@ -77,7 +76,6 @@ const City = () => {
       }
       setLoading(false)
     } catch (err) {
-      console.log(err)
       setLoading(false)
     }
   }
@@ -469,6 +467,7 @@ const City = () => {
             margin='dense'
             required
             select
+            defaultValue={' '}
             SelectProps={{
               MenuProps: {
                 style: {height: '300px'},
@@ -500,6 +499,7 @@ const City = () => {
             margin='dense'
             required
             select
+            defaultValue={' '}
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>
