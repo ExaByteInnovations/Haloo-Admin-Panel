@@ -50,7 +50,7 @@ const Topbar: FC = () => {
           data-kt-menu-placement='bottom-end'
           data-kt-menu-flip='bottom'
         >
-          {!imageLoaded && <img src={userImage} />}
+          {!imageLoaded && <img alt='haloo' src={userImage} />}
           <img
             style={imageStyles}
             onLoad={handleImageLoad}

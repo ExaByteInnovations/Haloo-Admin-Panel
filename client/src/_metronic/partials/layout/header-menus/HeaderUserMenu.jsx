@@ -38,7 +38,7 @@ const HeaderUserMenu = () => {
       <div className='menu-item px-3'>
         <div className='menu-content d-flex align-items-center px-3'>
           <div className='symbol symbol-50px me-5'>
-            {!imageLoaded && <img src={userImage} />}
+            {!imageLoaded && <img alt='logo' src={userImage} />}
             <img
               alt='Logo'
               style={imageStyles}
