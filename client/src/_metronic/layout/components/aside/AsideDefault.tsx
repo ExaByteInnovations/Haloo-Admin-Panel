@@ -6,6 +6,7 @@ import clsx from 'clsx'
 import {useLayout} from '../../core'
 import {KTSVG, toAbsoluteUrl} from '../../../helpers'
 import {AsideMenu} from './AsideMenu'
+import logo from '../../../../assets/logo.png'
 
 const AsideDefault: FC = () => {
   const {config, classes} = useLayout()
@@ -30,8 +31,9 @@ const AsideDefault: FC = () => {
           <Link to='/dashboard'>
             <img
               alt='Logo'
-              className='h-25px logo'
-              src={toAbsoluteUrl('/media/logos/logo-1-dark.svg')}
+              className='h-80px w-200px logo'
+              // src={toAbsoluteUrl('/media/logos/logo-1-dark.svg')}
+              src={logo}
             />
           </Link>
         )}
@@ -40,14 +42,15 @@ const AsideDefault: FC = () => {
             <img
               alt='Logo'
               className='h-25px logo'
-              src={toAbsoluteUrl('/media/logos/logo-1.svg')}
+              // src={toAbsoluteUrl('/media/logos/logo-1.svg')}
+              src={logo}
             />
           </Link>
         )}
         {/* end::Logo */}
 
         {/* begin::Aside toggler */}
-        {aside.minimize && (
+        {/* {aside.minimize && (
           <div
             id='kt_aside_toggle'
             className='btn btn-icon w-auto px-0 btn-active-color-primary aside-toggle'
@@ -61,7 +64,7 @@ const AsideDefault: FC = () => {
               className={'svg-icon-1 rotate-180'}
             />
           </div>
-        )}
+        )} */}
         {/* end::Aside toggler */}
       </div>
       {/* end::Brand */}

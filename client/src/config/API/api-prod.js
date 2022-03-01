@@ -1,10 +1,17 @@
 // const protocol = "http";
 // const host = "192.168.29.125:7001/api/v1";
 
-const protocol = 'http'
-const host = 'localhost'
+// const protocol = 'http'
+// const host = 'localhost'
 
-const port = '3000'
+// const port = '3000'
+// const trailUrl = '/api'
+
+// https://halooadmin.herokuapp.com/api/
+const protocol = 'https'
+const host = 'halooadmin.herokuapp.com'
+
+const port = ''
 const trailUrl = '/api'
 
 const hostUrl = `${protocol}://${host}${port ? ':' + port : ''}`

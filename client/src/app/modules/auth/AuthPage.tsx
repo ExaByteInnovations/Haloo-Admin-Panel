@@ -5,6 +5,7 @@ import {Registration} from './components/Registration'
 import {ForgotPassword} from './components/ForgotPassword'
 import {Login} from './components/Login'
 import {toAbsoluteUrl} from '../../../_metronic/helpers'
+import logo from '../../../assets/logo.png'
 
 export function AuthPage() {
   useEffect(() => {
@@ -25,7 +26,12 @@ export function AuthPage() {
       <div className='d-flex flex-center flex-column flex-column-fluid p-10 pb-lg-20'>
         {/* begin::Logo */}
         <a href='#' className='mb-12'>
-          <img alt='Logo' src={toAbsoluteUrl('/media/logos/logo-1.svg')} className='h-45px' />
+          <img
+            alt='Logo'
+            // src={toAbsoluteUrl('/media/logos/logo-1.svg')}
+            src={logo}
+            className='h-80px w-200px'
+          />
         </a>
         {/* end::Logo */}
         {/* begin::Wrapper */}
@@ -42,7 +48,7 @@ export function AuthPage() {
       </div>
       {/* end::Content */}
       {/* begin::Footer */}
-      <div className='d-flex flex-center flex-column-auto p-10'>
+      {/* <div className='d-flex flex-center flex-column-auto p-10'>
         <div className='d-flex align-items-center fw-bold fs-6'>
           <a href='#' className='text-muted text-hover-primary px-2'>
             About
@@ -56,7 +62,7 @@ export function AuthPage() {
             Contact Us
           </a>
         </div>
-      </div>
+      </div> */}
       {/* end::Footer */}
     </div>
   )
