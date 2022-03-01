@@ -21,7 +21,7 @@ import {
   DialogTitle,
 } from '@material-ui/core'
 import '../../App.css'
-import {Image} from 'react-bootstrap-v5'
+// import {Image} from 'react-bootstrap-v5'
 
 const Category = () => {
   const intl = useIntl()
@@ -58,7 +58,6 @@ const Category = () => {
       }
       setLoading(false)
     } catch (err) {
-      console.log(err)
       toast.error(err.message)
       setLoading(false)
     }
@@ -83,15 +82,15 @@ const Category = () => {
 
   const handleUpdate = async () => {
     if (validateForm()) {
-      const imageData = new FormData()
-      imageData.append('image', inputValue.image)
+      // const imageData = new FormData()
+      // imageData.append('image', inputValue.image)
       // imageData.append('hoverImage', inputValue.hoverImage)
-      imageData.append('categoryName', inputValue.categoryName)
-      imageData.append('sequenceNumber', inputValue.sequenceNumber)
-      imageData.append('status', inputValue.status)
+      // imageData.append('categoryName', inputValue.categoryName)
+      // imageData.append('sequenceNumber', inputValue.sequenceNumber)
+      // imageData.append('status', inputValue.status)
       try {
         setLoading(true)
-        const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, imageData)
+        const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, inputValue)
         if (response.status === 200) {
           toast.success('Updated Successfully')
           setInputValue({})
@@ -109,14 +108,18 @@ const Category = () => {
   }
 
   const handleChange = (e) => {
-    const {name, value, files} = e.target
-    if (files) {
-      setInputValue({...inputValue, [name]: files[0]})
-      setErrors({...errors, [name]: ''})
-    } else {
-      setInputValue({...inputValue, [name]: value})
-      setErrors({...errors, [name]: ''})
-    }
+    const {
+      name,
+      value,
+      // files
+    } = e.target
+    // if (files) {
+    //   setInputValue({...inputValue, [name]: files[0]})
+    //   setErrors({...errors, [name]: ''})
+    // } else {
+    setInputValue({...inputValue, [name]: value})
+    setErrors({...errors, [name]: ''})
+    // }
   }
 
   const validateForm = () => {
@@ -127,14 +130,14 @@ const Category = () => {
       formIsValid = false
       errors['categoryName'] = '*Please Enter Category Name!'
     }
-    if (inputValue && !inputValue.sequenceNumber) {
-      formIsValid = false
-      errors['sequenceNumber'] = '*Please Enter Sequence Number!'
-    }
-    if (inputValue && !inputValue.image && addOpen) {
-      formIsValid = false
-      errors['image'] = '*Please Select Image!'
-    }
+    // if (inputValue && !inputValue.sequenceNumber) {
+    //   formIsValid = false
+    //   errors['sequenceNumber'] = '*Please Enter Sequence Number!'
+    // }
+    // if (inputValue && !inputValue.image && addOpen) {
+    //   formIsValid = false
+    //   errors['image'] = '*Please Select Image!'
+    // }
     // if (inputValue && !inputValue.hoverImage) {
     //   formIsValid = false
     //   errors['hoverImage'] = '*Please Select Hover Image!'
@@ -149,16 +152,16 @@ const Category = () => {
 
   const handleAdd = async () => {
     if (validateForm()) {
-      const imageData = new FormData()
-      imageData.append('image', inputValue.image)
+      // const imageData = new FormData()
+      // imageData.append('image', inputValue.image)
       // imageData.append('hoverImage', inputValue.hoverImage)
-      imageData.append('categoryName', inputValue.categoryName)
-      imageData.append('sequenceNumber', inputValue.sequenceNumber)
-      imageData.append('status', inputValue.status)
+      // imageData.append('categoryName', inputValue.categoryName)
+      // imageData.append('sequenceNumber', inputValue.sequenceNumber)
+      // imageData.append('status', inputValue.status)
 
       try {
         setLoading(true)
-        const response = await ApiPost(`serviceinfo/category`, imageData)
+        const response = await ApiPost(`serviceinfo/category`, inputValue)
         if (response.status === 200) {
           toast.success('Added Successfully')
           setInputValue({})
@@ -186,12 +189,12 @@ const Category = () => {
       sortable: true,
       width: '200px',
     },
-    {
-      name: 'Image',
-      cell: (row) => {
-        return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.image} />
-      },
-    },
+    // {
+    //   name: 'Image',
+    //   cell: (row) => {
+    //     return <Image className='image' src={process.env.REACT_APP_SERVER_URL + row.image} />
+    //   },
+    // },
     // {
     //   name: 'Hover Image',
     //   cell: (row) => {
@@ -234,7 +237,7 @@ const Category = () => {
     return {
       id: category?._id,
       categoryName: category?.categoryName,
-      image: category?.image,
+      // image: category?.image,
       // hoverImage: category?.hoverImage,
       sequenceNumber: category?.sequenceNumber,
       status:
@@ -245,7 +248,8 @@ const Category = () => {
   const filteredItems = data.filter(
     (item) =>
       (item.categoryName && item.categoryName.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.sequenceNumber && item.sequenceNumber == filterText) ||
+      (item.sequenceNumber &&
+        item.sequenceNumber.toString().toLowerCase().includes(filterText.toLowerCase())) ||
       (item.status && item.status.toLowerCase().includes(filterText.toLowerCase()))
   )
 
@@ -371,7 +375,7 @@ const Category = () => {
             {errors['categoryName']}
           </span>
 
-          <TextField
+          {/* <TextField
             label='Sequence Number'
             inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
             onChange={(e) => handleChange(e)}
@@ -390,8 +394,8 @@ const Category = () => {
             }}
           >
             {errors['sequenceNumber']}
-          </span>
-          <TextField
+          </span> */}
+          {/* <TextField
             InputLabelProps={{shrink: true}}
             label='Image'
             type={'file'}
@@ -400,7 +404,7 @@ const Category = () => {
             fullWidth
             variant='standard'
             margin='dense'
-          />
+          /> */}
           {/* <span
             style={{
               color: 'red',
@@ -494,7 +498,7 @@ const Category = () => {
           >
             {errors['categoryName']}
           </span>
-          <TextField
+          {/* <TextField
             label='Sequence Number'
             inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
             onChange={(e) => handleChange(e)}
@@ -512,8 +516,8 @@ const Category = () => {
             }}
           >
             {errors['sequenceNumber']}
-          </span>
-          <TextField
+          </span> */}
+          {/* <TextField
             InputLabelProps={{shrink: true}}
             label='Image'
             type={'file'}
@@ -532,7 +536,7 @@ const Category = () => {
             }}
           >
             {errors['image']}
-          </span>
+          </span> */}
           {/* <TextField
             InputLabelProps={{shrink: true}}
             label='Hover Image'
@@ -562,6 +566,7 @@ const Category = () => {
             margin='dense'
             select
             required
+            defaultValue={' '}
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>

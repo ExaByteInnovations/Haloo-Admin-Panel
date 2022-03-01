@@ -3,12 +3,11 @@ import {AsideDefault} from './components/aside/AsideDefault'
 import {Footer} from './components/Footer'
 import {HeaderWrapper} from './components/header/HeaderWrapper'
 import {Toolbar} from './components/toolbar/Toolbar'
-import {RightToolbar} from '../partials/layout/RightToolbar'
+// import {RightToolbar} from '../partials/layout/RightToolbar'
 import {ScrollTop} from './components/ScrollTop'
 import {Content} from './components/Content'
 import {PageDataProvider} from './core'
 import {useLocation} from 'react-router-dom'
-import {DrawerMessenger, ActivityDrawer, Main, InviteUsers, UpgradePlan} from '../partials'
 import {MenuComponent} from '../assets/ts/components'
 
 const MasterLayout: React.FC = ({children}) => {
@@ -41,18 +40,6 @@ const MasterLayout: React.FC = ({children}) => {
           <Footer />
         </div>
       </div>
-
-      {/* begin:: Drawers */}
-      <ActivityDrawer />
-      {/* <RightToolbar/> */}
-      <DrawerMessenger />
-      {/* end:: Drawers */}
-
-      {/* begin:: Modals */}
-      <Main />
-      <InviteUsers />
-      <UpgradePlan />
-      {/* end:: Modals */}
       <ScrollTop />
     </PageDataProvider>
   )

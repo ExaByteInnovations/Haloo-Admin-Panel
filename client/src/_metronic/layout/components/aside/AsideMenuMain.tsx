@@ -1,7 +1,5 @@
 /* eslint-disable react/jsx-no-target-blank */
-import React from 'react'
 import {useIntl} from 'react-intl'
-import {KTSVG} from '../../../helpers'
 import {AsideMenuItemWithSub} from './AsideMenuItemWithSub'
 import {AsideMenuItem} from './AsideMenuItem'
 
@@ -49,7 +47,7 @@ export function AsideMenuMain() {
 
       <AsideMenuItemWithSub
         to='/service-info'
-        icon='/media/icons/duotune/communication/com006.svg'
+        icon='/media/icons/duotune/general/gen008.svg'
         title={intl.formatMessage({id: 'MENU.SERVICE_INFO'})}
         fontIcon='bi-app-indicator'
       >
@@ -61,14 +59,14 @@ export function AsideMenuMain() {
 
       <AsideMenuItem
         to='/support'
-        icon='/media/icons/duotune/general/gen019.svg'
+        icon='/media/icons/duotune/communication/com007.svg'
         title='Support'
         fontIcon='bi-layers'
       />
 
       <AsideMenuItemWithSub
         to='/settings'
-        icon='/media/icons/duotune/communication/com006.svg'
+        icon='/media/icons/duotune/coding/cod001.svg'
         title={intl.formatMessage({id: 'MENU.SETTINGS'})}
         fontIcon='bi-app-indicator'
       >

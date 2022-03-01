@@ -3,10 +3,9 @@ import * as Yup from 'yup'
 import clsx from 'clsx'
 import {Link} from 'react-router-dom'
 import {useFormik} from 'formik'
-import {requestPassword} from '../redux/AuthCRUD'
 
 const initialValues = {
-  email: 'admin@demo.com',
+  email: 'jay@gmail.com',
 }
 
 const forgotPasswordSchema = Yup.object().shape({
@@ -24,21 +23,21 @@ export function ForgotPassword() {
     initialValues,
     validationSchema: forgotPasswordSchema,
     onSubmit: (values, {setStatus, setSubmitting}) => {
-      setLoading(true)
-      setHasErrors(undefined)
-      setTimeout(() => {
-        requestPassword(values.email)
-          .then(({data: {result}}) => {
-            setHasErrors(false)
-            setLoading(false)
-          })
-          .catch(() => {
-            setHasErrors(true)
-            setLoading(false)
-            setSubmitting(false)
-            setStatus('The login detail is incorrect')
-          })
-      }, 1000)
+      // setLoading(true)
+      // setHasErrors(undefined)
+      // setTimeout(() => {
+      //   requestPassword(values.email)
+      //     .then(({data: {result}}) => {
+      //       setHasErrors(false)
+      //       setLoading(false)
+      //     })
+      //     .catch(() => {
+      //       setHasErrors(true)
+      //       setLoading(false)
+      //       setSubmitting(false)
+      //       setStatus('The login detail is incorrect')
+      //     })
+      // }, 1000)
     },
   })
 

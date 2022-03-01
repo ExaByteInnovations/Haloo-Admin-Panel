@@ -2,10 +2,17 @@
 import {useEffect, useMemo, useState} from 'react'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
-import {Edit, Delete} from '@mui/icons-material'
+import {
+  // Edit,
+  Delete,
+} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
-import {ApiGet, ApiDelete, ApiPut} from '../../../helpers/API/ApiData'
+import {
+  ApiGet,
+  ApiDelete,
+  //  ApiPut
+} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
 import ClearIcon from '@mui/icons-material/Clear'
 // import Dialog from '@material-ui/core/Dialog'
@@ -203,7 +210,8 @@ const DisputedJobs = () => {
   const filteredItems = data.filter(
     (item) =>
       (item.jobTitle && item.jobTitle.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.jobTotal && item.jobTotal == filterText) ||
+      (item.jobTotal.toString() &&
+        item.jobTotal.toString().toLowerCase().includes(filterText.toLowerCase())) ||
       (item.city && item.city.toLowerCase().includes(filterText.toLowerCase())) ||
       (item.customer && item.customer.toLowerCase().includes(filterText.toLowerCase())) ||
       (item.vendor && item.vendor.toLowerCase().includes(filterText.toLowerCase()))
