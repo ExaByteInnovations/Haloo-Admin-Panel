@@ -21,7 +21,7 @@ import {
   DialogTitle,
 } from '@material-ui/core'
 import '../../App.css'
-import {Image} from 'react-bootstrap-v5'
+// import {Image} from 'react-bootstrap-v5'
 
 const Category = () => {
   const intl = useIntl()
@@ -108,7 +108,11 @@ const Category = () => {
   }
 
   const handleChange = (e) => {
-    const {name, value, files} = e.target
+    const {
+      name,
+      value,
+      // files
+    } = e.target
     // if (files) {
     //   setInputValue({...inputValue, [name]: files[0]})
     //   setErrors({...errors, [name]: ''})
@@ -148,7 +152,7 @@ const Category = () => {
 
   const handleAdd = async () => {
     if (validateForm()) {
-      const imageData = new FormData()
+      // const imageData = new FormData()
       // imageData.append('image', inputValue.image)
       // imageData.append('hoverImage', inputValue.hoverImage)
       // imageData.append('categoryName', inputValue.categoryName)

@@ -1,7 +1,5 @@
 /* eslint-disable react/jsx-no-target-blank */
-import React from 'react'
 import {useIntl} from 'react-intl'
-import {KTSVG} from '../../../helpers'
 import {AsideMenuItemWithSub} from './AsideMenuItemWithSub'
 import {AsideMenuItem} from './AsideMenuItem'
 
@@ -55,8 +53,8 @@ export function AsideMenuMain() {
       >
         <AsideMenuItem to='/service-info/category' title='Category' hasBullet={true} />
         {/* <AsideMenuItem to='/service-info/subcategory' title='Subcategory' hasBullet={true} /> */}
-        {/* <AsideMenuItem to='/service-info/city' title='City' hasBullet={true} /> */}
-        {/* <AsideMenuItem to='/service-info/state' title='State' hasBullet={true} /> */}
+        <AsideMenuItem to='/service-info/city' title='City' hasBullet={true} />
+        <AsideMenuItem to='/service-info/state' title='State' hasBullet={true} />
       </AsideMenuItemWithSub>
 
       <AsideMenuItem

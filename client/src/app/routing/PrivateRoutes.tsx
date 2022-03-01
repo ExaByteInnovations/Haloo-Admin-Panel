@@ -8,8 +8,8 @@ import {CompletedJobs} from '../pages/jobs/CompletedJobs'
 import {DisputedJobs} from '../pages/jobs/DisputedJobs'
 import {Category} from '../pages/service-info/Category'
 // import {SubCategory} from '../pages/service-info/SubCategory'
-// import {City} from '../pages/service-info/City'
-// import {State} from '../pages/service-info/State'
+import {City} from '../pages/service-info/City'
+import {State} from '../pages/service-info/State'
 import {Customers} from '../pages/userManagement/Customers'
 import {Vendors} from '../pages/userManagement/Vendors'
 import {Support} from '../pages/support/Support'
@@ -36,8 +36,8 @@ export function PrivateRoutes() {
         <Route path='/jobs/disputed-jobs' component={DisputedJobs} />
         <Route path='/service-info/category' component={Category} />
         {/* <Route path='/service-info/subcategory' component={SubCategory} /> */}
-        {/* <Route path='/service-info/city' component={City} /> */}
-        {/* <Route path='/service-info/state' component={State} /> */}
+        <Route path='/service-info/city' component={City} />
+        <Route path='/service-info/state' component={State} />
         <Route path='/support' component={Support} />
         <Route path='/settings/master-settings' component={MasterSettings} />
         <Route path='/settings/email' component={Email} />

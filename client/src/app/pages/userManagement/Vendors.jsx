@@ -31,6 +31,7 @@ const Vendors = () => {
   const intl = useIntl()
   const [vendors, setVendors] = useState([])
   const [skills, setSkills] = useState([])
+  const [imageLoaded, setImageLoaded] = useState(false)
   const [categories, setCategories] = useState([])
   const [open, setOpen] = useState(false)
   const [addOpen, setAddOpen] = useState(false)
@@ -233,15 +234,28 @@ const Vendors = () => {
     setSkills(newSkills)
   }
 
+  const handleImageLoad = () => {
+    setImageLoaded(true)
+  }
+
+  const imageStyles = !imageLoaded ? {display: 'none'} : {}
+
   const columns = [
     {
       name: 'Profile Image',
       cell: (row) => {
         return (
-          <Image
-            className='image'
-            src={row.profileImage ? process.env.REACT_APP_SERVER_URL + row.profileImage : userImage}
-          />
+          <Box>
+            {!imageLoaded && <Image className='image' src={userImage} />}
+            <Image
+              className='image'
+              style={imageStyles}
+              onLoad={handleImageLoad}
+              src={
+                row.profileImage ? process.env.REACT_APP_SERVER_URL + row.profileImage : userImage
+              }
+            />
+          </Box>
         )
       },
     },

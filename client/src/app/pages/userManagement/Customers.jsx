@@ -19,7 +19,7 @@ import {
   CircularProgress,
   DialogContent,
   DialogTitle,
-  MenuItem,
+  // MenuItem,
   TextField,
 } from '@material-ui/core'
 import '../../App.css'
@@ -28,6 +28,7 @@ import {Image} from 'react-bootstrap-v5'
 const Customers = () => {
   const intl = useIntl()
   const [customers, setCustomers] = useState([])
+  const [imageLoaded, setImageLoaded] = useState(false)
   const [open, setOpen] = useState(false)
   const [addOpen, setAddOpen] = useState(false)
   const [rowId, setRowId] = useState('')
@@ -192,15 +193,28 @@ const Customers = () => {
     }
   }
 
+  const handleImageLoad = () => {
+    setImageLoaded(true)
+  }
+
+  const imageStyles = !imageLoaded ? {display: 'none'} : {}
+
   const columns = [
     {
       name: 'Profile Image',
       cell: (row) => {
         return (
-          <Image
-            className='image'
-            src={row.profileImage ? process.env.REACT_APP_SERVER_URL + row.profileImage : userImage}
-          />
+          <Box>
+            {!imageLoaded && <Image className='image' src={userImage} />}
+            <Image
+              className='image'
+              style={imageStyles}
+              onLoad={handleImageLoad}
+              src={
+                row.profileImage ? process.env.REACT_APP_SERVER_URL + row.profileImage : userImage
+              }
+            />
+          </Box>
         )
       },
     },

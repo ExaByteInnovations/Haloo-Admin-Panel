@@ -1,12 +1,14 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useContext} from 'react'
+import {useContext, useState} from 'react'
 import {AuthContext} from '../../../../app/auth/authContext'
 import {ApiPost} from '../../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
 import * as authUtil from '../../../../utils/auth.util'
+import userImage from '../../../../assets/user.png'
 
 const HeaderUserMenu = () => {
   const {user, dispatch} = useContext(AuthContext)
+  const [imageLoaded, setImageLoaded] = useState(false)
   const logout = async () => {
     try {
       const response = await ApiPost('auth/admin/logout', {email: user?.email})
@@ -22,6 +24,12 @@ const HeaderUserMenu = () => {
     }
   }
 
+  const handleImageLoad = () => {
+    setImageLoaded(true)
+  }
+
+  const imageStyles = !imageLoaded ? {display: 'none'} : {}
+
   return (
     <div
       className='menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg menu-state-primary fw-bold py-4 fs-6 w-275px'
@@ -30,7 +38,17 @@ const HeaderUserMenu = () => {
       <div className='menu-item px-3'>
         <div className='menu-content d-flex align-items-center px-3'>
           <div className='symbol symbol-50px me-5'>
-            <img alt='Logo' src={process.env.REACT_APP_SERVER_URL + user?.profileImage} />
+            {!imageLoaded && <img src={userImage} />}
+            <img
+              alt='Logo'
+              style={imageStyles}
+              onLoad={handleImageLoad}
+              src={
+                user?.profileImage
+                  ? process.env.REACT_APP_SERVER_URL + user.profileImage
+                  : userImage
+              }
+            />
           </div>
 
           <div className='d-flex flex-column'>

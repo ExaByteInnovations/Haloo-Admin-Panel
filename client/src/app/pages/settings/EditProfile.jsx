@@ -9,12 +9,14 @@ import {Modal} from 'react-bootstrap'
 import {Box, CircularProgress, MenuItem, TextField} from '@material-ui/core'
 import '../../App.css'
 import {Image} from 'react-bootstrap-v5'
+import userImage from '../../../assets/user.png'
 import {AuthContext} from '../../auth/authContext'
 
 const EditProfile = () => {
   const intl = useIntl()
   const {user, dispatch} = useContext(AuthContext)
   const [inputValue, setInputValue] = useState({...user})
+  const [imageLoaded, setImageLoaded] = useState(false)
   const [initialValues, setInitialValues] = useState({})
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
@@ -108,6 +110,12 @@ const EditProfile = () => {
     setErrors({...errors, [name]: ''})
   }
 
+  const handleImageLoad = () => {
+    setImageLoaded(true)
+  }
+
+  const imageStyles = !imageLoaded ? {display: 'none'} : {}
+
   const status = [
     {label: 'Active', value: 'Active'},
     {label: 'Inactive', value: 'Inactive'},
@@ -149,9 +157,16 @@ const EditProfile = () => {
       </Modal>
       <Box className='admin-wrapper'>
         <Box className='admin-profile-image-wrapper'>
+          {!imageLoaded && <Image className='admin-profile-image' src={userImage} />}
           <Image
             className='admin-profile-image'
-            src={process.env.REACT_APP_SERVER_URL + inputValue?.profileImage}
+            style={imageStyles}
+            onLoad={handleImageLoad}
+            src={
+              inputValue?.profileImage
+                ? process.env.REACT_APP_SERVER_URL + inputValue?.profileImage
+                : userImage
+            }
           />
         </Box>
         <Box className='settings-form'>

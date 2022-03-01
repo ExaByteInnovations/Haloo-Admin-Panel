@@ -1,18 +1,34 @@
 import clsx from 'clsx'
-import React, {FC, useContext} from 'react'
+import {FC, useContext, useState} from 'react'
 import {AuthContext} from '../../../../app/auth/authContext'
-import {KTSVG, toAbsoluteUrl} from '../../../helpers'
-import {HeaderNotificationsMenu, HeaderUserMenu, QuickLinks, Search} from '../../../partials'
+import userImage from '../../../../assets/user.png'
+import {
+  KTSVG,
+  //  toAbsoluteUrl
+} from '../../../helpers'
+import {
+  // HeaderNotificationsMenu,
+  HeaderUserMenu,
+  // QuickLinks,
+  // Search
+} from '../../../partials'
 import {useLayout} from '../../core'
 
 const toolbarButtonMarginClass = 'ms-1 ms-lg-3',
-  toolbarButtonHeightClass = 'w-30px h-30px w-md-40px h-md-40px',
-  toolbarUserAvatarHeightClass = 'symbol-30px symbol-md-40px',
-  toolbarButtonIconSizeClass = 'svg-icon-1'
+  // toolbarButtonHeightClass = 'w-30px h-30px w-md-40px h-md-40px',
+  toolbarUserAvatarHeightClass = 'symbol-30px symbol-md-40px'
+// toolbarButtonIconSizeClass = 'svg-icon-1'
 
 const Topbar: FC = () => {
   const {config} = useLayout()
   const {user} = useContext(AuthContext)
+  const [imageLoaded, setImageLoaded] = useState(false)
+
+  const handleImageLoad = () => {
+    setImageLoaded(true)
+  }
+
+  const imageStyles = !imageLoaded ? {display: 'none'} : {}
 
   return (
     <div className='d-flex align-items-stretch flex-shrink-0'>
@@ -34,7 +50,15 @@ const Topbar: FC = () => {
           data-kt-menu-placement='bottom-end'
           data-kt-menu-flip='bottom'
         >
-          <img src={process.env.REACT_APP_SERVER_URL + user?.profileImage} alt='metronic' />
+          {!imageLoaded && <img src={userImage} />}
+          <img
+            style={imageStyles}
+            onLoad={handleImageLoad}
+            src={
+              user?.profileImage ? process.env.REACT_APP_SERVER_URL + user.profileImage : userImage
+            }
+            alt='haloo'
+          />
         </div>
         <HeaderUserMenu />
         {/* end::Toggle */}
