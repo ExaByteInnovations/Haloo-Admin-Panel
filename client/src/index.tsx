@@ -1,13 +1,4 @@
-import React from 'react'
 import ReactDOM from 'react-dom'
-// Redux
-// https://github.com/rt2zz/redux-persist
-import {PersistGate} from 'redux-persist/integration/react'
-import {Provider} from 'react-redux'
-import * as _redux from './setup'
-import store, {persistor} from './setup/redux/Store'
-// Axios
-import axios from 'axios'
 import {Chart, registerables} from 'chart.js'
 
 // Apps
@@ -42,18 +33,12 @@ const {PUBLIC_URL} = process.env
  *
  * @see https://github.com/axios/axios#interceptors
  */
-_redux.setupAxios(axios, store)
 
 Chart.register(...registerables)
 
 ReactDOM.render(
   <MetronicI18nProvider>
-    <Provider store={store}>
-      {/* Asynchronously persist redux stores and show `SplashScreen` while it's loading. */}
-      <PersistGate persistor={persistor} loading={<div>Loading...</div>}>
-        <App basename={PUBLIC_URL} />
-      </PersistGate>
-    </Provider>
+    <App basename={PUBLIC_URL} />
   </MetronicI18nProvider>,
   document.getElementById('root')
 )
