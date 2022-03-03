@@ -30,6 +30,11 @@ import {Chip} from '@mui/material'
 const Vendors = () => {
   const intl = useIntl()
   const [vendors, setVendors] = useState([])
+  const [cities, setCities] = useState([])
+  const [states, setStates] = useState([])
+  const [profileImage, setProfileImage] = useState()
+  const [showImage, setShowImage] = useState(false)
+  const [previewImage, setPreviewImage] = useState()
   const [skills, setSkills] = useState([])
   const [imageLoaded, setImageLoaded] = useState(false)
   const [categories, setCategories] = useState([])
@@ -49,11 +54,27 @@ const Vendors = () => {
     setShow(false)
     setAddOpen(false)
     setErrors({})
+    setShowImage(false)
+    setProfileImage(null)
   }
 
   useEffect(() => {
     getVendors()
   }, [])
+
+  useEffect(() => {
+    getCategories()
+  }, [])
+
+  useEffect(() => {
+    if (!profileImage) {
+      setPreviewImage(null)
+      return
+    }
+    const objectUrl = URL.createObjectURL(profileImage)
+    setPreviewImage(objectUrl)
+    return () => URL.revokeObjectURL(objectUrl)
+  }, [profileImage])
 
   const getVendors = async () => {
     try {
@@ -69,10 +90,39 @@ const Vendors = () => {
     }
   }
 
-  const getCategories = async () => {
-    setLoading(true)
+  const getStates = async () => {
     try {
-      const response = await ApiGet(`serviceinfo/category`)
+      const response = await ApiGet(`serviceinfo/state?status=Active`)
+      if (response.status === 200) {
+        setStates(
+          response?.data?.data?.map((state) => {
+            return {name: state?.stateName, id: state?._id}
+          })
+        )
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const getCities = async (stateId) => {
+    try {
+      const response = await ApiGet(`serviceinfo/city?status=Active&stateId=${stateId}`)
+      if (response.status === 200) {
+        setCities(
+          response?.data?.data?.map((city) => {
+            return {name: city?.cityName, id: city?._id}
+          })
+        )
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const getCategories = async () => {
+    try {
+      const response = await ApiGet(`serviceinfo/category?status=Active`)
       if (response.status === 200) {
         setCategories(
           response?.data?.data?.map((category) => {
@@ -80,9 +130,8 @@ const Vendors = () => {
           })
         )
       }
-      setLoading(false)
     } catch (err) {
-      setLoading(false)
+      console.log(err)
     }
   }
 
@@ -109,37 +158,60 @@ const Vendors = () => {
     let formIsValid = true
     let errors = {}
 
-    if (inputValue && !inputValue.customerName) {
+    if (inputValue && !inputValue?.customerName) {
       formIsValid = false
-      errors['customerName'] = '*Please Enter Vendor Name!'
+      errors['customerName'] = '*Please Enter Customer Name!'
     }
-    if (inputValue && !inputValue.phone) {
+    if (inputValue && !inputValue?.customerName?.match(/^\S[a-zA-Z ]+$/)) {
+      formIsValid = false
+      errors['customerName'] = '*Please Enter Valid Customer Name Only!'
+    }
+
+    if (inputValue && !inputValue?.phone) {
       formIsValid = false
       errors['phone'] = '*Please Enter Phone Number!'
     }
-    if (inputValue && !inputValue.profileImage && addOpen) {
+    if (inputValue && !inputValue?.phone?.match(/^\d{10}$/)) {
       formIsValid = false
-      errors['profileImage'] = '*Please Select Profile Image!'
+      errors['phone'] = '*Please Enter Valid Phone Number!'
     }
-    if (inputValue && !inputValue.city) {
+
+    if (inputValue && !inputValue?.profileImage && !profileImage && addOpen) {
       formIsValid = false
-      errors['city'] = '*Please Enter City!'
+      errors['profileImage'] = '*Please Select ProfileImage!'
     }
-    if (inputValue && !inputValue.state) {
+
+    if (inputValue && !inputValue?.cityId) {
       formIsValid = false
-      errors['state'] = '*Please Enter State!'
+      errors['city'] = '*Please Select City!'
     }
-    if (inputValue && !inputValue.pincode) {
+
+    if (inputValue && !inputValue?.stateId) {
+      formIsValid = false
+      errors['state'] = '*Please Select State!'
+    }
+
+    if (inputValue && !inputValue?.pincode) {
       formIsValid = false
       errors['pincode'] = '*Please Enter Postal Code!'
     }
-    if (inputValue && !inputValue.address) {
+    if (inputValue && !inputValue?.pincode?.match(/^\d{6}$/)) {
+      formIsValid = false
+      errors['pincode'] = '*Please Enter Valid Postal Code!'
+    }
+
+    if (inputValue && !inputValue?.address) {
       formIsValid = false
       errors['address'] = '*Please Enter Address!'
     }
+
     if (_.isEmpty(skills)) {
       formIsValid = false
       errors['jobSkills'] = '*Please Select Job Skills!'
+    }
+    if (skills?.length > 5) {
+      formIsValid = false
+      errors['jobSkills'] = '*Maximum 5 Skills are allowed!'
     }
     setErrors(errors)
     return formIsValid
@@ -148,11 +220,11 @@ const Vendors = () => {
   const handleUpdate = async () => {
     if (validateForm()) {
       const imageData = new FormData()
-      imageData.append('profileImage', inputValue.profileImage || '')
+      imageData.append('profileImage', profileImage || '')
       imageData.append('customerName', inputValue.customerName)
       imageData.append('phone', inputValue.phone)
-      imageData.append('city', inputValue.city || '')
-      imageData.append('state', inputValue.state || '')
+      imageData.append('cityId', inputValue.cityId || '')
+      imageData.append('stateId', inputValue.stateId || '')
       imageData.append('address', inputValue.address || '')
       imageData.append('pincode', inputValue.pincode || '')
       skills.forEach((skill) => imageData.append('jobSkills[]', skill || ''))
@@ -166,13 +238,13 @@ const Vendors = () => {
           setInputValue({})
           setSkills([])
           getVendors()
+          handleClose()
         }
         setLoading(false)
-        handleClose()
       } catch (err) {
-        toast.error(err.message)
+        toast.error(err.error || err.message)
         setLoading(false)
-        handleClose()
+        setErrors({[err.field]: err.error})
       }
     }
   }
@@ -180,11 +252,11 @@ const Vendors = () => {
   const handleAdd = async () => {
     if (validateForm()) {
       const imageData = new FormData()
-      imageData.append('profileImage', inputValue?.profileImage || '')
+      imageData.append('profileImage', profileImage || '')
       imageData.append('customerName', inputValue?.customerName)
       imageData.append('phone', inputValue?.phone)
-      imageData.append('city', inputValue?.city || '')
-      imageData.append('state', inputValue?.state || '')
+      imageData.append('cityId', inputValue?.cityId || '')
+      imageData.append('stateId', inputValue?.stateId || '')
       imageData.append('address', inputValue?.address || '')
       imageData.append('pincode', inputValue?.pincode || '')
       imageData.append('type', 'vendor')
@@ -199,13 +271,13 @@ const Vendors = () => {
           getVendors()
           setInputValue({})
           setSkills([])
+          handleClose()
         }
         setLoading(false)
-        handleClose()
       } catch (err) {
-        toast.error(err.message)
+        toast.error(err[0] || err.message)
         setLoading(false)
-        handleClose()
+        setErrors({[err[1]]: err[0]})
       }
     }
   }
@@ -229,7 +301,6 @@ const Vendors = () => {
   }
 
   const handleSkillDelete = (skill) => {
-    console.log(skill, 'skill')
     const newSkills = skills.filter((item) => item !== skill)
     setSkills(newSkills)
   }
@@ -251,6 +322,10 @@ const Vendors = () => {
               className='image'
               style={imageStyles}
               onLoad={handleImageLoad}
+              onClick={() => {
+                setShowImage(true)
+                setInputValue({...inputValue, profileImage: row.profileImage})
+              }}
               src={
                 row.profileImage ? process.env.REACT_APP_SERVER_URL + row.profileImage : userImage
               }
@@ -308,7 +383,7 @@ const Vendors = () => {
       selector: (row) => row.jobSkills,
       cell: (row) => (
         <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1}}>
-          {row.jobSkills.map((skill) => (
+          {row?.jobSkills?.map((skill) => (
             <Chip
               key={skill}
               label={skill.trim().charAt(0).toUpperCase() + skill.trim().substr(1).toLowerCase()}
@@ -344,8 +419,13 @@ const Vendors = () => {
                 handleOpen()
                 setInputValue(row)
                 setRowId(row.id)
-                getCategories()
-                setSkills(row.jobSkills)
+                setSkills(
+                  categories
+                    ?.filter((category) => row?.jobSkills?.includes(category.name))
+                    .map((category) => category.id)
+                )
+                getStates()
+                getCities(row.stateId)
               }}
             />
             <Delete
@@ -369,12 +449,16 @@ const Vendors = () => {
       customerName: vendor?.customerName,
       phone: vendor?.phone,
       address: vendor?.address,
-      city: vendor?.city,
-      state: vendor?.state,
+      city: vendor?.cityDetails[0]?.cityName,
+      cityId: vendor?.cityId,
+      state: vendor?.stateDetails[0]?.stateName,
+      stateId: vendor?.stateId,
       pincode: vendor?.pincode,
       noOfJobs: vendor?.noOfJobs,
       memberSince: moment(vendor?.createdAt).format('DD MMM YY hh:mmA'),
-      jobSkills: vendor?.jobSkills,
+      jobSkills: categories
+        ?.filter((category) => vendor?.jobSkills?.includes(category.id))
+        .map((category) => category.name),
       // status: vendor?.status?.charAt(0)?.toUpperCase() + vendor?.status?.substr(1)?.toLowerCase(),
     }
   })
@@ -386,7 +470,10 @@ const Vendors = () => {
       (item.pincode && item.pincode.toLowerCase().includes(filterText.toLowerCase())) ||
       (item.city && item.city.toLowerCase().includes(filterText.toLowerCase())) ||
       (item.state && item.state.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.address && item.address.toLowerCase().includes(filterText.toLowerCase()))
+      (item.address && item.address.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.noOfJobs &&
+        item.noOfJobs.toString().toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.memberSince && item.memberSince.toLowerCase().includes(filterText.toLowerCase()))
   )
 
   const subHeaderComponentMemo = useMemo(() => {
@@ -443,8 +530,9 @@ const Vendors = () => {
           variant='success'
           onClick={() => {
             setAddOpen(true)
-            getCategories()
             setSkills([])
+            getStates()
+            setInputValue({})
           }}
         >
           Add New +
@@ -487,6 +575,24 @@ const Vendors = () => {
         </>
       </Modal>
 
+      <Modal show={showImage} onHide={handleClose}>
+        <>
+          <Modal.Header closeButton>
+            <Modal.Title>Vendor Profile Image</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Image
+              className='model-image'
+              src={
+                inputValue?.profileImage
+                  ? process.env.REACT_APP_SERVER_URL + inputValue?.profileImage
+                  : userImage
+              }
+            />
+          </Modal.Body>
+        </>
+      </Modal>
+
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='xs'>
         <DialogTitle>
           <Box sx={{display: 'flex'}}>
@@ -499,16 +605,36 @@ const Vendors = () => {
           </Box>
         </DialogTitle>
         <DialogContent>
+          <Image
+            className='image'
+            src={
+              inputValue?.profileImage
+                ? process.env.REACT_APP_SERVER_URL + inputValue?.profileImage
+                : previewImage
+                ? previewImage
+                : userImage
+            }
+          />
           <TextField
             InputLabelProps={{shrink: true}}
             label='ProfileImage'
             name='profileImage'
             type={'file'}
-            onChange={handleChange}
+            onChange={(e) => setProfileImage(e.target.files[0])}
             variant='standard'
             margin='dense'
             fullWidth
+            helperText='Please upload images of format jpg, jpeg, png'
           />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['profileImage']}
+          </span>
           <TextField
             label='Vendor Name'
             type={'text'}
@@ -570,36 +696,31 @@ const Vendors = () => {
             {errors['pincode']}
           </span>
           <TextField
-            label='City'
+            label='State Name'
             type={'text'}
-            name='city'
-            onChange={handleChange}
+            onChange={(e) => {
+              handleChange(e)
+              getCities(e.target.value)
+            }}
+            name='stateId'
+            fullWidth
             variant='standard'
             margin='dense'
-            fullWidth
-            value={inputValue?.city}
+            select
+            value={inputValue?.stateId}
             required
-          />
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
+            SelectProps={{
+              MenuProps: {
+                style: {height: '300px'},
+              },
             }}
           >
-            {errors['city']}
-          </span>
-          <TextField
-            label='State'
-            type={'text'}
-            name='state'
-            onChange={handleChange}
-            variant='standard'
-            margin='dense'
-            fullWidth
-            value={inputValue?.state}
-            required
-          />
+            {states.map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
           <span
             style={{
               color: 'red',
@@ -608,6 +729,38 @@ const Vendors = () => {
             }}
           >
             {errors['state']}
+          </span>
+          <TextField
+            label='City Name'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='cityId'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            select
+            value={inputValue?.cityId}
+            required
+            SelectProps={{
+              MenuProps: {
+                style: {height: '300px'},
+              },
+            }}
+          >
+            {cities.map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['city']}
           </span>
           <TextField
             label='Address'
@@ -668,22 +821,25 @@ const Vendors = () => {
               },
               renderValue: (selected) => (
                 <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1}}>
-                  {selected.map((value) => (
-                    <Chip
-                      key={value}
-                      label={value}
-                      onDelete={() => handleSkillDelete(value)}
-                      onMouseDown={(event) => {
-                        event.stopPropagation()
-                      }}
-                    />
-                  ))}
+                  {selected.map((value) => {
+                    const skill = categories?.find((item) => item?.id === value)?.name
+                    return (
+                      <Chip
+                        key={value}
+                        label={skill}
+                        onDelete={() => handleSkillDelete(value)}
+                        onMouseDown={(event) => {
+                          event.stopPropagation()
+                        }}
+                      />
+                    )
+                  })}
                 </Box>
               ),
             }}
           >
             {categories?.map((option) => (
-              <MenuItem key={option.id} value={option.name}>
+              <MenuItem key={option.id} value={option.id}>
                 {option.name}
               </MenuItem>
             ))}
@@ -715,16 +871,27 @@ const Vendors = () => {
           </Box>
         </DialogTitle>
         <DialogContent>
+          <Image
+            className='image'
+            src={
+              inputValue?.profileImage
+                ? process.env.REACT_APP_SERVER_URL + inputValue?.profileImage
+                : previewImage
+                ? previewImage
+                : userImage
+            }
+          />
           <TextField
             InputLabelProps={{shrink: true}}
             label='profileImage'
             name='profileImage'
             type={'file'}
-            onChange={(e) => handleChange(e)}
+            onChange={(e) => setProfileImage(e.target.files[0])}
             variant='standard'
             margin='dense'
             fullWidth
             required
+            helperText='Please upload images of format jpg, jpeg, png'
           />
           <span
             style={{
@@ -744,6 +911,7 @@ const Vendors = () => {
             margin='dense'
             fullWidth
             required
+            value={inputValue?.customerName || ''}
           />
           <span
             style={{
@@ -763,6 +931,7 @@ const Vendors = () => {
             margin='dense'
             fullWidth
             required
+            value={inputValue?.phone || ''}
           />
           <span
             style={{
@@ -782,6 +951,7 @@ const Vendors = () => {
             margin='dense'
             fullWidth
             required
+            value={inputValue?.pincode || ''}
           />
           <span
             style={{
@@ -793,34 +963,32 @@ const Vendors = () => {
             {errors['pincode']}
           </span>
           <TextField
-            label='City'
+            label='State Name'
             type={'text'}
-            name='city'
-            onChange={(e) => handleChange(e)}
+            onChange={(e) => {
+              handleChange(e)
+              getCities(e.target.value)
+            }}
+            name='stateId'
+            fullWidth
             variant='standard'
             margin='dense'
-            fullWidth
+            select
             required
-          />
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
+            defaultValue={''}
+            value={inputValue?.stateId || ''}
+            SelectProps={{
+              MenuProps: {
+                style: {height: '300px'},
+              },
             }}
           >
-            {errors['city']}
-          </span>
-          <TextField
-            label='State'
-            type={'text'}
-            name='state'
-            onChange={(e) => handleChange(e)}
-            variant='standard'
-            margin='dense'
-            fullWidth
-            required
-          />
+            {states.map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
           <span
             style={{
               color: 'red',
@@ -831,6 +999,39 @@ const Vendors = () => {
             {errors['state']}
           </span>
           <TextField
+            label='City Name'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='cityId'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            select
+            required
+            defaultValue={''}
+            value={inputValue?.cityId || ''}
+            SelectProps={{
+              MenuProps: {
+                style: {height: '300px'},
+              },
+            }}
+          >
+            {cities.map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['city']}
+          </span>
+          <TextField
             label='Address'
             type={'text'}
             name='address'
@@ -839,6 +1040,7 @@ const Vendors = () => {
             margin='dense'
             fullWidth
             required
+            value={inputValue?.address || ''}
           />
           <span
             style={{
@@ -874,6 +1076,7 @@ const Vendors = () => {
             margin='dense'
             select
             required
+            defaultValue={''}
             SelectProps={{
               multiple: true,
               value: skills,
@@ -883,22 +1086,25 @@ const Vendors = () => {
               },
               renderValue: (selected) => (
                 <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1}}>
-                  {selected.map((value) => (
-                    <Chip
-                      key={value}
-                      label={value}
-                      onDelete={() => handleSkillDelete(value)}
-                      onMouseDown={(event) => {
-                        event.stopPropagation()
-                      }}
-                    />
-                  ))}
+                  {selected.map((value) => {
+                    const skill = categories?.find((item) => item?.id === value)?.name
+                    return (
+                      <Chip
+                        key={value}
+                        label={skill}
+                        onDelete={() => handleSkillDelete(value)}
+                        onMouseDown={(event) => {
+                          event.stopPropagation()
+                        }}
+                      />
+                    )
+                  })}
                 </Box>
               ),
             }}
           >
             {categories?.map((option) => (
-              <MenuItem key={option.id} value={option.name}>
+              <MenuItem key={option.id} value={option.id}>
                 {option.name}
               </MenuItem>
             ))}

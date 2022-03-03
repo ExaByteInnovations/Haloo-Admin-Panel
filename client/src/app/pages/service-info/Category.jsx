@@ -96,13 +96,13 @@ const Category = () => {
           setInputValue({})
           setErrors({})
           getCategories()
+          handleClose()
         }
         setLoading(false)
-        handleClose()
       } catch (err) {
-        toast.error(err.message)
+        toast.error(err.error || err.message)
         setLoading(false)
-        handleClose()
+        setErrors({[err.field]: err.error})
       }
     }
   }
@@ -166,13 +166,13 @@ const Category = () => {
           toast.success('Added Successfully')
           setInputValue({})
           getCategories()
+          handleClose()
         }
         setLoading(false)
-        handleClose()
       } catch (err) {
-        toast.error(err.message)
+        toast.error(err[0] || err.message)
         setLoading(false)
-        handleClose()
+        setErrors({[err[1]]: err[0]})
       }
     }
   }
@@ -488,6 +488,7 @@ const Category = () => {
             variant='standard'
             margin='dense'
             required
+            value={inputValue?.categoryName || ''}
           />
           <span
             style={{
@@ -567,6 +568,7 @@ const Category = () => {
             select
             required
             defaultValue={' '}
+            value={inputValue?.status || ' '}
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>

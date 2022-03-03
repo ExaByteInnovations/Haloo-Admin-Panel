@@ -77,11 +77,11 @@ const Support = () => {
       selector: (row) => row.phoneNumber,
       sortable: true,
     },
-    {
-      name: 'Email Address',
-      selector: (row) => row.emailAddress,
-      sortable: true,
-    },
+    // {
+    //   name: 'Email Address',
+    //   selector: (row) => row.emailAddress,
+    //   sortable: true,
+    // },
     {
       name: 'Query',
       selector: (row) => row.query,
@@ -119,7 +119,7 @@ const Support = () => {
       customerName: sup?.customerDetails[0]?.customerName,
       query: sup?.query,
       phoneNumber: sup?.customerDetails[0]?.phone,
-      emailAddress: sup?.customerDetails[0]?.emailAddress,
+      // emailAddress: sup?.customerDetails[0]?.emailAddress,
       postedDate: moment(sup?.createdAt).format('DD MMM YY hh:mmA'),
       status: sup?.status?.charAt(0)?.toUpperCase() + sup?.status?.substr(1)?.toLowerCase(),
     }

@@ -22,6 +22,7 @@
   width: 100px;
   height: 100px;
   object-fit: contain;
+  cursor: pointer;
 }
 
 .file {
@@ -108,4 +109,8 @@
 .input-clear-button:hover {
   transform: scale(1.1, 1.1) !important;
   color: #b33030 !important;
+}
+
+.model-image {
+  width: 100%;
 }

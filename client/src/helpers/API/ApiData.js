@@ -197,8 +197,8 @@ export const ApiPost = (type, userData, AdditionalHeader) => {
         resolve(responseJson)
       })
       .catch((error) => {
-        console.log('error', error)
-        console.log('error.response', error.response)
+        // console.log('error', error)
+        // console.log('error.response', error.response)
         if (
           error &&
           error.hasOwnProperty('response') &&
@@ -208,10 +208,10 @@ export const ApiPost = (type, userData, AdditionalHeader) => {
           error.response.data.hasOwnProperty('error') &&
           error.response.data.error
         ) {
-          console.log('reject')
-          reject(error.response.data.error)
+          // console.log('reject')
+          reject([error.response.data.error, error.response.data.field])
         } else {
-          console.log('reject', error)
+          // console.log('reject', error)
           reject(error)
         }
       })
@@ -226,6 +226,7 @@ export const ApiPut = (type, userData) => {
         resolve(responseJson)
       })
       .catch((error) => {
+        // console.log(error, 'error')
         if (
           error &&
           error.hasOwnProperty('response') &&

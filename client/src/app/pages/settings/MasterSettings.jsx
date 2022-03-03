@@ -6,8 +6,9 @@ import {ApiGet, ApiPut} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
 import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
-import {Box, CircularProgress, InputAdornment, TextField} from '@material-ui/core'
+import {Box, Chip, CircularProgress, InputAdornment, TextField} from '@material-ui/core'
 import '../../App.css'
+import {Autocomplete} from '@mui/material'
 
 const MasterSettings = () => {
   const intl = useIntl()
@@ -15,6 +16,8 @@ const MasterSettings = () => {
   const [initialValues, setInitialValues] = useState({})
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
+  const [imageExtension, setImageExtension] = useState([])
+  // const [errors, setErrors] = useState({})
 
   const handleClose = () => {
     setShow(false)
@@ -30,8 +33,10 @@ const MasterSettings = () => {
       setLoading(true)
       const response = await ApiGet(`setting/master`)
       if (response.status === 200) {
+        const masterSettings = response.data.data
         setInputValue(...response.data.data)
         setInitialValues(...response.data.data)
+        setImageExtension(masterSettings[0]?.validImageExtensions.split(', ' || ','))
       }
       setLoading(false)
     } catch (err) {
@@ -40,22 +45,39 @@ const MasterSettings = () => {
     }
   }
 
+  // const validateForm = () => {
+  //   let formIsValid = true
+  //   let errors = {}
+  //   if (inputValue && !inputValue?.rewardsAmount?.match(/^\d$/)) {
+  //     formIsValid = false
+  //     errors['amount'] = '*Please Enter Valid Reward Amount!'
+  //   }
+
+  //   setErrors(errors)
+  //   if (formIsValid) setShow(true)
+  //   return formIsValid
+  // }
+
   const handleUpdate = async () => {
+    // if (validateForm()) {
     try {
       setLoading(true)
-      const response = await ApiPut(`setting/master?_id=${inputValue?._id}`, inputValue)
+      const response = await ApiPut(`setting/master?_id=${inputValue?._id}`, {
+        ...inputValue,
+        validImageExtensions: imageExtension,
+      })
 
       if (response.status === 200) {
         toast.success('Updated Successfully')
         getMasterSettings()
+        handleClose()
       }
       setLoading(false)
-      handleClose()
     } catch (err) {
       toast.error(err.message)
       setLoading(false)
-      handleClose()
     }
+    // }
   }
 
   const handleChange = (e) => {
@@ -113,7 +135,7 @@ const MasterSettings = () => {
           margin='dense'
           value={inputValue?.siteControlPanelTitle || ''}
         />
-        <TextField
+        {/* <TextField
           className='settings-field'
           label='Valid Image Extensions'
           type={'text'}
@@ -122,8 +144,38 @@ const MasterSettings = () => {
           variant='filled'
           margin='dense'
           value={inputValue?.validImageExtensions || ''}
+        /> */}
+
+        <Autocomplete
+          className='settings-field'
+          multiple
+          options={[]}
+          defaultValue={[]}
+          value={imageExtension}
+          freeSolo
+          onChange={(e, value) => setImageExtension((state) => value)}
+          renderTags={(value, getTagProps) =>
+            value.map((option, index) => {
+              return (
+                <Chip key={index} variant='outlined' label={option} {...getTagProps({index})} />
+              )
+            })
+          }
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label='Valid Image Extensions'
+              type={'text'}
+              onChange={(e) => handleChange(e)}
+              name='validImageExtensions'
+              variant='filled'
+              margin='dense'
+              helperText='Press Enter key after each Extension'
+            />
+          )}
         />
-        <TextField
+
+        {/* <TextField
           className='settings-field'
           label='No. of Records Per Page'
           inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
@@ -132,7 +184,7 @@ const MasterSettings = () => {
           variant='filled'
           margin='dense'
           value={inputValue?.noOfRecordsPerPage}
-        />
+        /> */}
         <TextField
           className='settings-field'
           label='Rewards Amount'
@@ -143,9 +195,18 @@ const MasterSettings = () => {
           margin='dense'
           value={inputValue?.rewardsAmount}
           InputProps={{
-            startAdornment: <InputAdornment position='start'>€</InputAdornment>,
+            startAdornment: <InputAdornment position='start'>₹</InputAdornment>,
           }}
         />
+        {/* <span
+          style={{
+            color: 'red',
+            top: '5px',
+            fontSize: '12px',
+          }}
+        >
+          {errors['amount']}
+        </span> */}
         <Box className='settings-btn-wrapper'>
           <Button
             className='button settings-btn-save'

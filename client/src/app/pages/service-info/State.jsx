@@ -109,16 +109,13 @@ const State = () => {
           toast.success('Updated Successfully')
           setInputValue({})
           getStates()
-          setLoading(false)
-          handleClose()
-        } else {
-          setLoading(false)
           handleClose()
         }
-      } catch (err) {
-        toast.error(err.message)
         setLoading(false)
-        handleClose()
+      } catch (err) {
+        toast.error(err.error || err.message)
+        setLoading(false)
+        setErrors({[err.field]: err.error})
       }
     }
   }
@@ -132,13 +129,13 @@ const State = () => {
           toast.success('Added Successfully')
           setInputValue({})
           getStates()
+          handleClose()
         }
         setLoading(false)
-        handleClose()
       } catch (err) {
-        toast.error(err.message)
+        toast.error(err[0] || err.message)
         setLoading(false)
-        handleClose()
+        setErrors({[err[1]]: err[0]})
       }
     }
   }
@@ -407,6 +404,7 @@ const State = () => {
             variant='standard'
             margin='dense'
             required
+            value={inputValue?.stateName || ''}
           />
           <span
             style={{
@@ -446,6 +444,7 @@ const State = () => {
             select
             required
             defaultValue={' '}
+            value={inputValue?.status || ''}
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>
