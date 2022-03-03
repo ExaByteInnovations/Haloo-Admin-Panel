@@ -48,13 +48,12 @@ const SocialMedia = () => {
       if (response.status === 200) {
         toast.success('Updated Successfully')
         getSocialMedia()
+        handleClose()
       }
       setLoading(false)
-      handleClose()
     } catch (err) {
       toast.error(err.message)
       setLoading(false)
-      handleClose()
     }
   }
 

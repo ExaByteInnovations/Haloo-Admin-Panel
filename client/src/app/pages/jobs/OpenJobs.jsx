@@ -59,7 +59,6 @@ const OpenJobs = () => {
       }
       setLoading(false)
     } catch (err) {
-      console.log(err)
       toast.error(err.message)
       setLoading(false)
     }
@@ -207,14 +206,14 @@ const OpenJobs = () => {
     }
   })
 
-  const filteredItems = data.filter(
+  const filteredItems = data?.filter(
     (item) =>
-      (item.jobTitle && item.jobTitle.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.jobTotal.toString() &&
-        item.jobTotal.toString().toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.city && item.city.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.customer && item.customer.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.vendor && item.vendor.toLowerCase().includes(filterText.toLowerCase()))
+      (item?.jobTitle && item?.jobTitle?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.jobTotal?.toString() &&
+        item?.jobTotal?.toString()?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.city && item?.city?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.customer && item?.customer?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.vendor && item?.vendor?.toLowerCase()?.includes(filterText?.toLowerCase()))
   )
 
   const subHeaderComponentMemo = useMemo(() => {

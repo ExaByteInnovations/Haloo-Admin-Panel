@@ -48,13 +48,12 @@ const Email = () => {
       if (response.status === 200) {
         toast.success('Updated Successfully')
         getEmail()
+        handleClose()
       }
       setLoading(false)
-      handleClose()
     } catch (err) {
       toast.error(err.message)
       setLoading(false)
-      handleClose()
     }
   }
 

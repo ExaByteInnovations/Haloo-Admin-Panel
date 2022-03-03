@@ -77,6 +77,15 @@ export function AsideMenuMain() {
         <AsideMenuItem to='/settings/social-media' title='Social Media' hasBullet={true} />
         <AsideMenuItem to='/settings/static-pages' title='Static Pages' hasBullet={true} />
       </AsideMenuItemWithSub>
+
+      {/* <AsideMenuItemWithSub
+        to='/reports'
+        icon='/media/icons/duotune/coding/cod001.svg'
+        title={intl.formatMessage({id: 'MENU.REPORTS'})}
+        fontIcon='bi-app-indicator'
+      >
+        <AsideMenuItem to='/reports/login-report' title='Login Report' hasBullet={true} />
+      </AsideMenuItemWithSub> */}
     </>
   )
 }

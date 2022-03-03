@@ -21,6 +21,7 @@ import {Password} from '../pages/settings/Password'
 import {StaticPages} from '../pages/settings/StaticPages'
 import {TextEditor} from '../components/TextEditor'
 import {CodEnable} from '../pages/userManagement/CodEnable'
+import {LoginReport} from '../pages/reports/LoginReport'
 
 export function PrivateRoutes() {
   return (
@@ -46,6 +47,7 @@ export function PrivateRoutes() {
         <Route path='/settings/change-password' component={Password} />
         <Route path='/settings/static-pages' component={StaticPages} />
         <Route path='/settings/editor' component={TextEditor} />
+        <Route path='/reports/login-report' component={LoginReport} />
 
         <Redirect from='/auth' to='/dashboard' />
         <Redirect exact from='/' to='/dashboard' />

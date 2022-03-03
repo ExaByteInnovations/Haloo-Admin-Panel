@@ -19,6 +19,7 @@ import {
   CircularProgress,
   DialogContent,
   DialogTitle,
+  MenuItem,
   // MenuItem,
   TextField,
 } from '@material-ui/core'
@@ -28,13 +29,18 @@ import {Image} from 'react-bootstrap-v5'
 const Customers = () => {
   const intl = useIntl()
   const [customers, setCustomers] = useState([])
+  const [cities, setCities] = useState([])
+  const [states, setStates] = useState([])
   const [imageLoaded, setImageLoaded] = useState(false)
   const [open, setOpen] = useState(false)
   const [addOpen, setAddOpen] = useState(false)
   const [rowId, setRowId] = useState('')
+  const [profileImage, setProfileImage] = useState()
   const [inputValue, setInputValue] = useState({})
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
+  const [showImage, setShowImage] = useState(false)
+  const [previewImage, setPreviewImage] = useState()
   const [errors, setErrors] = useState({})
   const [filterText, setFilterText] = useState('')
   const [resetPaginationToggle, setResetPaginationToggle] = useState(false)
@@ -45,11 +51,23 @@ const Customers = () => {
     setShow(false)
     setAddOpen(false)
     setErrors({})
+    setShowImage(false)
+    setProfileImage(null)
   }
 
   useEffect(() => {
     getCustomers()
   }, [])
+
+  useEffect(() => {
+    if (!profileImage) {
+      setPreviewImage(null)
+      return
+    }
+    const objectUrl = URL.createObjectURL(profileImage)
+    setPreviewImage(objectUrl)
+    return () => URL.revokeObjectURL(objectUrl)
+  }, [profileImage])
 
   const getCustomers = async () => {
     try {
@@ -62,6 +80,36 @@ const Customers = () => {
     } catch (err) {
       toast.error(err.message)
       setLoading(false)
+    }
+  }
+
+  const getStates = async () => {
+    try {
+      const response = await ApiGet(`serviceinfo/state?status=Active`)
+      if (response.status === 200) {
+        setStates(
+          response?.data?.data?.map((state) => {
+            return {name: state?.stateName, id: state?._id}
+          })
+        )
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const getCities = async (stateId) => {
+    try {
+      const response = await ApiGet(`serviceinfo/city?status=Active&stateId=${stateId}`)
+      if (response.status === 200) {
+        setCities(
+          response?.data?.data?.map((city) => {
+            return {name: city?.cityName, id: city?._id}
+          })
+        )
+      }
+    } catch (err) {
+      console.log(err)
     }
   }
 
@@ -87,34 +135,51 @@ const Customers = () => {
     let formIsValid = true
     let errors = {}
 
-    if (inputValue && !inputValue.customerName) {
+    if (inputValue && !inputValue?.customerName) {
       formIsValid = false
       errors['customerName'] = '*Please Enter Customer Name!'
     }
-    if (inputValue && !inputValue.phone) {
+    if (inputValue && !inputValue?.customerName?.match(/^\S[a-zA-Z ]+$/)) {
+      formIsValid = false
+      errors['customerName'] = '*Please Enter Valid Customer Name Only!'
+    }
+
+    if (inputValue && !inputValue?.phone) {
       formIsValid = false
       errors['phone'] = '*Please Enter Phone Number!'
     }
-    if (inputValue && !inputValue.profileImage && addOpen) {
+    if (inputValue && !inputValue?.phone?.match(/^\d{10}$/)) {
+      formIsValid = false
+      errors['phone'] = '*Please Enter Valid Phone Number!'
+    }
+    if (inputValue && !inputValue?.profileImage && !profileImage && addOpen) {
       formIsValid = false
       errors['profileImage'] = '*Please Select ProfileImage!'
     }
-    if (inputValue && !inputValue.city) {
+    if (inputValue && !inputValue?.cityId) {
       formIsValid = false
-      errors['city'] = '*Please Enter City!'
+      errors['city'] = '*Please Select City!'
     }
-    if (inputValue && !inputValue.state) {
+    if (inputValue && !inputValue?.stateId) {
       formIsValid = false
-      errors['state'] = '*Please Enter State!'
+      errors['state'] = '*Please Select State!'
     }
-    if (inputValue && !inputValue.pincode) {
+    if (inputValue && !inputValue?.pincode) {
       formIsValid = false
       errors['pincode'] = '*Please Enter Postal Code!'
     }
-    if (inputValue && !inputValue.address) {
+    if (inputValue && !inputValue?.pincode?.match(/^\d{6}$/)) {
+      formIsValid = false
+      errors['pincode'] = '*Please Enter Valid Postal Code!'
+    }
+    if (inputValue && !inputValue?.address) {
       formIsValid = false
       errors['address'] = '*Please Enter Address!'
     }
+    //  else if (inputValue && !inputValue?.address?.match(/^\S[a-zA-Z0-9\s,.'-/]+$/)) {
+    //   formIsValid = false
+    //   errors['address'] = '*Please Enter Valid Address!'
+    // }
     setErrors(errors)
     return formIsValid
   }
@@ -122,11 +187,11 @@ const Customers = () => {
   const handleUpdate = async () => {
     if (validateForm()) {
       const imageData = new FormData()
-      imageData.append('profileImage', inputValue.profileImage || '')
+      imageData.append('profileImage', profileImage || '')
       imageData.append('customerName', inputValue.customerName)
-      imageData.append('city', inputValue.city || '')
+      imageData.append('cityId', inputValue.cityId || '')
       imageData.append('phone', inputValue.phone)
-      imageData.append('state', inputValue.state || '')
+      imageData.append('stateId', inputValue.stateId || '')
       imageData.append('address', inputValue.address || '')
       imageData.append('pincode', inputValue.pincode || '')
       // imageData.append('status', inputValue.status)
@@ -134,18 +199,17 @@ const Customers = () => {
       try {
         setLoading(true)
         const response = await ApiPut(`usermanagement/customer?_id=${rowId}`, imageData)
-
         if (response.status === 200) {
           toast.success('Updated Successfully')
           setInputValue({})
           getCustomers()
+          handleClose()
         }
         setLoading(false)
-        handleClose()
       } catch (err) {
-        toast.error(err.message)
+        toast.error(err.error || err.message)
         setLoading(false)
-        handleClose()
+        setErrors({[err.field]: err.error})
       }
     }
   }
@@ -153,11 +217,11 @@ const Customers = () => {
   const handleAdd = async () => {
     if (validateForm()) {
       const imageData = new FormData()
-      imageData.append('profileImage', inputValue?.profileImage || '')
+      imageData.append('profileImage', profileImage || '')
       imageData.append('customerName', inputValue?.customerName)
-      imageData.append('city', inputValue?.city || '')
+      imageData.append('cityId', inputValue?.cityId || '')
       imageData.append('phone', inputValue?.phone)
-      imageData.append('state', inputValue?.state || '')
+      imageData.append('stateId', inputValue?.stateId || '')
       imageData.append('address', inputValue?.address || '')
       imageData.append('pincode', inputValue?.pincode || '')
       imageData.append('type', 'customer')
@@ -171,13 +235,13 @@ const Customers = () => {
           toast.success('Added Successfully')
           getCustomers()
           setInputValue({})
+          handleClose()
         }
         setLoading(false)
-        handleClose()
       } catch (err) {
-        toast.error(err.message)
+        toast.error(err[0] || err.message)
         setLoading(false)
-        handleClose()
+        setErrors({[err[1]]: err[0]})
       }
     }
   }
@@ -210,6 +274,10 @@ const Customers = () => {
               className='image'
               style={imageStyles}
               onLoad={handleImageLoad}
+              onClick={() => {
+                setShowImage(true)
+                setInputValue({...inputValue, profileImage: row.profileImage})
+              }}
               src={
                 row.profileImage ? process.env.REACT_APP_SERVER_URL + row.profileImage : userImage
               }
@@ -281,6 +349,8 @@ const Customers = () => {
                 handleOpen()
                 setRowId(row.id)
                 setInputValue(row)
+                getStates()
+                getCities(row.stateId)
               }}
             />
             <Delete
@@ -303,8 +373,10 @@ const Customers = () => {
       profileImage: customer?.profileImage,
       customerName: customer?.customerName,
       phone: customer?.phone,
-      city: customer?.city,
-      state: customer?.state,
+      city: customer?.cityDetails[0]?.cityName,
+      cityId: customer?.cityId,
+      state: customer?.stateDetails[0]?.stateName,
+      stateId: customer?.stateId,
       pincode: customer?.pincode,
       address: customer?.address,
       noOfJobs: customer?.noOfJobs,
@@ -324,7 +396,10 @@ const Customers = () => {
       (item.pincode && item.pincode.toLowerCase().includes(filterText.toLowerCase())) ||
       (item.city && item.city.toLowerCase().includes(filterText.toLowerCase())) ||
       (item.state && item.state.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.address && item.address.toLowerCase().includes(filterText.toLowerCase()))
+      (item.address && item.address.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.noOfJobs &&
+        item.noOfJobs.toString().toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.memberSince && item.memberSince.toLowerCase().includes(filterText.toLowerCase()))
   )
 
   const subHeaderComponentMemo = useMemo(() => {
@@ -376,7 +451,15 @@ const Customers = () => {
         {intl.formatMessage({id: 'MENU.USER_MANAGEMENT.CUSTOMERS'})}
       </PageTitle>
       <Box className='add-button-wrapper'>
-        <Button className='add-button' variant='success' onClick={() => setAddOpen(true)}>
+        <Button
+          className='add-button'
+          variant='success'
+          onClick={() => {
+            setAddOpen(true)
+            getStates()
+            setInputValue({})
+          }}
+        >
           Add New +
         </Button>
       </Box>
@@ -417,6 +500,24 @@ const Customers = () => {
         </>
       </Modal>
 
+      <Modal show={showImage} onHide={handleClose}>
+        <>
+          <Modal.Header closeButton>
+            <Modal.Title>Customer Profile Image</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Image
+              className='model-image'
+              src={
+                inputValue?.profileImage
+                  ? process.env.REACT_APP_SERVER_URL + inputValue?.profileImage
+                  : userImage
+              }
+            />
+          </Modal.Body>
+        </>
+      </Modal>
+
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='xs'>
         <DialogTitle>
           <Box sx={{display: 'flex'}}>
@@ -429,16 +530,36 @@ const Customers = () => {
           </Box>
         </DialogTitle>
         <DialogContent>
+          <Image
+            className='image'
+            src={
+              inputValue?.profileImage
+                ? process.env.REACT_APP_SERVER_URL + inputValue?.profileImage
+                : previewImage
+                ? previewImage
+                : userImage
+            }
+          />
           <TextField
             InputLabelProps={{shrink: true}}
             label='Profile Image'
             type={'file'}
-            onChange={(e) => handleChange(e)}
+            onChange={(e) => setProfileImage(e.target.files[0])}
             name='profileImage'
             fullWidth
             variant='standard'
             margin='dense'
+            helperText='Please upload images of format jpg, jpeg, png'
           />
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['profileImage']}
+          </span>
           <TextField
             label='Customer Name'
             type={'text'}
@@ -500,36 +621,31 @@ const Customers = () => {
             {errors['pincode']}
           </span>
           <TextField
-            label='City'
+            label='State Name'
             type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='city'
+            onChange={(e) => {
+              handleChange(e)
+              getCities(e.target.value)
+            }}
+            name='stateId'
             fullWidth
             variant='standard'
             margin='dense'
-            value={inputValue?.city}
+            select
+            value={inputValue?.stateId}
             required
-          />
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
+            SelectProps={{
+              MenuProps: {
+                style: {height: '300px'},
+              },
             }}
           >
-            {errors['city']}
-          </span>
-          <TextField
-            label='State'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='state'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            value={inputValue?.state}
-            required
-          />
+            {states.map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
           <span
             style={{
               color: 'red',
@@ -538,6 +654,38 @@ const Customers = () => {
             }}
           >
             {errors['state']}
+          </span>
+          <TextField
+            label='City Name'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='cityId'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            select
+            value={inputValue?.cityId}
+            required
+            SelectProps={{
+              MenuProps: {
+                style: {height: '300px'},
+              },
+            }}
+          >
+            {cities.map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['city']}
           </span>
           <TextField
             label='Address'
@@ -617,16 +765,27 @@ const Customers = () => {
           </Box>
         </DialogTitle>
         <DialogContent>
+          <Image
+            className='image'
+            src={
+              inputValue?.profileImage
+                ? process.env.REACT_APP_SERVER_URL + inputValue?.profileImage
+                : previewImage
+                ? previewImage
+                : userImage
+            }
+          />
           <TextField
             InputLabelProps={{shrink: true}}
             label='Profile Image'
             type={'file'}
-            onChange={(e) => handleChange(e)}
+            onChange={(e) => setProfileImage(e.target.files[0])}
             name='profileImage'
             fullWidth
             variant='standard'
             margin='dense'
             required
+            helperText='Please upload images of format jpg, jpeg, png'
           />
           <span
             style={{
@@ -646,6 +805,7 @@ const Customers = () => {
             variant='standard'
             margin='dense'
             required
+            value={inputValue?.customerName || ''}
           />
           <span
             style={{
@@ -665,6 +825,7 @@ const Customers = () => {
             variant='standard'
             margin='dense'
             required
+            value={inputValue?.phone || ''}
           />
           <span
             style={{
@@ -684,6 +845,7 @@ const Customers = () => {
             variant='standard'
             margin='dense'
             required
+            value={inputValue?.pincode || ''}
           />
           <span
             style={{
@@ -695,34 +857,32 @@ const Customers = () => {
             {errors['pincode']}
           </span>
           <TextField
-            label='City'
+            label='State Name'
             type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='city'
+            onChange={(e) => {
+              handleChange(e)
+              getCities(e.target.value)
+            }}
+            name='stateId'
             fullWidth
             variant='standard'
             margin='dense'
+            select
             required
-          />
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
+            defaultValue={''}
+            value={inputValue?.stateId || ''}
+            SelectProps={{
+              MenuProps: {
+                style: {height: '300px'},
+              },
             }}
           >
-            {errors['city']}
-          </span>
-          <TextField
-            label='State'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='state'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            required
-          />
+            {states.map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
           <span
             style={{
               color: 'red',
@@ -733,6 +893,39 @@ const Customers = () => {
             {errors['state']}
           </span>
           <TextField
+            label='City Name'
+            type={'text'}
+            onChange={(e) => handleChange(e)}
+            name='cityId'
+            fullWidth
+            variant='standard'
+            margin='dense'
+            select
+            required
+            defaultValue={''}
+            value={inputValue?.cityId || ''}
+            SelectProps={{
+              MenuProps: {
+                style: {height: '300px'},
+              },
+            }}
+          >
+            {cities.map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <span
+            style={{
+              color: 'red',
+              top: '5px',
+              fontSize: '12px',
+            }}
+          >
+            {errors['city']}
+          </span>
+          <TextField
             label='Address'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -741,6 +934,7 @@ const Customers = () => {
             variant='standard'
             margin='dense'
             required
+            value={inputValue?.address || ''}
           />
           <span
             style={{

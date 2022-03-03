@@ -127,15 +127,12 @@ const City = () => {
           setInputValue({})
           getCities()
           handleClose()
-          setLoading(false)
-        } else {
-          setLoading(false)
-          handleClose()
         }
-      } catch (err) {
-        toast.error(err.message)
         setLoading(false)
-        handleClose()
+      } catch (err) {
+        toast.error(err.error || err.message)
+        setLoading(false)
+        setErrors({[err.field]: err.error})
       }
     }
   }
@@ -149,15 +146,13 @@ const City = () => {
           toast.success('Added Successfully')
           setInputValue({})
           getCities()
-          setLoading(false)
           handleClose()
         }
         setLoading(false)
-        handleClose()
       } catch (err) {
-        toast.error(err.message)
+        toast.error(err[0] || err.message)
         setLoading(false)
-        handleClose()
+        setErrors({[err[1]]: err[0]})
       }
     }
   }
@@ -448,6 +443,7 @@ const City = () => {
             variant='standard'
             margin='dense'
             required
+            value={inputValue?.cityName || ''}
           />
           <span
             style={{
@@ -468,6 +464,7 @@ const City = () => {
             required
             select
             defaultValue={' '}
+            value={inputValue?.stateId || ''}
             SelectProps={{
               MenuProps: {
                 style: {height: '300px'},
@@ -500,6 +497,7 @@ const City = () => {
             required
             select
             defaultValue={' '}
+            value={inputValue?.status || ''}
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>

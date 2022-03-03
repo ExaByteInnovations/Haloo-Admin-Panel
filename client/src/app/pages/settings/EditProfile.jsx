@@ -2,7 +2,7 @@
 import {useContext, useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
 import {PageTitle} from '../../../_metronic/layout/core'
-import {ApiGet, ApiPut} from '../../../helpers/API/ApiData'
+import {ApiGet, ApiPost, ApiPut} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
 import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
@@ -11,17 +11,19 @@ import '../../App.css'
 import {Image} from 'react-bootstrap-v5'
 import userImage from '../../../assets/user.png'
 import {AuthContext} from '../../auth/authContext'
+import * as authUtil from '../../../utils/auth.util'
 
 const EditProfile = () => {
   const intl = useIntl()
   const {user, dispatch} = useContext(AuthContext)
+  const [previewImage, setPreviewImage] = useState()
   const [inputValue, setInputValue] = useState({...user})
   const [imageLoaded, setImageLoaded] = useState(false)
   const [initialValues, setInitialValues] = useState({})
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
   const [errors, setErrors] = useState({})
-  const [profileImage, setProfileImage] = useState(user?.profileImage)
+  const [profileImage, setProfileImage] = useState()
 
   const handleClose = () => {
     setShow(false)
@@ -32,6 +34,16 @@ const EditProfile = () => {
   useEffect(() => {
     getEditProfile()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!profileImage) {
+      setPreviewImage(null)
+      return
+    }
+    const objectUrl = URL.createObjectURL(profileImage)
+    setPreviewImage(objectUrl)
+    return () => URL.revokeObjectURL(objectUrl)
+  }, [profileImage])
 
   const getEditProfile = async () => {
     try {
@@ -55,23 +67,49 @@ const EditProfile = () => {
     if (inputValue && !inputValue.name) {
       formIsValid = false
       errors['name'] = '*Please Enter Name!'
+    } else if (inputValue && !inputValue.name.match(/^\S[a-zA-Z ]+$/)) {
+      formIsValid = false
+      errors['name'] = '*Please Enter Valid Name Only!'
     }
     if (inputValue && !inputValue.email) {
       formIsValid = false
       errors['email'] = '*Please Enter Email!'
-    }
-    if (inputValue && !inputValue.userRole) {
+    } else if (
+      inputValue &&
+      !inputValue.email.match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      )
+    ) {
       formIsValid = false
-      errors['userRole'] = '*Please Select User Role!'
+      errors['email'] = '*Please Enter Valid Email Only!'
     }
-    if (inputValue && !inputValue.status) {
-      formIsValid = false
-      errors['status'] = '*Please Select Status!'
-    }
+    // if (inputValue && !inputValue.userRole) {
+    //   formIsValid = false
+    //   errors['userRole'] = '*Please Select User Role!'
+    // }
+    // if (inputValue && !inputValue.status) {
+    //   formIsValid = false
+    //   errors['status'] = '*Please Select Status!'
+    // }
 
     setErrors(errors)
     if (formIsValid) setShow(true)
     return formIsValid
+  }
+
+  const logout = async () => {
+    try {
+      const response = await ApiPost('auth/admin/logout', {email: user?.email})
+      if (response.status === 200) {
+        dispatch({
+          type: 'LOGOUT',
+        })
+        authUtil.logout()
+        // toast.success(response.data)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
 
   const handleUpdate = async () => {
@@ -93,13 +131,13 @@ const EditProfile = () => {
             type: 'UPDATE_SUCCESS',
             payload: response?.data,
           })
+          logout()
+          handleClose()
         }
         setLoading(false)
-        handleClose()
       } catch (err) {
         toast.error(err.message)
         setLoading(false)
-        handleClose()
       }
     }
   }
@@ -163,7 +201,15 @@ const EditProfile = () => {
             style={imageStyles}
             onLoad={handleImageLoad}
             src={
-              inputValue?.profileImage
+              // inputValue?.profileImage
+              //   ? process.env.REACT_APP_SERVER_URL + inputValue?.profileImage
+              //   : previewImage
+              //   ? previewImage
+              //   : userImage
+
+              previewImage
+                ? previewImage
+                : inputValue?.profileImage
                 ? process.env.REACT_APP_SERVER_URL + inputValue?.profileImage
                 : userImage
             }
@@ -217,8 +263,9 @@ const EditProfile = () => {
             variant='filled'
             margin='dense'
             value={inputValue?.userRole || ''}
+            disabled
           />
-          <span
+          {/* <span
             style={{
               color: 'red',
               top: '5px',
@@ -226,8 +273,8 @@ const EditProfile = () => {
             }}
           >
             {errors['userRole']}
-          </span>
-          <TextField
+          </span> */}
+          {/* <TextField
             className='admin-field'
             label='Status'
             type={'text'}
@@ -249,7 +296,7 @@ const EditProfile = () => {
                 {option.label}
               </MenuItem>
             ))}
-          </TextField>
+          </TextField> */}
           <TextField
             InputLabelProps={{shrink: true}}
             className='admin-field'
