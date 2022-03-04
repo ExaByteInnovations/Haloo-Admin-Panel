@@ -61,7 +61,6 @@ const MasterSettings = () => {
   const handleUpdate = async () => {
     // if (validateForm()) {
     try {
-      setLoading(true)
       const response = await ApiPut(`setting/master?_id=${inputValue?._id}`, {
         ...inputValue,
         validImageExtensions: imageExtension,
@@ -72,10 +71,8 @@ const MasterSettings = () => {
         getMasterSettings()
         handleClose()
       }
-      setLoading(false)
     } catch (err) {
       toast.error(err.message)
-      setLoading(false)
     }
     // }
   }

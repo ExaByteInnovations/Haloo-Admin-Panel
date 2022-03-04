@@ -68,7 +68,6 @@ const Password = () => {
   const handleUpdate = async () => {
     if (validateForm()) {
       try {
-        setLoading(true)
         const response = await ApiPost(`auth/admin/resetpassword?_id=${user?._id}`, {
           email: user?.email,
           password: inputValue?.password,
@@ -83,10 +82,8 @@ const Password = () => {
           })
           logout()
         }
-        setLoading(false)
       } catch (err) {
         toast.error(err.message)
-        setLoading(false)
       }
     }
   }

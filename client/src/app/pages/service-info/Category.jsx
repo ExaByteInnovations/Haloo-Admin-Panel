@@ -89,7 +89,6 @@ const Category = () => {
       // imageData.append('sequenceNumber', inputValue.sequenceNumber)
       // imageData.append('status', inputValue.status)
       try {
-        setLoading(true)
         const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, inputValue)
         if (response.status === 200) {
           toast.success('Updated Successfully')
@@ -98,10 +97,8 @@ const Category = () => {
           getCategories()
           handleClose()
         }
-        setLoading(false)
       } catch (err) {
         toast.error(err.error || err.message)
-        setLoading(false)
         setErrors({[err.field]: err.error})
       }
     }
@@ -160,7 +157,6 @@ const Category = () => {
       // imageData.append('status', inputValue.status)
 
       try {
-        setLoading(true)
         const response = await ApiPost(`serviceinfo/category`, inputValue)
         if (response.status === 200) {
           toast.success('Added Successfully')
@@ -168,10 +164,8 @@ const Category = () => {
           getCategories()
           handleClose()
         }
-        setLoading(false)
       } catch (err) {
         toast.error(err[0] || err.message)
-        setLoading(false)
         setErrors({[err[1]]: err[0]})
       }
     }

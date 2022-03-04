@@ -42,7 +42,6 @@ const Email = () => {
 
   const handleUpdate = async () => {
     try {
-      setLoading(true)
       const response = await ApiPut(`setting/email?_id=${inputValue?._id}`, inputValue)
 
       if (response.status === 200) {
@@ -50,10 +49,8 @@ const Email = () => {
         getEmail()
         handleClose()
       }
-      setLoading(false)
     } catch (err) {
       toast.error(err.message)
-      setLoading(false)
     }
   }
 

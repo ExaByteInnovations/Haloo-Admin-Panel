@@ -64,7 +64,6 @@ const City = () => {
   }
 
   const getStates = async () => {
-    setLoading(true)
     try {
       const response = await ApiGet(`serviceinfo/state`)
       if (response.status === 200) {
@@ -74,9 +73,8 @@ const City = () => {
           })
         )
       }
-      setLoading(false)
     } catch (err) {
-      setLoading(false)
+      console.log(err)
     }
   }
 
@@ -120,7 +118,6 @@ const City = () => {
   const handleUpdate = async () => {
     if (validateForm()) {
       try {
-        setLoading(true)
         const response = await ApiPut(`serviceinfo/city?_id=${rowId}`, inputValue)
         if (response.status === 200) {
           toast.success('Updated Successfully')
@@ -128,10 +125,8 @@ const City = () => {
           getCities()
           handleClose()
         }
-        setLoading(false)
       } catch (err) {
         toast.error(err.error || err.message)
-        setLoading(false)
         setErrors({[err.field]: err.error})
       }
     }
@@ -140,7 +135,6 @@ const City = () => {
   const handleAdd = async () => {
     if (validateForm()) {
       try {
-        setLoading(true)
         const response = await ApiPost(`serviceinfo/city`, inputValue)
         if (response.status === 200) {
           toast.success('Added Successfully')
@@ -148,10 +142,8 @@ const City = () => {
           getCities()
           handleClose()
         }
-        setLoading(false)
       } catch (err) {
         toast.error(err[0] || err.message)
-        setLoading(false)
         setErrors({[err[1]]: err[0]})
       }
     }

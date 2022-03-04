@@ -200,7 +200,6 @@ const Customers = () => {
       // imageData.append('status', inputValue.status)
       // imageData.append('codStatus', inputValue.codStatus)
       try {
-        setLoading(true)
         const response = await ApiPut(`usermanagement/customer?_id=${rowId}`, imageData)
         if (response.status === 200) {
           toast.success('Updated Successfully')
@@ -208,10 +207,8 @@ const Customers = () => {
           getCustomers()
           handleClose()
         }
-        setLoading(false)
       } catch (err) {
         toast.error(err.error || err.message)
-        setLoading(false)
         setErrors({[err.field]: err.error})
       }
     }
@@ -232,7 +229,6 @@ const Customers = () => {
       // imageData.append('codStatus', inputValue?.codStatus)
 
       try {
-        setLoading(true)
         const response = await ApiPost(`usermanagement/customer?type=customer`, imageData)
         if (response.status === 200) {
           toast.success('Added Successfully')
@@ -240,10 +236,8 @@ const Customers = () => {
           setInputValue({})
           handleClose()
         }
-        setLoading(false)
       } catch (err) {
         toast.error(err[0] || err.message)
-        setLoading(false)
         setErrors({[err[1]]: err[0]})
       }
     }
