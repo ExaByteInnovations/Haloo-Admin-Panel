@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import {useEffect, useMemo, useState} from 'react'
+import _ from 'lodash'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
@@ -102,11 +103,13 @@ const Customers = () => {
     try {
       const response = await ApiGet(`serviceinfo/city?status=Active&stateId=${stateId}`)
       if (response.status === 200) {
-        setCities(
-          response?.data?.data?.map((city) => {
-            return {name: city?.cityName, id: city?._id}
-          })
-        )
+        const cityList = response?.data?.data?.map((city) => {
+          return {name: city?.cityName, id: city?._id}
+        })
+        console.log(cityList, 'cityList')
+        _.isEmpty(cityList)
+          ? setCities([{name: 'No Cities Found', id: 'No Cities Found'}])
+          : setCities(cityList)
       }
     } catch (err) {
       console.log(err)

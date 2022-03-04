@@ -463,7 +463,7 @@ const City = () => {
             margin='dense'
             required
             select
-            defaultValue={' '}
+            defaultValue={''}
             value={inputValue?.stateId || ''}
             SelectProps={{
               MenuProps: {
@@ -496,7 +496,7 @@ const City = () => {
             margin='dense'
             required
             select
-            defaultValue={' '}
+            defaultValue={''}
             value={inputValue?.status || ''}
           >
             {status.map((option) => (

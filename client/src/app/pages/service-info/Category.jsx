@@ -567,8 +567,8 @@ const Category = () => {
             margin='dense'
             select
             required
-            defaultValue={' '}
-            value={inputValue?.status || ' '}
+            defaultValue={''}
+            value={inputValue?.status || ''}
           >
             {status.map((option) => (
               <MenuItem key={option.value} value={option.value}>
