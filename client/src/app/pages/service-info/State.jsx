@@ -103,7 +103,6 @@ const State = () => {
   const handleUpdate = async () => {
     if (validateForm()) {
       try {
-        setLoading(true)
         const response = await ApiPut(`serviceinfo/state?_id=${rowId}`, inputValue)
         if (response.status === 200) {
           toast.success('Updated Successfully')
@@ -111,10 +110,8 @@ const State = () => {
           getStates()
           handleClose()
         }
-        setLoading(false)
       } catch (err) {
         toast.error(err.error || err.message)
-        setLoading(false)
         setErrors({[err.field]: err.error})
       }
     }
@@ -123,7 +120,6 @@ const State = () => {
   const handleAdd = async () => {
     if (validateForm()) {
       try {
-        setLoading(true)
         const response = await ApiPost(`serviceinfo/state`, inputValue)
         if (response.status === 200) {
           toast.success('Added Successfully')
@@ -131,10 +127,8 @@ const State = () => {
           getStates()
           handleClose()
         }
-        setLoading(false)
       } catch (err) {
         toast.error(err[0] || err.message)
-        setLoading(false)
         setErrors({[err[1]]: err[0]})
       }
     }

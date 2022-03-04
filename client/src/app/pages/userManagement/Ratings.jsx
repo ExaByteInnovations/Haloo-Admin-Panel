@@ -69,7 +69,6 @@ const Ratings = () => {
 
   const handleUpdate = async (rowId) => {
     try {
-      setLoading(true)
       const response = await ApiPut(`review?_id=${rowId}`, inputValue)
 
       if (response.status === 200) {
@@ -77,10 +76,8 @@ const Ratings = () => {
         setInputValue({})
         getRatings()
       }
-      setLoading(false)
     } catch (err) {
       toast.error(err.message)
-      setLoading(false)
     }
   }
 

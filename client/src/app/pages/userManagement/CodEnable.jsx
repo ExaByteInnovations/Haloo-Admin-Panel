@@ -51,11 +51,9 @@ const CodEnable = () => {
         toast.success('Updated Successfully')
         getCod()
       }
-      setLoading(false)
       setShow(false)
     } catch (err) {
       toast.error(err.message)
-      setLoading(false)
       setShow(false)
     }
   }

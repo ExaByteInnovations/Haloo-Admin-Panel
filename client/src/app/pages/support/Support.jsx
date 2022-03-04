@@ -53,11 +53,9 @@ const Support = () => {
         toast.success('Updated Successfully')
         getSupport()
       }
-      setLoading(false)
       setShow(false)
     } catch (err) {
       toast.error(err.message)
-      setLoading(false)
       setShow(false)
     }
   }

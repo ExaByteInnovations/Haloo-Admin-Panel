@@ -42,7 +42,6 @@ const SocialMedia = () => {
 
   const handleUpdate = async () => {
     try {
-      setLoading(true)
       const response = await ApiPut(`setting/socialmedia?_id=${inputValue?._id}`, inputValue)
 
       if (response.status === 200) {
@@ -50,10 +49,8 @@ const SocialMedia = () => {
         getSocialMedia()
         handleClose()
       }
-      setLoading(false)
     } catch (err) {
       toast.error(err.message)
-      setLoading(false)
     }
   }
 

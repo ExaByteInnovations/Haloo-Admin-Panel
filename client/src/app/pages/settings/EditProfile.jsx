@@ -122,7 +122,6 @@ const EditProfile = () => {
       imageData.append('status', inputValue.status)
 
       try {
-        setLoading(true)
         const response = await ApiPut(`usermanagement/admin?_id=${user?._id}`, imageData)
         if (response.status === 200) {
           toast.success('Updated Successfully')
@@ -134,10 +133,8 @@ const EditProfile = () => {
           logout()
           handleClose()
         }
-        setLoading(false)
       } catch (err) {
         toast.error(err.message)
-        setLoading(false)
       }
     }
   }

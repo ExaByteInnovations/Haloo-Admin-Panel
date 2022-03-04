@@ -36,7 +36,7 @@ const MasterSettings = () => {
         const masterSettings = response.data.data
         setInputValue(...response.data.data)
         setInitialValues(...response.data.data)
-        setImageExtension(masterSettings[0]?.validImageExtensions.split(', ' || ','))
+        setImageExtension(masterSettings[0]?.validImageExtensions)
       }
       setLoading(false)
     } catch (err) {
@@ -61,7 +61,6 @@ const MasterSettings = () => {
   const handleUpdate = async () => {
     // if (validateForm()) {
     try {
-      setLoading(true)
       const response = await ApiPut(`setting/master?_id=${inputValue?._id}`, {
         ...inputValue,
         validImageExtensions: imageExtension,
@@ -72,10 +71,8 @@ const MasterSettings = () => {
         getMasterSettings()
         handleClose()
       }
-      setLoading(false)
     } catch (err) {
       toast.error(err.message)
-      setLoading(false)
     }
     // }
   }
@@ -170,7 +167,7 @@ const MasterSettings = () => {
               name='validImageExtensions'
               variant='filled'
               margin='dense'
-              helperText='Press Enter key after each Extension'
+              helperText="Please don't add '.' before the extension and press Enter key to add the extension"
             />
           )}
         />

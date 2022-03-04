@@ -109,11 +109,13 @@ const Vendors = () => {
     try {
       const response = await ApiGet(`serviceinfo/city?status=Active&stateId=${stateId}`)
       if (response.status === 200) {
-        setCities(
-          response?.data?.data?.map((city) => {
-            return {name: city?.cityName, id: city?._id}
-          })
-        )
+        const cityList = response?.data?.data?.map((city) => {
+          return {name: city?.cityName, id: city?._id}
+        })
+        console.log(cityList, 'cityList')
+        _.isEmpty(cityList)
+          ? setCities([{name: 'No Cities Found', id: 'No Cities Found'}])
+          : setCities(cityList)
       }
     } catch (err) {
       console.log(err)
@@ -230,7 +232,6 @@ const Vendors = () => {
       skills.forEach((skill) => imageData.append('jobSkills[]', skill || ''))
       // imageData.append('status', inputValue.status)
       try {
-        setLoading(true)
         const response = await ApiPut(`usermanagement/customer?_id=${rowId}`, imageData)
 
         if (response.status === 200) {
@@ -240,10 +241,8 @@ const Vendors = () => {
           getVendors()
           handleClose()
         }
-        setLoading(false)
       } catch (err) {
         toast.error(err.error || err.message)
-        setLoading(false)
         setErrors({[err.field]: err.error})
       }
     }
@@ -264,7 +263,6 @@ const Vendors = () => {
       // imageData.append('status', inputValue.status)
 
       try {
-        setLoading(true)
         const response = await ApiPost(`usermanagement/customer`, imageData)
         if (response.status === 200) {
           toast.success('Added Successfully')
@@ -273,10 +271,8 @@ const Vendors = () => {
           setSkills([])
           handleClose()
         }
-        setLoading(false)
       } catch (err) {
         toast.error(err[0] || err.message)
-        setLoading(false)
         setErrors({[err[1]]: err[0]})
       }
     }
