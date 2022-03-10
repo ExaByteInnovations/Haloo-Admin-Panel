@@ -8,6 +8,8 @@ import {ApiPost} from '../../../../helpers/API/ApiData'
 import {AuthContext} from '../../../auth/authContext'
 import * as authUtil from '../../../../utils/auth.util'
 import {toast} from 'react-toastify'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -22,8 +24,8 @@ const loginSchema = Yup.object().shape({
 })
 
 const initialValues = {
-  email: 'jay@gmail.com',
-  password: '1234',
+  email: 'test@gmail.com',
+  password: 'test',
 }
 
 /*
@@ -35,6 +37,7 @@ const initialValues = {
 export function Login() {
   const [loading, setLoading] = useState(false)
   const {dispatch} = useContext(AuthContext)
+  const [showPassword, setShowPassword] = useState(false)
 
   const formik = useFormik({
     initialValues,
@@ -81,18 +84,20 @@ export function Login() {
       </div>
       {/* begin::Heading */}
 
-      {/* {formik.status ? (
+      {formik.status ? (
         <div className='mb-lg-15 alert alert-danger'>
           <div className='alert-text font-weight-bold'>{formik.status}</div>
         </div>
-      ) : (
+      ) : null }
+      {/* (
         <div className='mb-10 bg-light-info p-8 rounded'>
           <div className='text-info'>
             Use account <strong>test@gmail.com</strong> and password <strong>test</strong> to
             continue.
           </div>
         </div>
-      )} */}
+      )
+      } */}
 
       {/* begin::Form group */}
       <div className='fv-row mb-10'>
@@ -101,11 +106,11 @@ export function Login() {
           placeholder='Email'
           {...formik.getFieldProps('email')}
           className={clsx(
-            'form-control form-control-lg form-control-solid',
-            {'is-invalid': formik.touched.email && formik.errors.email},
-            {
-              'is-valid': formik.touched.email && !formik.errors.email,
-            }
+            'form-control form-control-lg form-control-solid'
+            // {'is-invalid': formik.touched.email && formik.errors.email},
+            // {
+            //   'is-valid': formik.touched.email && !formik.errors.email,
+            // }
           )}
           type='email'
           name='email'
@@ -127,30 +132,39 @@ export function Login() {
             <label className='form-label fw-bolder text-dark fs-6 mb-0'>Password</label>
             {/* end::Label */}
             {/* begin::Link */}
-            {/* <Link
+            <Link
               to='/auth/forgot-password'
               className='link-primary fs-6 fw-bolder'
               style={{marginLeft: '5px'}}
             >
               Forgot Password ?
-            </Link> */}
+            </Link>
             {/* end::Link */}
           </div>
         </div>
-        <input
-          type='password'
-          autoComplete='off'
-          {...formik.getFieldProps('password')}
-          className={clsx(
-            'form-control form-control-lg form-control-solid',
-            {
-              'is-invalid': formik.touched.password && formik.errors.password,
-            },
-            {
-              'is-valid': formik.touched.password && !formik.errors.password,
-            }
-          )}
-        />
+        <div className='password-field-wrapper'>
+          <input
+            type={showPassword ? 'text' : 'password'}
+            autoComplete='off'
+            {...formik.getFieldProps('password')}
+            className={clsx(
+              'form-control form-control-lg form-control-solid'
+              // {
+              //   'is-invalid': formik.touched.password && formik.errors.password,
+              // },
+              // {
+              //   'is-valid': formik.touched.password && !formik.errors.password,
+              // }
+            )}
+          />
+          <div className='show-password-btn'>
+            {showPassword ? (
+              <VisibilityIcon onClick={() => setShowPassword(false)} />
+            ) : (
+              <VisibilityOffIcon onClick={() => setShowPassword(true)} />
+            )}
+          </div>
+        </div>
         {formik.touched.password && formik.errors.password && (
           <div className='fv-plugins-message-container'>
             <div className='fv-help-block'>

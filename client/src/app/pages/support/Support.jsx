@@ -176,7 +176,7 @@ const Support = () => {
         columns={columns}
         data={filteredItems}
         fixedHeader
-        fixedHeaderScrollHeight='61vh'
+        fixedHeaderScrollHeight='58vh'
         pagination
         paginationResetDefaultPage={resetPaginationToggle}
         subHeader

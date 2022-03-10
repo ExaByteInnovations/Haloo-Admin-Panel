@@ -7,7 +7,6 @@
 // const port = '3000'
 // const trailUrl = '/api'
 
-// https://halooadmin.herokuapp.com/api/
 const protocol = 'https'
 const host = 'halooadmin.herokuapp.com'
 

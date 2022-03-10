@@ -112,7 +112,6 @@ const Vendors = () => {
         const cityList = response?.data?.data?.map((city) => {
           return {name: city?.cityName, id: city?._id}
         })
-        console.log(cityList, 'cityList')
         _.isEmpty(cityList)
           ? setCities([{name: 'No Cities Found', id: 'No Cities Found'}])
           : setCities(cityList)
