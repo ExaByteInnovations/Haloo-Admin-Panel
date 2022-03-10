@@ -7,7 +7,7 @@ import {CustomDashboardWidget} from '../../../_metronic/partials/widgets/customD
 
 const DashboardPage: FC = () => (
   <>
-    <CustomDashboardWidget className='card-stretch gutter-b' />
+    <CustomDashboardWidget />
   </>
 )
 

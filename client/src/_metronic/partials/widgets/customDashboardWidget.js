@@ -1,16 +1,51 @@
-import {Box} from '@material-ui/core'
+import {Box, CircularProgress} from '@material-ui/core'
+import {useEffect, useState} from 'react'
+import {toast} from 'react-toastify'
+import {ApiGet} from '../../../helpers/API/ApiData'
 import MuiCard from './MuiCard'
 
-export function CustomDashboardWidget({className}) {
+export function CustomDashboardWidget() {
+  const [loading, setLoading] = useState(false)
+  const [dashboardDetails, setDashboardDetails] = useState([])
+
+  useEffect(() => {
+    getDashboardDetails()
+  }, [])
+
+  const getDashboardDetails = async () => {
+    try {
+      setLoading(true)
+      const response = await ApiGet(`dashboard`)
+      if (response.status === 200) {
+        setDashboardDetails(response.data.data)
+      }
+      setLoading(false)
+    } catch (err) {
+      toast.error(err.message)
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <Box className='loader'>
+        <CircularProgress />
+      </Box>
+    )
+  }
+
+  const cardColor = ['#0096c7', '#00b4d8', '#48cae4', '#90e0ef']
+
   return (
-    // <div className='col-xl-3 col-lg-6'>
-    //   <div className='row'>
-    <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 20}}>
-      <MuiCard title='Customers' count='11' color='#00b4d8' />
-      <MuiCard title='Vendors' count='13' color='#48cae4' />
-      <MuiCard title='Completed Jobs' count='15' color='#90e0ef' />
+    <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 35}}>
+      {dashboardDetails?.map((item, index) => (
+        <MuiCard
+          key={item.title}
+          title={item.title}
+          count={item.total}
+          color={cardColor[index % cardColor.length]}
+        />
+      ))}
     </Box>
-    //   </div>
-    // </div>
   )
 }

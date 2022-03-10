@@ -197,7 +197,7 @@ const Ratings = () => {
         columns={columns}
         data={data}
         fixedHeader
-        fixedHeaderScrollHeight='61vh'
+        fixedHeaderScrollHeight='58vh'
         pagination
         highlightOnHover
         responsive

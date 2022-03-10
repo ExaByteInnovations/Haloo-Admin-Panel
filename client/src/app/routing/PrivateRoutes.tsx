@@ -22,6 +22,7 @@ import {StaticPages} from '../pages/settings/StaticPages'
 import {TextEditor} from '../components/TextEditor'
 import {CodEnable} from '../pages/userManagement/CodEnable'
 import {LoginReport} from '../pages/reports/LoginReport'
+import {ContactUs} from '../pages/reports/ContactUs'
 
 export function PrivateRoutes() {
   return (
@@ -48,6 +49,7 @@ export function PrivateRoutes() {
         <Route path='/settings/static-pages' component={StaticPages} />
         <Route path='/settings/editor' component={TextEditor} />
         <Route path='/reports/login-report' component={LoginReport} />
+        <Route path='/reports/contact-us' component={ContactUs} />
 
         <Redirect from='/auth' to='/dashboard' />
         <Redirect exact from='/' to='/dashboard' />

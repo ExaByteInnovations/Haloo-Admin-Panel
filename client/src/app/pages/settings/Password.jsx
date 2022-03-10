@@ -5,10 +5,12 @@ import {PageTitle} from '../../../_metronic/layout/core'
 import {ApiPost} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
 import {Button} from 'react-bootstrap'
-import {Box, CircularProgress, TextField} from '@material-ui/core'
+import {Box, CircularProgress, InputAdornment, TextField} from '@material-ui/core'
 import '../../App.css'
 import {AuthContext} from '../../auth/authContext'
 import * as authUtil from '../../../utils/auth.util'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 
 const Password = () => {
   const intl = useIntl()
@@ -16,6 +18,8 @@ const Password = () => {
   const [inputValue, setInputValue] = useState({})
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const validateForm = () => {
     let formIsValid = true
@@ -111,13 +115,27 @@ const Password = () => {
         <TextField
           className='settings-field'
           label='New Password'
-          type={'password'}
+          type={showPassword ? 'text' : 'password'}
           onChange={(e) => handleChange(e)}
           name='password'
           variant='filled'
           margin='dense'
           required
           helperText='Please Enter Password having more than 2 characters'
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position='end'>
+                {showPassword ? (
+                  <VisibilityIcon sx={{cursor: 'pointer'}} onClick={() => setShowPassword(false)} />
+                ) : (
+                  <VisibilityOffIcon
+                    sx={{cursor: 'pointer'}}
+                    onClick={() => setShowPassword(true)}
+                  />
+                )}
+              </InputAdornment>
+            ),
+          }}
         />
         <span
           style={{
@@ -131,13 +149,30 @@ const Password = () => {
         <TextField
           className='settings-field'
           label='Confirm Password'
-          type={'password'}
+          type={showConfirmPassword ? 'text' : 'password'}
           onChange={(e) => handleChange(e)}
           name='confirmPassword'
           variant='filled'
           margin='dense'
           required
           helperText='Please Enter Password having more than 2 characters'
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position='end'>
+                {showConfirmPassword ? (
+                  <VisibilityIcon
+                    sx={{cursor: 'pointer'}}
+                    onClick={() => setShowConfirmPassword(false)}
+                  />
+                ) : (
+                  <VisibilityOffIcon
+                    sx={{cursor: 'pointer'}}
+                    onClick={() => setShowConfirmPassword(true)}
+                  />
+                )}
+              </InputAdornment>
+            ),
+          }}
         />
         <span
           style={{

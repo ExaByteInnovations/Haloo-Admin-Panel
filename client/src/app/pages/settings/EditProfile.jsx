@@ -134,7 +134,8 @@ const EditProfile = () => {
           handleClose()
         }
       } catch (err) {
-        toast.error(err.message)
+        toast.error(err.error || err.message)
+        setErrors({[err.field]: err.error})
       }
     }
   }
