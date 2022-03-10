@@ -40,20 +40,6 @@ export function ForgotPassword() {
   const [adminId, setAdminId] = useState('')
   const [minutes, setMinutes] = useState(2)
   const [seconds, setSeconds] = useState(0)
-  // const [counter, setCounter] = useState(120)
-
-  // useEffect(() => {
-  //   if (otpSent) {
-  //     const interval = setInterval(() => {
-  //       setCounter(counter - 1)
-  //       setMinutes(Math.floor(counter / 60))
-  //       setSeconds(counter % 60)
-  //       if (counter === 0) {
-  //         clearInterval(interval)
-  //       }
-  //     }, 1000)
-  //   }
-  // }, [otpSent, counter])
 
   useEffect(() => {
     if (otpSent) {
@@ -261,7 +247,11 @@ export function ForgotPassword() {
             </div>
             <div className='otp-wrapper'>
               <div className='otp-counter'>
-                Resend OTP in {minutes} : {seconds} seconds
+                Resend OTP in
+                <span className='otp'>
+                  {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+                </span>
+                seconds
               </div>
               <button
                 type='submit'

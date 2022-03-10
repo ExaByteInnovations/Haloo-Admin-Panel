@@ -78,14 +78,15 @@ export function AsideMenuMain() {
         <AsideMenuItem to='/settings/static-pages' title='Static Pages' hasBullet={true} />
       </AsideMenuItemWithSub>
 
-      {/* <AsideMenuItemWithSub
+      <AsideMenuItemWithSub
         to='/reports'
-        icon='/media/icons/duotune/coding/cod001.svg'
+        icon='/media/icons/duotune/graphs/gra010.svg'
         title={intl.formatMessage({id: 'MENU.REPORTS'})}
         fontIcon='bi-app-indicator'
       >
         <AsideMenuItem to='/reports/login-report' title='Login Report' hasBullet={true} />
-      </AsideMenuItemWithSub> */}
+        <AsideMenuItem to='/reports/contact-us' title='Contact Us' hasBullet={true} />
+      </AsideMenuItemWithSub>
     </>
   )
 }

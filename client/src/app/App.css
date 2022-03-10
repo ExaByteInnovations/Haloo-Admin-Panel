@@ -166,3 +166,9 @@
   margin: 10px auto !important;
   color: #da1e37;
 }
+.otp {
+  display: inline-block;
+  width: 35px !important;
+  font-weight: bold;
+  margin: 0 4px;
+}
