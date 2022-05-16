@@ -4,23 +4,24 @@ import {useIntl} from 'react-intl'
 import {PageTitle} from '../../../_metronic/layout/core'
 import {ApiGet, ApiPost, ApiPut} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
-import {Button} from 'react-bootstrap'
+import {CircularProgress, Box} from '@material-ui/core'
 import {Modal} from 'react-bootstrap'
-import {Box, CircularProgress, MenuItem, TextField} from '@material-ui/core'
 import '../../App.css'
-import {Image} from 'react-bootstrap-v5'
-import userImage from '../../../assets/user.png'
 import {AuthContext} from '../../auth/authContext'
+import {toAbsoluteUrl} from '../../../_metronic/helpers/AssetHelpers'
 import * as authUtil from '../../../utils/auth.util'
+import {MasterContext} from '../../context/masterContext'
 
 const EditProfile = () => {
   const intl = useIntl()
   const {user, dispatch} = useContext(AuthContext)
+  const {imgExtensions} = useContext(MasterContext)
   const [previewImage, setPreviewImage] = useState()
   const [inputValue, setInputValue] = useState({...user})
-  const [imageLoaded, setImageLoaded] = useState(false)
+  // const [imageLoaded, setImageLoaded] = useState(false)
   const [initialValues, setInitialValues] = useState({})
   const [loading, setLoading] = useState(false)
+  const [loader, setLoader] = useState(false)
   const [show, setShow] = useState(false)
   const [errors, setErrors] = useState({})
   const [profileImage, setProfileImage] = useState()
@@ -47,16 +48,16 @@ const EditProfile = () => {
 
   const getEditProfile = async () => {
     try {
-      setLoading(true)
+      setLoader(true)
       const response = await ApiGet(`usermanagement/admin?_id=${user?._id}`)
       if (response.status === 200) {
         setInputValue(...response.data.data)
         setInitialValues(...response.data.data)
       }
-      setLoading(false)
+      setLoader(false)
     } catch (err) {
       toast.error(err.message)
-      setLoading(false)
+      setLoader(false)
     }
   }
 
@@ -146,28 +147,57 @@ const EditProfile = () => {
     setErrors({...errors, [name]: ''})
   }
 
-  const handleImageLoad = () => {
-    setImageLoaded(true)
-  }
+  // const handleImageLoad = () => {
+  //   setImageLoaded(true)
+  // }
 
-  const imageStyles = !imageLoaded ? {display: 'none'} : {}
+  // const imageStyles = !imageLoaded ? {display: 'none'} : {}
 
-  const status = [
-    {label: 'Active', value: 'Active'},
-    {label: 'Inactive', value: 'Inactive'},
-  ]
+  // const status = [
+  //   {label: 'Active', value: 'Active'},
+  //   {label: 'Inactive', value: 'Inactive'},
+  // ]
 
-  if (loading) {
+  if (loader) {
     return (
       <Box className='loader'>
-        <CircularProgress />
+        <CircularProgress color='secondary' />
       </Box>
     )
   }
 
+  const EditProfileBreadCrumbs = [
+    {
+      title: 'Settings',
+      path: '/settings/edit-profile',
+      isSeparator: false,
+      isActive: false,
+    },
+    {
+      title: '',
+      path: '',
+      isSeparator: true,
+      isActive: false,
+    },
+  ]
+
+  const click = () => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
+  }
+
+  const blankImg = toAbsoluteUrl('/media/svg/avatars/blank.svg')
+  const userProfileImg = previewImage
+    ? previewImage
+    : inputValue.profileImage
+    ? `${process.env.REACT_APP_SERVER_URL}${inputValue.profileImage}`
+    : blankImg
+
   return (
     <>
-      <PageTitle breadcrumbs={[]}>
+      <PageTitle breadcrumbs={EditProfileBreadCrumbs}>
         {intl.formatMessage({id: 'MENU.SETTINGS.EDIT_PROFILE'})}
       </PageTitle>
       <Modal show={show} onHide={handleClose}>
@@ -177,22 +207,157 @@ const EditProfile = () => {
           </Modal.Header>
           <Modal.Body>Are you sure you want to Edit the Admin Profile</Modal.Body>
           <Modal.Footer>
-            <Button
-              variant='secondary'
+            <button className='btn btn-white btn-active-light-danger me-2' onClick={handleClose}>
+              Discard
+            </button>
+            <button
+              className='btn btn-danger'
               onClick={() => {
-                handleClose()
+                handleUpdate()
+                click()
               }}
             >
-              Cancel
-            </Button>
-            <Button variant='danger' onClick={handleUpdate}>
-              Update
-            </Button>
+              {!loading && 'Update'}
+              {loading && (
+                <span className='indicator-progress' style={{display: 'block'}}>
+                  Please wait...{' '}
+                  <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+                </span>
+              )}
+            </button>
           </Modal.Footer>
         </>
       </Modal>
-      <Box className='admin-wrapper'>
-        <Box className='admin-profile-image-wrapper'>
+      <div className='card mb-5 mb-xl-10'>
+        <div
+          className='card-header border-0 cursor-pointer'
+          role='button'
+          data-bs-toggle='collapse'
+          data-bs-target='#kt_account_profile_details'
+          aria-expanded='true'
+          aria-controls='kt_account_profile_details'
+        >
+          <div className='card-title m-0'>
+            <h3 className='fw-bolder m-0'>Profile Details</h3>
+          </div>
+        </div>
+        <div className='card-body border-top p-9'>
+          <div className='row mb-6'>
+            <label className='col-lg-4 col-form-label fw-bold fs-6'>Profile Image</label>
+            <div className='col-lg-8'>
+              <div
+                className='image-input image-input-outline'
+                data-kt-image-input='true'
+                style={{backgroundImage: `url('${blankImg}')`}}
+              >
+                <div
+                  className='image-input-wrapper w-125px h-125px'
+                  style={{backgroundImage: `url('${userProfileImg}')`}}
+                ></div>
+                <label
+                  className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                  data-kt-image-input-action='change'
+                  data-bs-toggle='tooltip'
+                  title='Change profile image'
+                >
+                  <i className='bi bi-pencil-fill fs-7'></i>
+
+                  <input
+                    type='file'
+                    name='profileImage'
+                    accept={imgExtensions.join(', ')}
+                    onChange={(e) => {
+                      setProfileImage(e.target.files[0])
+                    }}
+                  />
+                  <input type='hidden' name='remove profile image' />
+                </label>
+
+                {/* <span
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='cancel'
+                data-bs-toggle='tooltip'
+                title='Cancel profile image'
+              >
+                <i className='bi bi-x fs-2'></i>
+              </span> */}
+
+                <span
+                  className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                  data-kt-image-input-action='remove'
+                  data-bs-toggle='tooltip'
+                  title='Remove profile image'
+                  onClick={() => {
+                    setPreviewImage('')
+                    setProfileImage(null)
+                    setInputValue({...inputValue, profileImage: ''})
+                  }}
+                >
+                  <i className='bi bi-x fs-2'></i>
+                </span>
+              </div>
+              <div className='form-text'>{`Allowed file types: ${imgExtensions.join(', ')}`}</div>
+              <span className='error-msg'>{errors['profileImage']}</span>
+            </div>
+          </div>
+
+          <div className='row mb-6'>
+            <label className='col-lg-4 col-form-label required fw-bold fs-6'>Name</label>
+
+            <div className='col-lg-8 fv-row'>
+              <input
+                type='text'
+                name='name'
+                className='form-control form-control-lg form-control-solid'
+                placeholder='Name'
+                onChange={(e) => handleChange(e)}
+                value={inputValue?.name || ''}
+              />
+              <span className='error-msg'>{errors['name']}</span>
+            </div>
+          </div>
+
+          <div className='row mb-6'>
+            <label className='col-lg-4 col-form-label required fw-bold fs-6'>Email</label>
+
+            <div className='col-lg-8 fv-row'>
+              <input
+                type='email'
+                name='email'
+                className='form-control form-control-lg form-control-solid'
+                placeholder='Email'
+                onChange={(e) => handleChange(e)}
+                value={inputValue?.email || ''}
+              />
+              <span className='error-msg'>{errors['email']}</span>
+            </div>
+          </div>
+
+          <div className='row mb-6'>
+            <label className='col-lg-4 col-form-label required fw-bold fs-6'>User Role</label>
+
+            <div className='col-lg-8 fv-row'>
+              <input
+                type='text'
+                name='userRole'
+                className='form-control form-control-lg form-control-solid'
+                placeholder='User Role'
+                onChange={(e) => handleChange(e)}
+                value={inputValue?.userRole || ''}
+                disabled
+              />
+              <span className='error-msg'>{errors['userRole']}</span>
+            </div>
+          </div>
+        </div>
+        <div className='card-footer d-flex justify-content-end py-6 px-9'>
+          <button className='btn btn-primary' disabled={loading} onClick={() => validateForm()}>
+            Save Changes
+          </button>
+        </div>
+      </div>
+      {/* <Box className='admin-wrapper'> */}
+      {/* <Box className='admin-profile-image-wrapper'>
           {!imageLoaded && <Image className='admin-profile-image' src={userImage} />}
           <Image
             className='admin-profile-image'
@@ -212,67 +377,9 @@ const EditProfile = () => {
                 : userImage
             }
           />
-        </Box>
-        <Box className='settings-form'>
-          <TextField
-            className='admin-field'
-            label='Name'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='name'
-            variant='filled'
-            margin='dense'
-            value={inputValue?.name || ''}
-          />
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
-            }}
-          >
-            {errors['name']}
-          </span>
-          <TextField
-            className='admin-field'
-            label='Email'
-            type={'email'}
-            onChange={(e) => handleChange(e)}
-            name='email'
-            variant='filled'
-            margin='dense'
-            value={inputValue?.email || ''}
-          />
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
-            }}
-          >
-            {errors['email']}
-          </span>
-          <TextField
-            className='admin-field'
-            label='User Role'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='userRole'
-            variant='filled'
-            margin='dense'
-            value={inputValue?.userRole || ''}
-            disabled
-          />
-          {/* <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
-            }}
-          >
-            {errors['userRole']}
-          </span> */}
-          {/* <TextField
+        </Box> */}
+      {/* <Box className='settings-form'> */}
+      {/* <TextField
             className='admin-field'
             label='Status'
             type={'text'}
@@ -295,40 +402,8 @@ const EditProfile = () => {
               </MenuItem>
             ))}
           </TextField> */}
-          <TextField
-            InputLabelProps={{shrink: true}}
-            className='admin-field'
-            label='Profile Image'
-            type={'file'}
-            onChange={(e) => setProfileImage(e.target.files[0])}
-            name='profileImage'
-            variant='filled'
-            margin='dense'
-          />
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
-            }}
-          >
-            {errors['profileImage']}
-          </span>
-
-          <Box className='settings-btn-wrapper'>
-            <Button
-              className='button settings-btn-save'
-              size='lg'
-              variant='success'
-              onClick={() => {
-                validateForm()
-              }}
-            >
-              Save
-            </Button>
-          </Box>
-        </Box>
-      </Box>
+      {/* </Box> */}
+      {/* </Box> */}
     </>
   )
 }

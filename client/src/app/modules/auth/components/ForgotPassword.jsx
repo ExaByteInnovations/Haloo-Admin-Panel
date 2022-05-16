@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react'
-import Countdown from 'react-countdown'
 import * as Yup from 'yup'
 import clsx from 'clsx'
 import {Link, useHistory} from 'react-router-dom'

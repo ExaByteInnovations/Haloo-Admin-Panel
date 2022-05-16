@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useMemo, useState} from 'react'
+import {useContext, useEffect, useMemo, useState} from 'react'
 import _ from 'lodash'
+import clsx from 'clsx'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
-import {Edit, Delete} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
 import {ApiGet, ApiDelete, ApiPut, ApiPost} from '../../../helpers/API/ApiData'
@@ -11,40 +11,41 @@ import {toast} from 'react-toastify'
 import Dialog from '@material-ui/core/Dialog'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
-import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
 import ClearIcon from '@mui/icons-material/Clear'
 import userImage from '../../../assets/user.png'
-import {
-  Box,
-  CircularProgress,
-  DialogContent,
-  DialogTitle,
-  MenuItem,
-  // MenuItem,
-  TextField,
-} from '@material-ui/core'
+import {KTSVG} from '../../../_metronic/helpers/components/KTSVG'
+import {toAbsoluteUrl} from '../../../_metronic/helpers/AssetHelpers'
+import {Box, CircularProgress, DialogContent, DialogTitle} from '@material-ui/core'
 import '../../App.css'
 import {Image} from 'react-bootstrap-v5'
+import {MasterContext} from '../../context/masterContext'
+
+const state = ['warning', 'danger', 'primary', 'success', 'info']
 
 const Customers = () => {
   const intl = useIntl()
+  const {imgExtensions} = useContext(MasterContext)
   const [customers, setCustomers] = useState([])
   const [cities, setCities] = useState([])
   const [states, setStates] = useState([])
-  const [imageLoaded, setImageLoaded] = useState(false)
+  // const [imageLoaded, setImageLoaded] = useState(false)
   const [open, setOpen] = useState(false)
   const [addOpen, setAddOpen] = useState(false)
   const [rowId, setRowId] = useState('')
-  const [profileImage, setProfileImage] = useState()
+  const [profileImage, setProfileImage] = useState(null)
   const [inputValue, setInputValue] = useState({})
   const [loading, setLoading] = useState(false)
+  const [loader, setLoader] = useState(false)
   const [show, setShow] = useState(false)
+  const [showBlock, setShowBlock] = useState(false)
+  const [showUnblock, setShowUnblock] = useState(false)
   const [showImage, setShowImage] = useState(false)
-  const [previewImage, setPreviewImage] = useState()
+  const [previewImage, setPreviewImage] = useState('')
   const [errors, setErrors] = useState({})
   const [filterText, setFilterText] = useState('')
   const [resetPaginationToggle, setResetPaginationToggle] = useState(false)
+  const [blockReason, setBlockReason] = useState('')
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
@@ -54,6 +55,19 @@ const Customers = () => {
     setErrors({})
     setShowImage(false)
     setProfileImage(null)
+    setShowBlock(false)
+    setBlockReason('')
+    setShowUnblock(false)
+  }
+
+  const compare = (a, b) => {
+    if (a.name < b.name) {
+      return -1
+    }
+    if (a.name > b.name) {
+      return 1
+    }
+    return 0
   }
 
   useEffect(() => {
@@ -72,15 +86,15 @@ const Customers = () => {
 
   const getCustomers = async () => {
     try {
-      setLoading(true)
+      setLoader(true)
       const response = await ApiGet(`usermanagement/customer?type=customer`)
       if (response.status === 200) {
         setCustomers(response.data.data)
       }
-      setLoading(false)
+      setLoader(false)
     } catch (err) {
       toast.error(err.message)
-      setLoading(false)
+      setLoader(false)
     }
   }
 
@@ -140,8 +154,7 @@ const Customers = () => {
     if (inputValue && !inputValue?.customerName) {
       formIsValid = false
       errors['customerName'] = '*Please Enter Customer Name!'
-    }
-    if (inputValue && !inputValue?.customerName?.match(/^\S[a-zA-Z ]+$/)) {
+    } else if (inputValue && !inputValue?.customerName?.match(/^\S[a-zA-Z ]+$/)) {
       formIsValid = false
       errors['customerName'] = '*Please Enter Valid Customer Name Only!'
     }
@@ -149,15 +162,14 @@ const Customers = () => {
     if (inputValue && !inputValue?.phone) {
       formIsValid = false
       errors['phone'] = '*Please Enter Phone Number!'
-    }
-    if (inputValue && !inputValue?.phone?.match(/^\d{10}$/)) {
+    } else if (inputValue && !inputValue?.phone?.match(/^\d{10}$/)) {
       formIsValid = false
       errors['phone'] = '*Please Enter Valid Phone Number!'
     }
-    if (inputValue && !inputValue?.profileImage && !profileImage && addOpen) {
-      formIsValid = false
-      errors['profileImage'] = '*Please Select ProfileImage!'
-    }
+    // if (inputValue && !inputValue?.profileImage && !profileImage && addOpen) {
+    //   formIsValid = false
+    //   errors['profileImage'] = '*Please Select ProfileImage!'
+    // }
     if (inputValue && !inputValue?.cityId) {
       formIsValid = false
       errors['city'] = '*Please Select City!'
@@ -169,8 +181,7 @@ const Customers = () => {
     if (inputValue && !inputValue?.pincode) {
       formIsValid = false
       errors['pincode'] = '*Please Enter Postal Code!'
-    }
-    if (inputValue && !inputValue?.pincode?.match(/^\d{6}$/)) {
+    } else if (inputValue && !inputValue?.pincode?.match(/^\d{6}$/)) {
       formIsValid = false
       errors['pincode'] = '*Please Enter Valid Postal Code!'
     }
@@ -184,6 +195,42 @@ const Customers = () => {
     // }
     setErrors(errors)
     return formIsValid
+  }
+
+  const blockCustomer = async (customerId) => {
+    try {
+      setLoading(true)
+      const response = await ApiPut(`usermanagement/customer/block?_id=${customerId}`, {
+        blockReason: blockReason,
+      })
+      if (response.status === 200) {
+        toast.success('Customer Blocked Successfully')
+        getCustomers()
+        handleClose()
+      }
+      setLoading(false)
+    } catch (err) {
+      toast.error(err.error || err.message)
+      setErrors({[err.field]: err.error})
+      setLoading(false)
+    }
+  }
+
+  const unblockCustomer = async (customerId) => {
+    try {
+      setLoading(true)
+      const response = await ApiPut(`usermanagement/customer/unblock?_id=${customerId}`)
+      if (response.status === 200) {
+        toast.success('Customer Unblocked Successfully')
+        getCustomers()
+        handleClose()
+      }
+      setLoading(false)
+    } catch (err) {
+      toast.error(err.error || err.message)
+      setErrors({[err.field]: err.error})
+      setLoading(false)
+    }
   }
 
   const handleUpdate = async () => {
@@ -253,39 +300,102 @@ const Customers = () => {
     }
   }
 
-  const handleImageLoad = () => {
-    setImageLoaded(true)
-  }
+  // const handleImageLoad = () => {
+  //   setImageLoaded(true)
+  // }
 
-  const imageStyles = !imageLoaded ? {display: 'none'} : {}
+  const blankImg = toAbsoluteUrl('/media/svg/avatars/blank.svg')
+  const userProfileImg = previewImage
+    ? previewImage
+    : inputValue.profileImage
+    ? `${process.env.REACT_APP_SERVER_URL}${inputValue.profileImage}`
+    : blankImg
+
+  // inputValue?.profileImage
+  //   ? process.env.REACT_APP_SERVER_URL + inputValue?.profileImage
+  //   : previewImage
+  //   ? previewImage
+  //   : blankImg
+
+  // const imageStyles = !imageLoaded ? {display: 'none'} : {}
 
   const columns = [
+    // {
+    //   name: 'Profile Image',
+    //   cell: (row) => {
+    //     return (
+    //       <Box>
+    //         {!imageLoaded && <Image className='image' src={userImage} />}
+    //         <Image
+    //           className='image'
+    //           style={imageStyles}
+    //           onLoad={handleImageLoad}
+    //           onClick={() => {
+    //             setShowImage(true)
+    //             setInputValue({...inputValue, profileImage: row.profileImage})
+    //           }}
+    //           src={
+    //             row.profileImage ? process.env.REACT_APP_SERVER_URL + row.profileImage : userImage
+    //           }
+    //         />
+    //       </Box>
+    //     )
+    //   },
+    // },
     {
-      name: 'Profile Image',
+      name: 'Customer',
+      selector: (row) => row.customerName,
       cell: (row) => {
+        const userState = _.sample(state)
         return (
-          <Box>
-            {!imageLoaded && <Image className='image' src={userImage} />}
-            <Image
-              className='image'
-              style={imageStyles}
-              onLoad={handleImageLoad}
-              onClick={() => {
-                setShowImage(true)
-                setInputValue({...inputValue, profileImage: row.profileImage})
-              }}
-              src={
-                row.profileImage ? process.env.REACT_APP_SERVER_URL + row.profileImage : userImage
-              }
-            />
-          </Box>
+          <>
+            {/* {!imageLoaded && (
+            <div className='symbol symbol-45px me-5 image'>
+              <img src={blankImg} alt='Customer Profile pic' />
+            </div>
+          )} */}
+            <div className='d-flex align-items-center'>
+              <div className='symbol symbol-circle symbol-50px overflow-hidden me-3'>
+                {row?.profileImage ? (
+                  <div className='symbol-label image'>
+                    <img
+                      // style={imageStyles}
+                      // onLoad={handleImageLoad}
+                      className='w-100'
+                      onClick={() => {
+                        setShowImage(true)
+                        setInputValue({...inputValue, profileImage: row.profileImage})
+                      }}
+                      src={
+                        row.profileImage
+                          ? process.env.REACT_APP_SERVER_URL + row.profileImage
+                          : userImage
+                      }
+                      alt='Customer Profile pic'
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className={clsx(
+                      'symbol-label fs-3',
+                      `bg-light-${userState}`,
+                      `text-${userState}`
+                    )}
+                  >
+                    {row.customerName?.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
+
+              <div className='d-flex justify-content-start flex-column'>
+                <span className='text-dark fw-bolder text-hover-primary fs-6'>
+                  {row.customerName}
+                </span>
+              </div>
+            </div>
+          </>
         )
       },
-    },
-    {
-      name: 'Customer Name',
-      selector: (row) => row.customerName,
-      cell: (row) => <Box>{row.customerName}</Box>,
       sortable: true,
       width: '200px',
     },
@@ -339,24 +449,49 @@ const Customers = () => {
       cell: (row) => {
         return (
           <>
-            <Edit
-              className='icon'
+            <span
+              className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1'
               onClick={() => {
                 handleOpen()
                 setRowId(row.id)
                 setInputValue(row)
                 getStates()
-                getCities(row.stateId)
+                row.stateId && getCities(row.stateId)
               }}
-            />
-            <Delete
-              className='icon'
-              color='error'
+            >
+              <KTSVG path='/media/icons/duotune/art/art005.svg' className='svg-icon-3' />
+            </span>
+            <span
+              className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1'
               onClick={() => {
                 setShow(true)
                 setRowId(row.id)
               }}
-            />
+            >
+              <KTSVG path='/media/icons/duotune/general/gen027.svg' className='svg-icon-3' />
+            </span>
+            <button
+              className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1'
+              onClick={() => {
+                setShowBlock(true)
+                setRowId(row.id)
+              }}
+              disabled={row.block}
+              title={'Block'}
+            >
+              <KTSVG path='/media/icons/duotune/general/gen050.svg' className='svg-icon-3' />
+            </button>
+            <button
+              className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm'
+              onClick={() => {
+                setShowUnblock(true)
+                setRowId(row.id)
+              }}
+              disabled={!row.block}
+              title={'Unblock'}
+            >
+              <KTSVG path='/media/icons/duotune/general/gen048.svg' className='svg-icon-3' />
+            </button>
           </>
         )
       },
@@ -377,6 +512,7 @@ const Customers = () => {
       address: customer?.address,
       noOfJobs: customer?.noOfJobs,
       memberSince: moment(customer?.createdAt).format('DD MMM YY hh:mmA'),
+      block: customer?.block,
       // codStatus:
       //   customer?.codStatus?.charAt(0)?.toUpperCase() +
       //   customer?.codStatus?.substr(1)?.toLowerCase(),
@@ -406,24 +542,32 @@ const Customers = () => {
       }
     }
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          position: 'relative',
-          lineHeight: '1.5',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-        }}
-      >
-        <TextField
-          className='input-search'
-          placeholder='Search'
-          variant='outlined'
-          margin='dense'
-          onChange={(e) => setFilterText(e.target.value)}
-          value={filterText}
-        />
-        <ClearIcon className='input-clear-button' onClick={handleClear} />
+      <Box className='header-wrapper'>
+        <Box className='search-wrapper'>
+          <span className='search-icon'>
+            <KTSVG path='/media/icons/duotune/general/gen021.svg' className='svg-icon-1' />
+          </span>
+
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0 px-12'
+            placeholder='Search'
+            onChange={(e) => setFilterText(e.target.value)}
+            value={filterText}
+          />
+          <ClearIcon className='input-clear-button' onClick={handleClear} />
+        </Box>
+        <button
+          className='btn btn-md btn-light-primary'
+          onClick={() => {
+            setAddOpen(true)
+            getStates()
+            setInputValue({})
+          }}
+        >
+          <KTSVG path='/media/icons/duotune/arrows/arr075.svg' className='svg-icon-2' />
+          Add Customer
+        </button>
       </Box>
     )
   }, [filterText, resetPaginationToggle])
@@ -433,45 +577,62 @@ const Customers = () => {
   //   {label: 'Inactive', value: 'Inactive'},
   // ]
 
-  if (loading) {
+  if (loader) {
     return (
       <Box className='loader'>
-        <CircularProgress />
+        <CircularProgress color='secondary' />
       </Box>
     )
   }
 
+  const customStyles = {
+    headCells: {
+      style: {
+        paddingLeft: '8px',
+        paddingRight: '8px',
+      },
+    },
+  }
+
+  const click = () => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
+  }
+
+  const CustomerBreadCrumbs = [
+    {
+      title: 'User Management',
+      path: '/user-management/customers',
+      isSeparator: false,
+      isActive: false,
+    },
+    {
+      title: '',
+      path: '',
+      isSeparator: true,
+      isActive: false,
+    },
+  ]
+
   return (
     <>
-      <PageTitle breadcrumbs={[]}>
+      <PageTitle breadcrumbs={CustomerBreadCrumbs}>
         {intl.formatMessage({id: 'MENU.USER_MANAGEMENT.CUSTOMERS'})}
       </PageTitle>
-      <Box className='add-button-wrapper'>
-        <Button
-          className='add-button'
-          variant='success'
-          onClick={() => {
-            setAddOpen(true)
-            getStates()
-            setInputValue({})
-          }}
-        >
-          Add New +
-        </Button>
-      </Box>
       <DataTable
+        customStyles={customStyles}
         columns={columns}
         data={filteredItems}
         fixedHeader
-        fixedHeaderScrollHeight='51vh'
+        fixedHeaderScrollHeight='57vh'
         pagination
         paginationResetDefaultPage={resetPaginationToggle}
         subHeader
         subHeaderComponent={subHeaderComponentMemo}
         persistTableHead
-        highlightOnHover
         responsive
-        striped
       />
 
       <Modal show={show} onHide={handleClose}>
@@ -481,17 +642,97 @@ const Customers = () => {
           </Modal.Header>
           <Modal.Body>Are you sure you want to delete this row</Modal.Body>
           <Modal.Footer>
-            <Button variant='secondary' onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button
-              variant='danger'
+            <button className='btn btn-white btn-active-light-danger me-2' onClick={handleClose}>
+              Discard
+            </button>
+            <button
+              className='btn btn-danger'
               onClick={() => {
                 handleDelete()
+                click()
               }}
             >
-              Delete
-            </Button>
+              {!loading && 'Delete'}
+              {loading && (
+                <span className='indicator-progress' style={{display: 'block'}}>
+                  Please wait...{' '}
+                  <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+                </span>
+              )}
+            </button>
+          </Modal.Footer>
+        </>
+      </Modal>
+
+      <Modal show={showBlock} onHide={handleClose}>
+        <>
+          <Modal.Header closeButton>
+            <Modal.Title className='text-danger'>Block Customer!</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <label className='col-lg-4 col-form-label required fw-bold fs-6'>Reason To Block</label>
+            <input
+              type='text'
+              className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+              placeholder='Reason To Block'
+              onChange={(e) => {
+                setBlockReason(e.target.value)
+                setErrors({...errors, blockReason: ''})
+              }}
+              name='blockReason'
+              value={blockReason}
+              required
+            />
+            <span className='error-msg'>{errors['blockReason']}</span>
+          </Modal.Body>
+          <Modal.Footer>
+            <button className='btn btn-white btn-active-light-danger me-2' onClick={handleClose}>
+              Discard
+            </button>
+            <button
+              className='btn btn-danger'
+              onClick={() => {
+                blockCustomer(rowId)
+                click()
+              }}
+            >
+              {!loading && 'Block'}
+              {loading && (
+                <span className='indicator-progress' style={{display: 'block'}}>
+                  Please wait...{' '}
+                  <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+                </span>
+              )}
+            </button>
+          </Modal.Footer>
+        </>
+      </Modal>
+
+      <Modal show={showUnblock} onHide={handleClose}>
+        <>
+          <Modal.Header closeButton>
+            <Modal.Title className='text-danger'>Alert!</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Are you sure you want to unblock this customer</Modal.Body>
+          <Modal.Footer>
+            <button className='btn btn-white btn-active-light-danger me-2' onClick={handleClose}>
+              Discard
+            </button>
+            <button
+              className='btn btn-danger'
+              onClick={() => {
+                unblockCustomer(rowId)
+                click()
+              }}
+            >
+              {!loading && 'Unblock'}
+              {loading && (
+                <span className='indicator-progress' style={{display: 'block'}}>
+                  Please wait...{' '}
+                  <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+                </span>
+              )}
+            </button>
           </Modal.Footer>
         </>
       </Modal>
@@ -517,7 +758,9 @@ const Customers = () => {
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='xs'>
         <DialogTitle>
           <Box sx={{display: 'flex'}}>
-            <Box flexGrow={1}>Edit Row</Box>
+            <Box flexGrow={1}>
+              <h3 className='fw-bolder m-0'>Edit Row</h3>
+            </Box>
             <Box>
               <IconButton color='inherit' onClick={handleClose} aria-label='close'>
                 <CloseIcon />
@@ -526,183 +769,142 @@ const Customers = () => {
           </Box>
         </DialogTitle>
         <DialogContent>
-          <Image
-            className='image'
-            src={
-              inputValue?.profileImage
-                ? process.env.REACT_APP_SERVER_URL + inputValue?.profileImage
-                : previewImage
-                ? previewImage
-                : userImage
-            }
-          />
-          <TextField
-            InputLabelProps={{shrink: true}}
-            label='Profile Image'
-            type={'file'}
-            onChange={(e) => setProfileImage(e.target.files[0])}
-            name='profileImage'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            helperText='Please upload images of format jpg, jpeg, png'
-          />
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
-            }}
-          >
-            {errors['profileImage']}
-          </span>
-          <TextField
-            label='Customer Name'
-            type={'text'}
+          <div className='fv-row mb-7'>
+            <label className='d-block fw-bold fs-6 mb-5'>Profile Image</label>
+            <div
+              className='image-input image-input-outline'
+              data-kt-image-input='true'
+              style={{backgroundImage: `url('${blankImg}')`}}
+            >
+              <div
+                className='image-input-wrapper w-125px h-125px'
+                style={{backgroundImage: `url('${userProfileImg}')`}}
+              ></div>
+              <label
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='change'
+                data-bs-toggle='tooltip'
+                title='Change profile image'
+              >
+                <i className='bi bi-pencil-fill fs-7'></i>
+
+                <input
+                  type='file'
+                  name='profileImage'
+                  accept={imgExtensions.join(', ')}
+                  onChange={(e) => {
+                    setProfileImage(e.target.files[0])
+                  }}
+                />
+                <input type='hidden' name='remove profile image' />
+              </label>
+
+              {/* <span
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='cancel'
+                data-bs-toggle='tooltip'
+                title='Cancel profile image'
+              >
+                <i className='bi bi-x fs-2'></i>
+              </span> */}
+
+              <span
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='remove'
+                data-bs-toggle='tooltip'
+                title='Remove profile image'
+                onClick={() => {
+                  setPreviewImage('')
+                  setProfileImage(null)
+                  // setInputValue({...inputValue, profileImage: ''})
+                }}
+              >
+                <i className='bi bi-x fs-2'></i>
+              </span>
+            </div>
+            <div className='form-text'>{`Allowed file types: ${imgExtensions.join(', ')}`}</div>
+            <span className='error-msg'>{errors['profileImage']}</span>
+          </div>
+
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Customer Name</label>
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+            placeholder='Customer Name'
             onChange={(e) => handleChange(e)}
             name='customerName'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            value={inputValue?.customerName}
+            value={inputValue?.customerName || ''}
             required
           />
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
-            }}
-          >
-            {errors['customerName']}
-          </span>
-          <TextField
-            label='Phone'
-            type={'tel'}
+          <span className='error-msg'>{errors['customerName']}</span>
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Phone</label>
+          <input
+            type='tel'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+            placeholder='Phone Number'
             onChange={(e) => handleChange(e)}
             name='phone'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            value={inputValue?.phone}
+            value={inputValue?.phone || ''}
             required
           />
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
-            }}
-          >
-            {errors['phone']}
-          </span>
-          <TextField
-            label='Postal Code'
-            inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
+          <span className='error-msg'>{errors['phone']}</span>
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Postal Code</label>
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+            placeholder='Postal Code'
             onChange={(e) => handleChange(e)}
             name='pincode'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            value={inputValue?.pincode}
+            value={inputValue?.pincode || ''}
             required
           />
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
-            }}
-          >
-            {errors['pincode']}
-          </span>
-          <TextField
-            label='State Name'
-            type={'text'}
+          <span className='error-msg'>{errors['pincode']}</span>
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>State Name</label>
+          <select
+            className='form-select form-select-solid form-select-lg fw-bold'
             onChange={(e) => {
               handleChange(e)
               getCities(e.target.value)
             }}
             name='stateId'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            select
-            value={inputValue?.stateId}
+            value={inputValue?.stateId || ''}
             required
-            SelectProps={{
-              MenuProps: {
-                style: {height: '300px'},
-              },
-            }}
           >
-            {states.map((option) => (
-              <MenuItem key={option.id} value={option.id}>
+            <option value=''>Select State</option>
+            {states?.sort(compare)?.map((option) => (
+              <option key={option.id} value={option.id}>
                 {option.name}
-              </MenuItem>
+              </option>
             ))}
-          </TextField>
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
-            }}
-          >
-            {errors['state']}
-          </span>
-          <TextField
-            label='City Name'
-            type={'text'}
+          </select>
+          <span className='error-msg'>{errors['state']}</span>
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>City Name</label>
+          <select
+            className='form-select form-select-solid form-select-lg fw-bold'
             onChange={(e) => handleChange(e)}
             name='cityId'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            select
-            value={inputValue?.cityId}
+            value={inputValue?.cityId || ''}
             required
-            SelectProps={{
-              MenuProps: {
-                style: {height: '300px'},
-              },
-            }}
           >
-            {cities.map((option) => (
-              <MenuItem key={option.id} value={option.id}>
+            <option value=''>Select City</option>
+            {cities?.sort(compare)?.map((option) => (
+              <option key={option.id} value={option.id}>
                 {option.name}
-              </MenuItem>
+              </option>
             ))}
-          </TextField>
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
-            }}
-          >
-            {errors['city']}
-          </span>
-          <TextField
-            label='Address'
-            type={'text'}
+          </select>
+          <span className='error-msg'>{errors['city']}</span>
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Address</label>
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+            placeholder='Address'
             onChange={(e) => handleChange(e)}
             name='address'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            value={inputValue?.address}
+            value={inputValue?.address || ''}
             required
           />
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
-            }}
-          >
-            {errors['address']}
-          </span>
+          <span className='error-msg'>{errors['address']}</span>
           {/* <TextField
               label='Cod Status'
               onChange={(e) => handleChange(e)}
@@ -744,15 +946,34 @@ const Customers = () => {
               ))}
             </TextField> */}
         </DialogContent>
-        <Button className='button' size='lg' variant='success' onClick={handleUpdate}>
-          Save
-        </Button>
+        <div className='d-flex justify-content-center py-6 px-9'>
+          <button className='btn btn-white btn-active-light-primary me-2' onClick={handleClose}>
+            Discard
+          </button>
+          <button
+            className='btn btn-primary'
+            onClick={() => {
+              handleUpdate()
+              click()
+            }}
+          >
+            {!loading && 'Save'}
+            {loading && (
+              <span className='indicator-progress' style={{display: 'block'}}>
+                Please wait...{' '}
+                <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+              </span>
+            )}
+          </button>
+        </div>
       </Dialog>
 
       <Dialog open={addOpen} onClose={handleClose} fullWidth maxWidth='xs'>
         <DialogTitle>
           <Box sx={{display: 'flex'}}>
-            <Box flexGrow={1}>Add New Row</Box>
+            <Box flexGrow={1}>
+              <h3 className='fw-bolder m-0'>Add New Row</h3>
+            </Box>
             <Box>
               <IconButton color='inherit' onClick={handleClose} aria-label='close'>
                 <CloseIcon />
@@ -761,7 +982,143 @@ const Customers = () => {
           </Box>
         </DialogTitle>
         <DialogContent>
-          <Image
+          <div className='fv-row mb-7'>
+            <label className='d-block fw-bold fs-6 mb-5'>Profile Image</label>
+            <div
+              className='image-input image-input-outline'
+              data-kt-image-input='true'
+              style={{backgroundImage: `url('${blankImg}')`}}
+            >
+              <div
+                className='image-input-wrapper w-125px h-125px'
+                style={{backgroundImage: `url('${userProfileImg}')`}}
+              ></div>
+              <label
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='change'
+                data-bs-toggle='tooltip'
+                title='Change profile image'
+              >
+                <i className='bi bi-pencil-fill fs-7'></i>
+
+                <input
+                  type='file'
+                  name='profileImage'
+                  accept={imgExtensions.join(', ')}
+                  onChange={(e) => {
+                    setProfileImage(e.target.files[0])
+                  }}
+                />
+                <input type='hidden' name='remove profile image' />
+              </label>
+
+              {/* <span
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='cancel'
+                data-bs-toggle='tooltip'
+                title='Cancel profile image'
+              >
+                <i className='bi bi-x fs-2'></i>
+              </span> */}
+
+              <span
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='remove'
+                data-bs-toggle='tooltip'
+                title='Remove profile image'
+                onClick={() => {
+                  setPreviewImage('')
+                  setProfileImage(null)
+                  // setInputValue({...inputValue, profileImage: ''})
+                }}
+              >
+                <i className='bi bi-x fs-2'></i>
+              </span>
+            </div>
+            <div className='form-text'>{`Allowed file types: ${imgExtensions.join(', ')}`}</div>
+            <span className='error-msg'>{errors['profileImage']}</span>
+          </div>
+
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Customer Name</label>
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+            placeholder='Customer Name'
+            onChange={(e) => handleChange(e)}
+            name='customerName'
+            value={inputValue?.customerName || ''}
+            required
+          />
+          <span className='error-msg'>{errors['customerName']}</span>
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Phone</label>
+          <input
+            type='tel'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+            placeholder='Phone Number'
+            onChange={(e) => handleChange(e)}
+            name='phone'
+            value={inputValue?.phone || ''}
+            required
+          />
+          <span className='error-msg'>{errors['phone']}</span>
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Postal Code</label>
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+            placeholder='Postal Code'
+            onChange={(e) => handleChange(e)}
+            name='pincode'
+            value={inputValue?.pincode || ''}
+            required
+          />
+          <span className='error-msg'>{errors['pincode']}</span>
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>State Name</label>
+          <select
+            className='form-select form-select-solid form-select-lg fw-bold'
+            onChange={(e) => {
+              handleChange(e)
+              getCities(e.target.value)
+            }}
+            name='stateId'
+            value={inputValue?.stateId || ''}
+            required
+          >
+            <option value=''>Select State</option>
+            {states?.sort(compare)?.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.name}
+              </option>
+            ))}
+          </select>
+          <span className='error-msg'>{errors['state']}</span>
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>City Name</label>
+          <select
+            className='form-select form-select-solid form-select-lg fw-bold'
+            onChange={(e) => handleChange(e)}
+            name='cityId'
+            value={inputValue?.cityId || ''}
+            required
+          >
+            <option value=''>Select City</option>
+            {cities?.sort(compare)?.map((option) => (
+              <option key={option.id} value={option.id}>
+                {option.name}
+              </option>
+            ))}
+          </select>
+          <span className='error-msg'>{errors['city']}</span>
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Address</label>
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+            placeholder='Address'
+            onChange={(e) => handleChange(e)}
+            name='address'
+            value={inputValue?.address || ''}
+            required
+          />
+          <span className='error-msg'>{errors['address']}</span>
+          {/* <Image
             className='image'
             src={
               inputValue?.profileImage
@@ -770,8 +1127,8 @@ const Customers = () => {
                 ? previewImage
                 : userImage
             }
-          />
-          <TextField
+          /> */}
+          {/* <TextField
             InputLabelProps={{shrink: true}}
             label='Profile Image'
             type={'file'}
@@ -781,7 +1138,7 @@ const Customers = () => {
             variant='standard'
             margin='dense'
             required
-            helperText='Please upload images of format jpg, jpeg, png'
+            helperText={`Please upload images of format ${imgExtensions.join(', ')}`}
           />
           <span
             style={{
@@ -791,8 +1148,8 @@ const Customers = () => {
             }}
           >
             {errors['profileImage']}
-          </span>
-          <TextField
+          </span> */}
+          {/* <TextField
             label='Customer Name'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -811,8 +1168,8 @@ const Customers = () => {
             }}
           >
             {errors['customerName']}
-          </span>
-          <TextField
+          </span> */}
+          {/* <TextField
             label='Phone'
             type={'tel'}
             onChange={(e) => handleChange(e)}
@@ -831,8 +1188,8 @@ const Customers = () => {
             }}
           >
             {errors['phone']}
-          </span>
-          <TextField
+          </span> */}
+          {/* <TextField
             label='Postal Code'
             inputProps={{inputMode: 'numeric', pattern: '[0-9]*'}}
             onChange={(e) => handleChange(e)}
@@ -851,8 +1208,8 @@ const Customers = () => {
             }}
           >
             {errors['pincode']}
-          </span>
-          <TextField
+          </span> */}
+          {/* <TextField
             label='State Name'
             type={'text'}
             onChange={(e) => {
@@ -873,7 +1230,7 @@ const Customers = () => {
               },
             }}
           >
-            {states.map((option) => (
+            {states?.sort(compare)?.map((option) => (
               <MenuItem key={option.id} value={option.id}>
                 {option.name}
               </MenuItem>
@@ -887,8 +1244,8 @@ const Customers = () => {
             }}
           >
             {errors['state']}
-          </span>
-          <TextField
+          </span> */}
+          {/* <TextField
             label='City Name'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -906,7 +1263,7 @@ const Customers = () => {
               },
             }}
           >
-            {cities.map((option) => (
+            {cities?.sort(compare)?.map((option) => (
               <MenuItem key={option.id} value={option.id}>
                 {option.name}
               </MenuItem>
@@ -920,8 +1277,8 @@ const Customers = () => {
             }}
           >
             {errors['city']}
-          </span>
-          <TextField
+          </span> */}
+          {/* <TextField
             label='Address'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -940,7 +1297,7 @@ const Customers = () => {
             }}
           >
             {errors['address']}
-          </span>
+          </span> */}
           {/* <TextField
               label='Cod Status'
               onChange={(e) => handleChange(e)}
@@ -974,9 +1331,26 @@ const Customers = () => {
               ))}
             </TextField> */}
         </DialogContent>
-        <Button className='button' size='lg' variant='success' onClick={handleAdd}>
-          Save
-        </Button>
+        <div className='d-flex justify-content-center py-6 px-9'>
+          <button className='btn btn-white btn-active-light-primary me-2' onClick={handleClose}>
+            Discard
+          </button>
+          <button
+            className='btn btn-primary'
+            onClick={() => {
+              handleAdd()
+              click()
+            }}
+          >
+            {!loading && 'Save'}
+            {loading && (
+              <span className='indicator-progress' style={{display: 'block'}}>
+                Please wait...{' '}
+                <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+              </span>
+            )}
+          </button>
+        </div>
       </Dialog>
     </>
   )

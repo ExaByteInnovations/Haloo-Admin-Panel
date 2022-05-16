@@ -1,10 +1,10 @@
-import {API} from '../../config/API/api.config'
+// import {API} from '../../config/API/api.config'
 // import { useState, useCallback,useMemo, useEffect } from "react";
 
 // import Loader from "../../components/Loader/Loader"
 // import Auth from "../Auth";
 import * as authUtil from '../../utils/auth.util'
-export const BaseURL = API.endpoint + '/'
+export const BaseURL = process.env.REACT_APP_API_END_POINT
 
 const axios = require('axios').default
 
@@ -59,7 +59,6 @@ const defaultHeaders = {
 
 export const ApiPostNoAuth = (type, userData) => {
   // const [loading] = useAxiosLoader();
-  console.log('In api post without auth', API)
   console.log(BaseURL)
   return (
     // loading ? Loader()  :
@@ -88,7 +87,6 @@ export const ApiPostNoAuth = (type, userData) => {
 }
 
 export const ApiPutNoAuth = (type, userData) => {
-  console.log('In api put without auth', API)
   console.log(BaseURL)
   // debugger
   return new Promise((resolve, reject) => {

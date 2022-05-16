@@ -4,8 +4,6 @@ import {useIntl} from 'react-intl'
 import {PageTitle} from '../../../_metronic/layout/core'
 import {ApiPost} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
-import {Button} from 'react-bootstrap'
-import {Box, CircularProgress, InputAdornment, TextField} from '@material-ui/core'
 import '../../App.css'
 import {AuthContext} from '../../auth/authContext'
 import * as authUtil from '../../../utils/auth.util'
@@ -98,111 +96,132 @@ const Password = () => {
     setErrors({...errors, [name]: ''})
   }
 
-  if (loading) {
-    return (
-      <Box className='loader'>
-        <CircularProgress />
-      </Box>
-    )
+  // if (loading) {
+  //   return (
+  //     <Box className='loader'>
+  //       <CircularProgress />
+  //     </Box>
+  //   )
+  // }
+
+  const click = () => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
   }
+
+  const EditPasswordBreadCrumbs = [
+    {
+      title: 'Settings',
+      path: '/settings/edit-profile',
+      isSeparator: false,
+      isActive: false,
+    },
+    {
+      title: '',
+      path: '',
+      isSeparator: true,
+      isActive: false,
+    },
+  ]
 
   return (
     <>
-      <PageTitle breadcrumbs={[]}>
+      <PageTitle breadcrumbs={EditPasswordBreadCrumbs}>
         {intl.formatMessage({id: 'MENU.SETTINGS.CHANGE_PASSWORD'})}
       </PageTitle>
-      <Box className='settings-form'>
-        <TextField
-          className='settings-field'
-          label='New Password'
-          type={showPassword ? 'text' : 'password'}
-          onChange={(e) => handleChange(e)}
-          name='password'
-          variant='filled'
-          margin='dense'
-          required
-          helperText='Please Enter Password having more than 2 characters'
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position='end'>
-                {showPassword ? (
-                  <VisibilityIcon sx={{cursor: 'pointer'}} onClick={() => setShowPassword(false)} />
-                ) : (
-                  <VisibilityOffIcon
-                    sx={{cursor: 'pointer'}}
-                    onClick={() => setShowPassword(true)}
-                  />
-                )}
-              </InputAdornment>
-            ),
-          }}
-        />
-        <span
-          style={{
-            color: 'red',
-            top: '5px',
-            fontSize: '12px',
-          }}
+
+      <div className='card mb-5 mb-xl-10'>
+        {/* <div
+          className='card-header border-0 cursor-pointer'
+          role='button'
+          data-bs-toggle='collapse'
+          data-bs-target='#kt_account_profile_details'
+          aria-expanded='true'
+          aria-controls='kt_account_profile_details'
         >
-          {errors['password']}
-        </span>
-        <TextField
-          className='settings-field'
-          label='Confirm Password'
-          type={showConfirmPassword ? 'text' : 'password'}
-          onChange={(e) => handleChange(e)}
-          name='confirmPassword'
-          variant='filled'
-          margin='dense'
-          required
-          helperText='Please Enter Password having more than 2 characters'
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position='end'>
+          <div className='card-title m-0'>
+            <h3 className='fw-bolder m-0'>Profile Details</h3>
+          </div>
+        </div> */}
+        <div className='card-body border-top p-9'>
+          <div className='row mb-6'>
+            <label className='col-lg-4 col-form-label required fw-bold fs-6'>New Password</label>
+
+            <div className='col-lg-8 fv-row'>
+              <div className='password-wrapper'>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name='password'
+                  className='form-control form-control-lg form-control-solid'
+                  placeholder='Enter New Password'
+                  onChange={(e) => handleChange(e)}
+                  required
+                />
+                {showPassword ? (
+                  <VisibilityIcon className='eye-icon' onClick={() => setShowPassword(false)} />
+                ) : (
+                  <VisibilityOffIcon className='eye-icon' onClick={() => setShowPassword(true)} />
+                )}
+              </div>
+              <div className='form-text'>Please Enter Password having more than 2 characters</div>
+              <span className='error-msg'>{errors['password']}</span>
+            </div>
+          </div>
+          <div className='row mb-6'>
+            <label className='col-lg-4 col-form-label required fw-bold fs-6'>
+              Confirm Password
+            </label>
+
+            <div className='col-lg-8 fv-row'>
+              <div className='password-wrapper'>
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  name='confirmPassword'
+                  className='form-control form-control-lg form-control-solid'
+                  placeholder='Enter Confirm Password'
+                  onChange={(e) => handleChange(e)}
+                  required
+                />
                 {showConfirmPassword ? (
                   <VisibilityIcon
-                    sx={{cursor: 'pointer'}}
+                    className='eye-icon'
                     onClick={() => setShowConfirmPassword(false)}
                   />
                 ) : (
                   <VisibilityOffIcon
-                    sx={{cursor: 'pointer'}}
+                    className='eye-icon'
                     onClick={() => setShowConfirmPassword(true)}
                   />
                 )}
-              </InputAdornment>
-            ),
-          }}
-        />
-        <span
-          style={{
-            color: 'red',
-            top: '5px',
-            fontSize: '12px',
-          }}
-        >
-          {errors['confirmPassword']}
-        </span>
-        <Box className='settings-btn-wrapper'>
-          <Button
-            className='button settings-btn-save'
-            size='lg'
-            variant='success'
-            onClick={handleUpdate}
+              </div>
+              <div className='form-text'>Please Enter Password having more than 2 characters</div>
+              <span className='error-msg'>{errors['confirmPassword']}</span>
+              <span className='error-msg'>{errors['passwordMatch']}</span>
+            </div>
+          </div>
+        </div>
+        <div className='card-footer d-flex justify-content-end py-6 px-9'>
+          <button
+            type='submit'
+            className='btn btn-primary'
+            disabled={loading}
+            onClick={() => {
+              handleUpdate()
+              click()
+            }}
           >
-            Save
-          </Button>
-        </Box>
-        <span
-          style={{
-            color: 'red',
-            marginTop: '10px',
-            fontSize: '12px',
-          }}
-        >
-          {errors['passwordMatch']}
-        </span>
-      </Box>
+            {!loading && 'Save Changes'}
+            {loading && (
+              <span className='indicator-progress' style={{display: 'block'}}>
+                Please wait...{' '}
+                <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
     </>
   )
 }

@@ -5,16 +5,17 @@ import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
 import {ApiGet, ApiPut} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
-import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
-import {Box, CircularProgress, TextField} from '@material-ui/core'
+import {Box, CircularProgress} from '@material-ui/core'
 import ClearIcon from '@mui/icons-material/Clear'
+import {KTSVG} from '../../../_metronic/helpers/components/KTSVG'
 import '../../App.css'
 
 const CodEnable = () => {
   const intl = useIntl()
   const [cod, setCod] = useState([])
   const [loading, setLoading] = useState(false)
+  const [Loader, setLoader] = useState(false)
   const [show, setShow] = useState(false)
   const [rowId, setRowId] = useState('')
   const [codStatus, setCodStatus] = useState('')
@@ -26,23 +27,24 @@ const CodEnable = () => {
 
   useEffect(() => {
     getCod()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   const getCod = async () => {
-    setLoading(true)
+    setLoader(true)
     try {
       const response = await ApiGet(`usermanagement/codrequest`)
       if (response.status === 200) {
         setCod(response.data.data)
       }
-      setLoading(false)
+      setLoader(false)
     } catch (err) {
       toast.error(err.message)
-      setLoading(false)
+      setLoader(false)
     }
   }
 
   const handleUpdate = async () => {
+    setLoading(true)
     try {
       const response = await ApiPut(`usermanagement/codrequest?_id=${rowId}`, {
         status: codStatus,
@@ -52,9 +54,11 @@ const CodEnable = () => {
         getCod()
       }
       setShow(false)
+      setLoading(false)
     } catch (err) {
       toast.error(err.message)
       setShow(false)
+      setLoading(false)
     }
   }
 
@@ -72,10 +76,13 @@ const CodEnable = () => {
       name: 'Status',
       selector: (row) => row.status,
       cell: (row) => (
-        <Button
-          className='status-btn'
-          variant={row.status.toLowerCase() === 'disabled' ? 'warning' : 'success'}
-          size='sm'
+        <span
+          style={{
+            cursor: 'pointer',
+          }}
+          className={`badge badge-light-${
+            row.status.toLowerCase() === 'disabled' ? 'warning' : 'success'
+          } me-1`}
           onClick={() => {
             setShow(true)
             setRowId(row.id)
@@ -83,7 +90,7 @@ const CodEnable = () => {
           }}
         >
           {row.status}
-        </Button>
+        </span>
       ),
       sortable: true,
     },
@@ -111,54 +118,81 @@ const CodEnable = () => {
       }
     }
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          position: 'relative',
-          lineHeight: '1.5',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-        }}
-      >
-        <TextField
-          className='input-search'
-          placeholder='Search'
-          variant='outlined'
-          margin='dense'
-          onChange={(e) => setFilterText(e.target.value)}
-          value={filterText}
-        />
-        <ClearIcon className='input-clear-button' onClick={handleClear} />
+      <Box className='header-wrapper'>
+        <Box className='search-wrapper'>
+          <span className='search-icon'>
+            <KTSVG path='/media/icons/duotune/general/gen021.svg' className='svg-icon-1' />
+          </span>
+
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0 px-12'
+            placeholder='Search'
+            onChange={(e) => setFilterText(e.target.value)}
+            value={filterText}
+          />
+          <ClearIcon className='input-clear-button' onClick={handleClear} />
+        </Box>
       </Box>
     )
   }, [filterText, resetPaginationToggle])
 
-  if (loading) {
+  if (Loader) {
     return (
       <Box className='loader'>
-        <CircularProgress />
+        <CircularProgress color='secondary' />
       </Box>
     )
   }
 
+  const customStyles = {
+    headCells: {
+      style: {
+        paddingLeft: '8px',
+        paddingRight: '8px',
+      },
+    },
+  }
+
+  const CODBreadCrumbs = [
+    {
+      title: 'User Management',
+      path: '/user-management/customers',
+      isSeparator: false,
+      isActive: false,
+    },
+    {
+      title: '',
+      path: '',
+      isSeparator: true,
+      isActive: false,
+    },
+  ]
+
+  const click = () => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
+  }
+
   return (
     <>
-      <PageTitle breadcrumbs={[]}>
+      <PageTitle breadcrumbs={CODBreadCrumbs}>
         {intl.formatMessage({id: 'MENU.USER_MANAGEMENT.COD_ENABLE_REQUESTS'})}
       </PageTitle>
       <DataTable
+        customStyles={customStyles}
         columns={columns}
         data={filteredItems}
         fixedHeader
-        fixedHeaderScrollHeight='58vh'
+        fixedHeaderScrollHeight='57vh'
         pagination
         paginationResetDefaultPage={resetPaginationToggle}
         subHeader
         subHeaderComponent={subHeaderComponentMemo}
         persistTableHead
-        highlightOnHover
         responsive
-        striped
       />
       <Modal show={show} onHide={handleClose}>
         <>
@@ -167,12 +201,24 @@ const CodEnable = () => {
           </Modal.Header>
           <Modal.Body>Are you sure you want to change the COD Request Status.</Modal.Body>
           <Modal.Footer>
-            <Button variant='secondary' onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button variant='danger' onClick={handleUpdate}>
-              Update
-            </Button>
+            <button className='btn btn-white btn-active-light-danger me-2' onClick={handleClose}>
+              Discard
+            </button>
+            <button
+              className='btn btn-danger'
+              onClick={() => {
+                handleUpdate()
+                click()
+              }}
+            >
+              {!loading && 'Update'}
+              {loading && (
+                <span className='indicator-progress' style={{display: 'block'}}>
+                  Please wait...{' '}
+                  <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+                </span>
+              )}
+            </button>
           </Modal.Footer>
         </>
       </Modal>

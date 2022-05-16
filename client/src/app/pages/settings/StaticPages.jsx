@@ -1,14 +1,14 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import {useEffect, useState} from 'react'
 import {useIntl} from 'react-intl'
-import {Edit} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
 import {ApiGet} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
-import {Box, CircularProgress} from '@material-ui/core'
 import '../../App.css'
+import {KTSVG} from '../../../_metronic/helpers/components/KTSVG'
 import {Link} from 'react-router-dom'
+import {Box, CircularProgress} from '@material-ui/core'
 
 const StaticPages = () => {
   const intl = useIntl()
@@ -50,7 +50,9 @@ const StaticPages = () => {
         return (
           <>
             <Link to={{pathname: '/settings/editor', state: row}}>
-              <Edit className='icon' sx={{color: 'black'}} />
+              <span className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1'>
+                <KTSVG path='/media/icons/duotune/art/art005.svg' className='svg-icon-3' />
+              </span>
             </Link>
           </>
         )
@@ -70,25 +72,48 @@ const StaticPages = () => {
   if (loading) {
     return (
       <Box className='loader'>
-        <CircularProgress />
+        <CircularProgress color='secondary' />
       </Box>
     )
   }
 
+  const customStyles = {
+    headCells: {
+      style: {
+        paddingLeft: '8px',
+        paddingRight: '8px',
+      },
+    },
+  }
+
+  const StaticPagesBreadCrumbs = [
+    {
+      title: 'Settings',
+      path: '/settings/edit-profile',
+      isSeparator: false,
+      isActive: false,
+    },
+    {
+      title: '',
+      path: '',
+      isSeparator: true,
+      isActive: false,
+    },
+  ]
+
   return (
     <>
-      <PageTitle breadcrumbs={[]}>
+      <PageTitle breadcrumbs={StaticPagesBreadCrumbs}>
         {intl.formatMessage({id: 'MENU.SETTINGS.STATIC_PAGES'})}
       </PageTitle>
       <DataTable
+        customStyles={customStyles}
         columns={columns}
         data={data}
         fixedHeader
-        fixedHeaderScrollHeight='58vh'
+        fixedHeaderScrollHeight='57vh'
         pagination
-        highlightOnHover
         responsive
-        striped
       />
     </>
   )

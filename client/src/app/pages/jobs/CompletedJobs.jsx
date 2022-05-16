@@ -2,10 +2,6 @@
 import {useEffect, useMemo, useState} from 'react'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
-import {
-  // Edit,
-  Delete,
-} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
 import {
@@ -18,15 +14,15 @@ import ClearIcon from '@mui/icons-material/Clear'
 // import Dialog from '@material-ui/core/Dialog'
 // import IconButton from '@material-ui/core/IconButton'
 // import CloseIcon from '@material-ui/icons/Close'
-import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
+import {KTSVG} from '../../../_metronic/helpers/components/KTSVG'
 import {
   Box,
   CircularProgress,
+
   // DialogContent,
   // DialogTitle,
   // MenuItem,
-  TextField,
 } from '@material-ui/core'
 import '../../App.css'
 
@@ -34,6 +30,7 @@ const CompletedJobs = () => {
   const intl = useIntl()
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(false)
+  const [loader, setLoader] = useState(false)
   // const [open, setOpen] = useState(false)
   const [show, setShow] = useState(false)
   const [rowId, setRowId] = useState('')
@@ -52,33 +49,33 @@ const CompletedJobs = () => {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const getJobs = async () => {
-    setLoading(true)
+    setLoader(true)
     try {
       const response = await ApiGet(`job?status=completed`)
       if (response.status === 200) {
         setJobs(response.data.data)
       }
-      setLoading(false)
+      setLoader(false)
     } catch (err) {
       toast.error(err.message)
-      setLoading(false)
+      setLoader(false)
     }
   }
 
   const handleDelete = async () => {
+    setLoading(true)
     try {
-      setLoading(true)
       const response = await ApiDelete(`job?_id=${rowId}`)
       if (response.status === 200) {
         getJobs()
         toast.success('Deleted Successfully')
       }
-      setLoading(false)
       setShow(false)
+      setLoading(false)
     } catch (err) {
       toast.error(err.message)
-      setLoading(false)
       setShow(false)
+      setLoading(false)
     }
   }
 
@@ -161,6 +158,19 @@ const CompletedJobs = () => {
     {
       name: 'Status',
       selector: (row) => row.status,
+      cell: (row) => {
+        return (
+          <span
+            className={`badge badge-light-${
+              (row.status.toLowerCase() === 'completed' && 'success') ||
+              (row.status.toLowerCase() === 'inprogress' && 'warning') ||
+              (row.status.toLowerCase() === 'cancelled' && 'danger')
+            }`}
+          >
+            {row.status}
+          </span>
+        )
+      },
       sortable: true,
       width: '150px',
     },
@@ -169,22 +179,25 @@ const CompletedJobs = () => {
       cell: (row) => {
         return (
           <>
-            {/* <Edit
-              className='icon'
+            {/* <span
+              className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1'
               onClick={() => {
                 handleOpen()
                 setRowId(row.id)
                 setInputValue(row)
               }}
-            /> */}
-            <Delete
-              className='icon'
-              color='error'
+            >
+              <KTSVG path='/media/icons/duotune/art/art005.svg' className='svg-icon-3' />
+            </span> */}
+            <span
+              className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm'
               onClick={() => {
                 setShow(true)
                 setRowId(row.id)
               }}
-            />
+            >
+              <KTSVG path='/media/icons/duotune/general/gen027.svg' className='svg-icon-3' />
+            </span>
           </>
         )
       },
@@ -225,24 +238,21 @@ const CompletedJobs = () => {
       }
     }
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          position: 'relative',
-          lineHeight: '1.5',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-        }}
-      >
-        <TextField
-          className='input-search'
-          placeholder='Search'
-          variant='outlined'
-          margin='dense'
-          onChange={(e) => setFilterText(e.target.value)}
-          value={filterText}
-        />
-        <ClearIcon className='input-clear-button' onClick={handleClear} />
+      <Box className='header-wrapper'>
+        <Box className='search-wrapper'>
+          <span className='search-icon'>
+            <KTSVG path='/media/icons/duotune/general/gen021.svg' className='svg-icon-1' />
+          </span>
+
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0 px-12'
+            placeholder='Search'
+            onChange={(e) => setFilterText(e.target.value)}
+            value={filterText}
+          />
+          <ClearIcon className='input-clear-button' onClick={handleClear} />
+        </Box>
       </Box>
     )
   }, [filterText, resetPaginationToggle])
@@ -253,30 +263,62 @@ const CompletedJobs = () => {
   //   {label: 'disputed', value: 'disputed'},
   // ]
 
-  if (loading) {
+  if (loader) {
     return (
       <Box className='loader'>
-        <CircularProgress />
+        <CircularProgress color='secondary' />
       </Box>
     )
   }
 
+  const customStyles = {
+    headCells: {
+      style: {
+        paddingLeft: '8px',
+        paddingRight: '8px',
+      },
+    },
+  }
+
+  const CompletedBreadCrumbs = [
+    {
+      title: 'Jobs',
+      path: '/jobs/inprogress-jobs',
+      isSeparator: false,
+      isActive: false,
+    },
+    {
+      title: '',
+      path: '',
+      isSeparator: true,
+      isActive: false,
+    },
+  ]
+
+  const click = () => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
+  }
+
   return (
     <>
-      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.JOBS.COMPLETED_JOBS'})}</PageTitle>
+      <PageTitle breadcrumbs={CompletedBreadCrumbs}>
+        {intl.formatMessage({id: 'MENU.JOBS.COMPLETED_JOBS'})}
+      </PageTitle>
       <DataTable
+        customStyles={customStyles}
         columns={columns}
         data={filteredItems}
         fixedHeader
-        fixedHeaderScrollHeight='58vh'
+        fixedHeaderScrollHeight='57vh'
         pagination
         paginationResetDefaultPage={resetPaginationToggle}
         subHeader
         subHeaderComponent={subHeaderComponentMemo}
         persistTableHead
-        highlightOnHover
         responsive
-        striped
       />
       <Modal show={show} onHide={handleClose}>
         <>
@@ -285,17 +327,24 @@ const CompletedJobs = () => {
           </Modal.Header>
           <Modal.Body>Are you sure you want to delete this row</Modal.Body>
           <Modal.Footer>
-            <Button variant='secondary' onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button
-              variant='danger'
+            <button className='btn btn-white btn-active-light-danger me-2' onClick={handleClose}>
+              Discard
+            </button>
+            <button
+              className='btn btn-danger'
               onClick={() => {
                 handleDelete()
+                click()
               }}
             >
-              Delete
-            </Button>
+              {!loading && 'Delete'}
+              {loading && (
+                <span className='indicator-progress' style={{display: 'block'}}>
+                  Please wait...{' '}
+                  <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+                </span>
+              )}
+            </button>
           </Modal.Footer>
         </>
       </Modal>

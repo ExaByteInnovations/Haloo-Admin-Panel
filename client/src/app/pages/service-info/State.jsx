@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import {useEffect, useMemo, useState} from 'react'
 import {useIntl} from 'react-intl'
-import {Edit, Delete} from '@mui/icons-material'
 import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
 import {ApiGet, ApiDelete, ApiPut, ApiPost} from '../../../helpers/API/ApiData'
@@ -10,22 +9,16 @@ import Dialog from '@material-ui/core/Dialog'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import ClearIcon from '@mui/icons-material/Clear'
-import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
-import {
-  Box,
-  CircularProgress,
-  DialogContent,
-  DialogTitle,
-  MenuItem,
-  TextField,
-} from '@material-ui/core'
+import {KTSVG} from '../../../_metronic/helpers/components/KTSVG'
+import {Box, DialogContent, DialogTitle, CircularProgress} from '@material-ui/core'
 import '../../App.css'
 
 const State = () => {
   const intl = useIntl()
   const [states, setStates] = useState([])
   const [loading, setLoading] = useState(false)
+  const [loader, setLoader] = useState(false)
   const [open, setOpen] = useState(false)
   const [addOpen, setAddOpen] = useState(false)
   const [show, setShow] = useState(false)
@@ -42,40 +35,40 @@ const State = () => {
     setShow(false)
     setAddOpen(false)
     setErrors({})
+    setInputValue({})
   }
 
   useEffect(() => {
     getStates()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
+  }, [])
   const getStates = async () => {
-    setLoading(true)
+    setLoader(true)
     try {
       const response = await ApiGet(`serviceinfo/state`)
       if (response.status === 200) {
         setStates(response.data.data)
       }
-      setLoading(false)
+      setLoader(false)
     } catch (err) {
       toast.error(err.message)
-      setLoading(false)
+      setLoader(false)
     }
   }
 
   const handleDelete = async () => {
+    setLoading(true)
     try {
-      setLoading(true)
       const response = await ApiDelete(`serviceinfo/state?_id=${rowId}`)
       if (response.status === 200) {
         getStates()
         toast.success('Deleted Successfully')
       }
-      setLoading(false)
       setShow(false)
+      setLoading(false)
     } catch (err) {
       toast.error(err.message)
-      setLoading(false)
       setShow(false)
+      setLoading(false)
     }
   }
 
@@ -154,6 +147,17 @@ const State = () => {
     {
       name: 'Status',
       selector: (row) => row.status,
+      cell: (row) => {
+        return (
+          <span
+            className={`badge badge-light-${
+              row.status.toLowerCase() === 'active' ? 'success' : 'warning'
+            }`}
+          >
+            {row.status}
+          </span>
+        )
+      },
       sortable: true,
     },
     {
@@ -161,22 +165,25 @@ const State = () => {
       cell: (row) => {
         return (
           <>
-            <Edit
-              className='icon'
+            <span
+              className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1'
               onClick={() => {
                 handleOpen()
                 setRowId(row.id)
                 setInputValue(row)
               }}
-            />
-            <Delete
-              className='icon'
-              color='error'
+            >
+              <KTSVG path='/media/icons/duotune/art/art005.svg' className='svg-icon-3' />
+            </span>
+            <span
+              className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm'
               onClick={() => {
                 setShow(true)
                 setRowId(row.id)
               }}
-            />
+            >
+              <KTSVG path='/media/icons/duotune/general/gen027.svg' className='svg-icon-3' />
+            </span>
           </>
         )
       },
@@ -206,24 +213,25 @@ const State = () => {
       }
     }
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          position: 'relative',
-          lineHeight: '1.5',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-        }}
-      >
-        <TextField
-          className='input-search'
-          placeholder='Search'
-          variant='outlined'
-          margin='dense'
-          onChange={(e) => setFilterText(e.target.value)}
-          value={filterText}
-        />
-        <ClearIcon className='input-clear-button' onClick={handleClear} />
+      <Box className='header-wrapper'>
+        <Box className='search-wrapper'>
+          <span className='search-icon'>
+            <KTSVG path='/media/icons/duotune/general/gen021.svg' className='svg-icon-1' />
+          </span>
+
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0 px-12'
+            placeholder='Search'
+            onChange={(e) => setFilterText(e.target.value)}
+            value={filterText}
+          />
+          <ClearIcon className='input-clear-button' onClick={handleClear} />
+        </Box>
+        <button className='btn btn-md btn-light-primary' onClick={() => setAddOpen(true)}>
+          <KTSVG path='/media/icons/duotune/arrows/arr075.svg' className='svg-icon-2' />
+          Add State
+        </button>
       </Box>
     )
   }, [filterText, resetPaginationToggle])
@@ -233,35 +241,62 @@ const State = () => {
     {label: 'Inactive', value: 'Inactive'},
   ]
 
-  if (loading) {
+  const customStyles = {
+    headCells: {
+      style: {
+        paddingLeft: '8px',
+        paddingRight: '8px',
+      },
+    },
+  }
+
+  if (loader) {
     return (
       <Box className='loader'>
-        <CircularProgress />
+        <CircularProgress color='secondary' />
       </Box>
     )
   }
 
+  const click = () => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
+  }
+
+  const stateBreadCrumbs = [
+    {
+      title: 'Service Info',
+      path: '/service-info/category',
+      isSeparator: false,
+      isActive: false,
+    },
+    {
+      title: '',
+      path: '',
+      isSeparator: true,
+      isActive: false,
+    },
+  ]
+
   return (
     <>
-      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.SERVICE_INFO.STATE'})}</PageTitle>
-      <Box className='add-button-wrapper'>
-        <Button className='add-button' variant='success' onClick={() => setAddOpen(true)}>
-          Add New +
-        </Button>
-      </Box>
+      <PageTitle breadcrumbs={stateBreadCrumbs}>
+        {intl.formatMessage({id: 'MENU.SERVICE_INFO.STATE'})}
+      </PageTitle>
       <DataTable
+        customStyles={customStyles}
         columns={columns}
         data={filteredItems}
         fixedHeader
-        fixedHeaderScrollHeight='58vh'
+        fixedHeaderScrollHeight='57vh'
         pagination
         paginationResetDefaultPage={resetPaginationToggle}
         subHeader
         subHeaderComponent={subHeaderComponentMemo}
         persistTableHead
-        highlightOnHover
         responsive
-        striped
       />
       <Modal show={show} onHide={handleClose}>
         <>
@@ -270,17 +305,24 @@ const State = () => {
           </Modal.Header>
           <Modal.Body>Are you sure you want to delete this row</Modal.Body>
           <Modal.Footer>
-            <Button variant='secondary' onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button
-              variant='danger'
+            <button className='btn btn-white btn-active-light-danger me-2' onClick={handleClose}>
+              Discard
+            </button>
+            <button
+              className='btn btn-danger'
               onClick={() => {
                 handleDelete()
+                click()
               }}
             >
-              Delete
-            </Button>
+              {!loading && 'Delete'}
+              {loading && (
+                <span className='indicator-progress' style={{display: 'block'}}>
+                  Please wait...{' '}
+                  <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+                </span>
+              )}
+            </button>
           </Modal.Footer>
         </>
       </Modal>
@@ -288,7 +330,9 @@ const State = () => {
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth='xs'>
         <DialogTitle>
           <Box sx={{display: 'flex'}}>
-            <Box flexGrow={1}>Edit Row</Box>
+            <Box flexGrow={1}>
+              <h3 className='fw-bolder m-0'>Edit Row</h3>
+            </Box>
             <Box>
               <IconButton color='inherit' onClick={handleClose} aria-label='close'>
                 <CloseIcon />
@@ -297,89 +341,63 @@ const State = () => {
           </Box>
         </DialogTitle>
         <DialogContent>
-          <TextField
-            label='State Name'
-            type={'text'}
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>State Name</label>
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+            placeholder='State name'
             onChange={(e) => handleChange(e)}
             name='stateName'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            value={inputValue?.stateName}
+            value={inputValue?.stateName || ''}
             required
           />
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
-            }}
-          >
-            {errors['stateName']}
-          </span>
-          {/* <TextField
-            label='Country Name'
-            type={'text'}
-            onChange={(e) => handleChange(e)}
-            name='countryName'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            value={inputValue?.countryName}
-          />
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
-            }}
-          >
-            {errors['countryName']}
-          </span> */}
-          <TextField
-            label='Status'
-            type={'text'}
+          <span className='error-msg'>{errors['stateName']}</span>
+
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Status</label>
+          <select
+            className='form-select form-select-solid form-select-lg fw-bold'
             onChange={(e) => handleChange(e)}
             name='status'
-            fullWidth
-            variant='standard'
-            margin='dense'
-            value={inputValue?.status}
+            value={inputValue?.status || ''}
             required
-            select
           >
+            <option value=''>Select Status</option>
             {status.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
+              <option key={option.value} value={option.value}>
                 {option.label}
-              </MenuItem>
+              </option>
             ))}
-          </TextField>
-          <span
-            style={{
-              color: 'red',
-              top: '5px',
-              fontSize: '12px',
+          </select>
+          <span className='error-msg'>{errors['status']}</span>
+        </DialogContent>
+        <div className='d-flex justify-content-center py-6 px-9'>
+          <button className='btn btn-white btn-active-light-primary me-2' onClick={handleClose}>
+            Discard
+          </button>
+          <button
+            className='btn btn-primary'
+            onClick={() => {
+              handleUpdate()
+              click()
             }}
           >
-            {errors['status']}
-          </span>
-        </DialogContent>
-        <Button
-          className='button'
-          size='lg'
-          variant='success'
-          onClick={() => {
-            handleUpdate()
-          }}
-        >
-          Save
-        </Button>
+            {!loading && 'Save'}
+            {loading && (
+              <span className='indicator-progress' style={{display: 'block'}}>
+                Please wait...{' '}
+                <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+              </span>
+            )}
+          </button>
+        </div>
       </Dialog>
 
       <Dialog open={addOpen} onClose={handleClose} fullWidth maxWidth='xs'>
         <DialogTitle>
           <Box sx={{display: 'flex'}}>
-            <Box flexGrow={1}>Add New Row</Box>
+            <Box flexGrow={1}>
+              <h3 className='fw-bolder m-0'>Add New Row</h3>
+            </Box>
             <Box>
               <IconButton color='inherit' onClick={handleClose} aria-label='close'>
                 <CloseIcon />
@@ -389,7 +407,7 @@ const State = () => {
         </DialogTitle>
 
         <DialogContent>
-          <TextField
+          {/* <TextField
             label='State Name'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -408,7 +426,7 @@ const State = () => {
             }}
           >
             {errors['stateName']}
-          </span>
+          </span> */}
           {/* <TextField
             label='Country Name'
             type={'text'}
@@ -427,7 +445,7 @@ const State = () => {
           >
             {errors['countryName']}
           </span> */}
-          <TextField
+          {/* <TextField
             label='Status'
             type={'text'}
             onChange={(e) => handleChange(e)}
@@ -454,11 +472,59 @@ const State = () => {
             }}
           >
             {errors['status']}
-          </span>
+          </span> */}
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>State Name</label>
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+            placeholder='State name'
+            onChange={(e) => handleChange(e)}
+            name='stateName'
+            value={inputValue?.stateName || ''}
+            required
+          />
+          <span className='error-msg'>{errors['stateName']}</span>
+
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Status</label>
+          <select
+            className='form-select form-select-solid form-select-lg fw-bold'
+            onChange={(e) => handleChange(e)}
+            name='status'
+            value={inputValue?.status || ''}
+            required
+          >
+            <option value=''>Select Status</option>
+            {status.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <span className='error-msg'>{errors['status']}</span>
         </DialogContent>
-        <Button className='button' size='lg' variant='success' onClick={handleAdd}>
+        {/* <Button className='button' size='lg' variant='success' onClick={handleAdd}>
           Save
-        </Button>
+        </Button> */}
+        <div className='d-flex justify-content-center py-6 px-9'>
+          <button className='btn btn-white btn-active-light-primary me-2' onClick={handleClose}>
+            Discard
+          </button>
+          <button
+            className='btn btn-primary'
+            onClick={() => {
+              handleAdd()
+              click()
+            }}
+          >
+            {!loading && 'Save'}
+            {loading && (
+              <span className='indicator-progress' style={{display: 'block'}}>
+                Please wait...{' '}
+                <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+              </span>
+            )}
+          </button>
+        </div>
       </Dialog>
     </>
   )

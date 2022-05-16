@@ -1,5 +1,5 @@
 import {FC} from 'react'
-// import {MenuInner} from './MenuInner'
+import {MenuInner} from './MenuInner'
 
 const Header: FC = () => {
   return (
@@ -21,7 +21,7 @@ const Header: FC = () => {
         id='#kt_header_menu'
         data-kt-menu='true'
       >
-        {/* <MenuInner /> */}
+        <MenuInner />
       </div>
     </div>
   )

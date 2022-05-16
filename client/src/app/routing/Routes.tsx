@@ -13,6 +13,7 @@ import {Logout, AuthPage} from '../modules/auth'
 import {ErrorsPage} from '../modules/errors/ErrorsPage'
 import {MasterInit} from '../../_metronic/layout/MasterInit'
 import {AuthContext} from '../auth/authContext'
+import {MasterContextProvider} from '../context/masterContext'
 
 const Routes: FC = () => {
   const {user} = useContext(AuthContext)
@@ -39,9 +40,11 @@ const Routes: FC = () => {
           <Redirect to='/auth/login' />
         ) : (
           <>
-            <MasterLayout>
-              <PrivateRoutes />
-            </MasterLayout>
+            <MasterContextProvider>
+              <MasterLayout>
+                <PrivateRoutes />
+              </MasterLayout>
+            </MasterContextProvider>
           </>
         )}
       </Switch>

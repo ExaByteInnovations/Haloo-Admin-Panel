@@ -40,9 +40,9 @@ export function AsideMenuMain() {
         title={intl.formatMessage({id: 'MENU.JOBS'})}
         fontIcon='bi-app-indicator'
       >
-        <AsideMenuItem to='/jobs/open-jobs' title='Open Jobs' hasBullet={true} />
+        <AsideMenuItem to='/jobs/inprogress-jobs' title='Inprogress Jobs' hasBullet={true} />
         <AsideMenuItem to='/jobs/completed-jobs' title='Completed Jobs' hasBullet={true} />
-        <AsideMenuItem to='/jobs/disputed-jobs' title='Disputed Jobs' hasBullet={true} />
+        <AsideMenuItem to='/jobs/cancelled-jobs' title='Cancelled Jobs' hasBullet={true} />
       </AsideMenuItemWithSub>
 
       <AsideMenuItemWithSub
@@ -52,7 +52,7 @@ export function AsideMenuMain() {
         fontIcon='bi-app-indicator'
       >
         <AsideMenuItem to='/service-info/category' title='Category' hasBullet={true} />
-        {/* <AsideMenuItem to='/service-info/subcategory' title='Subcategory' hasBullet={true} /> */}
+        <AsideMenuItem to='/service-info/subcategory' title='Subcategory' hasBullet={true} />
         <AsideMenuItem to='/service-info/city' title='City' hasBullet={true} />
         <AsideMenuItem to='/service-info/state' title='State' hasBullet={true} />
       </AsideMenuItemWithSub>
