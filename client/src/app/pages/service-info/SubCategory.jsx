@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useState, useMemo} from 'react'
+import {useEffect, useState, useMemo, useContext} from 'react'
 import {useIntl} from 'react-intl'
 import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
@@ -13,8 +13,11 @@ import {Modal} from 'react-bootstrap'
 import {KTSVG} from '../../../_metronic/helpers/components/KTSVG'
 import {Box, DialogContent, DialogTitle, CircularProgress} from '@material-ui/core'
 import '../../App.css'
+import {toAbsoluteUrl} from '../../../_metronic/helpers'
+import {MasterContext} from '../../context/masterContext'
 
 const SubCategory = () => {
+  const {imgExtensions} = useContext(MasterContext)
   const intl = useIntl()
   const [subCategories, setSubCategories] = useState([])
   const [categories, setCategories] = useState([])
@@ -28,6 +31,8 @@ const SubCategory = () => {
   const [errors, setErrors] = useState({})
   const [filterText, setFilterText] = useState('')
   const [resetPaginationToggle, setResetPaginationToggle] = useState(false)
+  const [previewImage, setPreviewImage] = useState('')
+  const [subCategoryImage, setSubCategoryImage] = useState(null)
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
@@ -46,6 +51,16 @@ const SubCategory = () => {
     }
     return 0
   }
+
+  useEffect(() => {
+    if (!subCategoryImage) {
+      setPreviewImage(null)
+      return
+    }
+    const objectUrl = URL.createObjectURL(subCategoryImage)
+    setPreviewImage(objectUrl)
+    return () => URL.revokeObjectURL(objectUrl)
+  }, [subCategoryImage])
 
   useEffect(() => {
     getSubCategories()
@@ -88,9 +103,14 @@ const SubCategory = () => {
     let formIsValid = true
     let errors = {}
 
+    if (inputValue && !inputValue?.subCategoryImage && !subCategoryImage && addOpen) {
+      formIsValid = false
+      errors['subCategoryImage'] = '*Please Select subCategoryImage!'
+    }
+
     if (inputValue && !inputValue.subCategory) {
       formIsValid = false
-      errors['category'] = '*Please Enter Sub Category!'
+      errors['subCategory'] = '*Please Enter Sub Category!'
     }
     if (inputValue && !inputValue.parentCategoryId) {
       formIsValid = false
@@ -131,14 +151,14 @@ const SubCategory = () => {
 
   const handleUpdate = async () => {
     if (validateForm()) {
-      // const imageData = new FormData()
-      // imageData.append('image', inputValue.image)
-      // imageData.append('category', inputValue.category)
-      // imageData.append('sequenceNumber', inputValue.sequenceNumber)
-      // imageData.append('parentCategoryId', inputValue.parentCategoryId)
-      // imageData.append('status', inputValue.status)
+      const imageData = new FormData()
+      imageData.append('subCategoryImage', subCategoryImage || '')
+      imageData.append('category', inputValue.subCategory || '')
+      imageData.append('sequenceNumber', inputValue.sequenceNumber || '')
+      imageData.append('parentCategoryId', inputValue.parentCategoryId || '')
+      imageData.append('status', inputValue.status.toLowerCase() || '')
       try {
-        const response = await ApiPut(`serviceinfo/subcategory?_id=${rowId}`, inputValue)
+        const response = await ApiPut(`serviceinfo/subcategory?_id=${rowId}`, imageData)
         if (response.status === 200) {
           toast.success('Updated Successfully')
           setInputValue({})
@@ -146,7 +166,7 @@ const SubCategory = () => {
           handleClose()
         }
       } catch (err) {
-        toast.error(err.error || err.message)
+        toast.error(err.message || err.error)
         setErrors({[err.field]: err.error})
       }
     }
@@ -154,12 +174,12 @@ const SubCategory = () => {
 
   const handleAdd = async () => {
     if (validateForm()) {
-      // const imageData = new FormData()
-      // imageData.append('image', inputValue.image)
-      // imageData.append('category', inputValue.category)
+      const imageData = new FormData()
+      imageData.append('subCategoryImage', subCategoryImage || '')
+      imageData.append('category', inputValue.subCategory || '')
       // imageData.append('sequenceNumber', inputValue.sequenceNumber)
-      // imageData.append('parentCategoryId', inputValue.parentCategoryId)
-      // imageData.append('status', inputValue.status)
+      imageData.append('parentCategoryId', inputValue.parentCategoryId || '')
+      imageData.append('status', inputValue.status.toLowerCase() || '')
 
       try {
         const response = await ApiPost(`serviceinfo/subcategory`, inputValue)
@@ -272,11 +292,10 @@ const SubCategory = () => {
     return {
       id: subCategory?._id,
       subCategory: subCategory?.category,
-      // image: subCategory?.image,
+      subCategoryImage: subCategory?.subCategoryImage,
       category: subCategory?.parentCategoryDetails[0]?.categoryName,
       parentCategoryId: subCategory?.parentCategoryId,
       sequenceNumber: subCategory?.sequenceNumber,
-      // addedOn: moment(subCategory?.createdAt).format('DD MMM YY hh:mmA'),
       status:
         subCategory?.status?.charAt(0)?.toUpperCase() +
         subCategory?.status?.substr(1)?.toLowerCase(),
@@ -373,6 +392,13 @@ const SubCategory = () => {
     )
   }
 
+  const blankImg = toAbsoluteUrl('/media/svg/avatars/blank.svg')
+  const subCategoryImg = previewImage
+    ? previewImage
+    : inputValue.subCategoryImage
+    ? `${process.env.REACT_APP_SERVER_URL}${inputValue.subCategoryImage}`
+    : blankImg
+
   return (
     <>
       <PageTitle breadcrumbs={SubCategoryBreadCrumbs}>
@@ -435,6 +461,62 @@ const SubCategory = () => {
         </DialogTitle>
 
         <DialogContent>
+          <div className='fv-row mb-7'>
+            <label className='d-block fw-bold fs-6 mb-5'>Sub Category Image</label>
+            <div
+              className='image-input image-input-outline'
+              data-kt-image-input='true'
+              style={{backgroundImage: `url('${blankImg}')`}}
+            >
+              <div
+                className='image-input-wrapper w-125px h-125px'
+                style={{backgroundImage: `url('${subCategoryImg}')`}}
+              ></div>
+              <label
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='change'
+                data-bs-toggle='tooltip'
+                title='Change sub category image'
+              >
+                <i className='bi bi-pencil-fill fs-7'></i>
+
+                <input
+                  type='file'
+                  name='subCategoryImage'
+                  accept={imgExtensions.join(', ')}
+                  onChange={(e) => {
+                    setSubCategoryImage(e.target.files[0])
+                  }}
+                />
+                <input type='hidden' name='remove sub category image' />
+              </label>
+
+              {/* <span
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='cancel'
+                data-bs-toggle='tooltip'
+                title='Cancel profile image'
+              >
+                <i className='bi bi-x fs-2'></i>
+              </span> */}
+
+              <span
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='remove'
+                data-bs-toggle='tooltip'
+                title='Remove sub category image'
+                onClick={() => {
+                  setPreviewImage('')
+                  setSubCategoryImage(null)
+                }}
+              >
+                <i className='bi bi-x fs-2'></i>
+              </span>
+            </div>
+            <div className='form-text'>{`Allowed file types: ${imgExtensions.join(', ')}`}</div>
+            <span className='error-msg'>{errors['subCategoryImage']}</span>
+          </div>
+
           <label className='col-lg-4 col-form-label required fw-bold fs-6'>Sub Category</label>
           <input
             type='text'
@@ -535,6 +617,62 @@ const SubCategory = () => {
         </DialogTitle>
 
         <DialogContent>
+          <div className='fv-row mb-7'>
+            <label className='d-block fw-bold fs-6 mb-5'>Sub Category Image</label>
+            <div
+              className='image-input image-input-outline'
+              data-kt-image-input='true'
+              style={{backgroundImage: `url('${blankImg}')`}}
+            >
+              <div
+                className='image-input-wrapper w-125px h-125px'
+                style={{backgroundImage: `url('${subCategoryImg}')`}}
+              ></div>
+              <label
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='change'
+                data-bs-toggle='tooltip'
+                title='Change sub category image'
+              >
+                <i className='bi bi-pencil-fill fs-7'></i>
+
+                <input
+                  type='file'
+                  name='subCategoryImage'
+                  accept={imgExtensions.join(', ')}
+                  onChange={(e) => {
+                    setSubCategoryImage(e.target.files[0])
+                  }}
+                />
+                <input type='hidden' name='remove sub category image' />
+              </label>
+
+              {/* <span
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='cancel'
+                data-bs-toggle='tooltip'
+                title='Cancel profile image'
+              >
+                <i className='bi bi-x fs-2'></i>
+              </span> */}
+
+              <span
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='remove'
+                data-bs-toggle='tooltip'
+                title='Remove sub category image'
+                onClick={() => {
+                  setPreviewImage('')
+                  setSubCategoryImage(null)
+                }}
+              >
+                <i className='bi bi-x fs-2'></i>
+              </span>
+            </div>
+            <div className='form-text'>{`Allowed file types: ${imgExtensions.join(', ')}`}</div>
+            <span className='error-msg'>{errors['subCategoryImage']}</span>
+          </div>
+
           <label className='col-lg-4 col-form-label required fw-bold fs-6'>Sub Category</label>
           <input
             type='text'

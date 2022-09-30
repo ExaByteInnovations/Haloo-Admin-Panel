@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, {useState, useEffect} from 'react'
-import {useDispatch} from 'react-redux'
+import {useEffect} from 'react'
 import {useFormik} from 'formik'
 import * as Yup from 'yup'
 import clsx from 'clsx'
@@ -47,8 +46,7 @@ const registrationSchema = Yup.object().shape({
 })
 
 export function Registration() {
-  const [loading, setLoading] = useState(false)
-  const dispatch = useDispatch()
+  // const [loading, setLoading] = useState(false)
   const formik = useFormik({
     initialValues,
     validationSchema: registrationSchema,
@@ -318,13 +316,13 @@ export function Registration() {
           className='btn btn-lg btn-primary w-100 mb-5'
           disabled={formik.isSubmitting || !formik.isValid || !formik.values.acceptTerms}
         >
-          {!loading && <span className='indicator-label'>Submit</span>}
+          {/* {!loading && <span className='indicator-label'>Submit</span>}
           {loading && (
             <span className='indicator-progress' style={{display: 'block'}}>
               Please wait...{' '}
               <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
             </span>
-          )}
+          )} */}
         </button>
         <Link to='/auth/login'>
           <button

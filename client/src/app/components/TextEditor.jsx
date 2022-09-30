@@ -4,7 +4,6 @@ import {useLocation, useHistory} from 'react-router-dom'
 import {useState} from 'react'
 import '../App.css'
 import {PageTitle} from '../../_metronic/layout/core'
-import {Box, CircularProgress} from '@material-ui/core'
 import {Button} from 'react-bootstrap-v5'
 import {ApiPut} from '../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
@@ -39,13 +38,41 @@ const TextEditor = () => {
     }
   }
 
-  if (loading) {
-    return (
-      <Box className='loader'>
-        <CircularProgress />
-      </Box>
-    )
+  // if (loading) {
+  //   return (
+  //     <Box className='loader'>
+  //       <CircularProgress />
+  //     </Box>
+  //   )
+  // }
+
+  const click = () => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
   }
+
+  const TextEditorBreadCrumbs = [
+    {
+      title: 'Settings',
+      path: '/settings/edit-profile',
+      isSeparator: false,
+      isActive: false,
+    },
+    {
+      title: 'Static Pages',
+      path: '/settings/static-pages',
+      isSeparator: false,
+      isActive: false,
+    },
+    {
+      title: '',
+      path: '',
+      isSeparator: true,
+      isActive: false,
+    },
+  ]
 
   return (
     <>
@@ -67,7 +94,7 @@ const TextEditor = () => {
           </Modal.Footer>
         </>
       </Modal>
-      <PageTitle breadcrumbs={[]}>
+      <PageTitle breadcrumbs={TextEditorBreadCrumbs}>
         {pageName?.charAt(0)?.toUpperCase() + pageName?.slice(1)}
       </PageTitle>
       <CKEditor
@@ -79,30 +106,34 @@ const TextEditor = () => {
           setIsDataChanged(true)
         }}
       />
-      <Box sx={{marginTop: '10px'}}>
-        <Button
-          style={{marginRight: '10px'}}
-          size='lg'
-          variant='success'
-          onClick={() => {
-            handleUpdate()
-            setIsDataChanged(false)
-          }}
-        >
-          Save
-        </Button>
-        <Button
-          size='lg'
-          variant='danger'
+      <div className='d-flex justify-content-center py-6 px-9'>
+        <button
+          className='btn btn-white btn-active-light-primary me-2'
           onClick={() =>
             isDataChanged && pageData !== data
               ? setShow(true)
               : history.push('/settings/static-pages')
           }
         >
-          Go Back
-        </Button>
-      </Box>
+          Discard
+        </button>
+        <button
+          className='btn btn-primary'
+          onClick={() => {
+            handleUpdate()
+            setIsDataChanged(false)
+            click()
+          }}
+        >
+          {!loading && 'Save'}
+          {loading && (
+            <span className='indicator-progress' style={{display: 'block'}}>
+              Please wait...{' '}
+              <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+            </span>
+          )}
+        </button>
+      </div>
     </>
   )
 }

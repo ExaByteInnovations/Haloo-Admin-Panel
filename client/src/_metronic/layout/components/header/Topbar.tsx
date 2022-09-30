@@ -1,28 +1,24 @@
 import clsx from 'clsx'
 import {FC, useContext, useState} from 'react'
 import {AuthContext} from '../../../../app/auth/authContext'
-import userImage from '../../../../assets/user.png'
+import {KTSVG, toAbsoluteUrl} from '../../../helpers'
 import {
-  KTSVG,
-  //  toAbsoluteUrl
-} from '../../../helpers'
-import {
-  // HeaderNotificationsMenu,
+  HeaderNotificationsMenu,
   HeaderUserMenu,
-  // QuickLinks,
   // Search
 } from '../../../partials'
 import {useLayout} from '../../core'
 
 const toolbarButtonMarginClass = 'ms-1 ms-lg-3',
-  // toolbarButtonHeightClass = 'w-30px h-30px w-md-40px h-md-40px',
-  toolbarUserAvatarHeightClass = 'symbol-30px symbol-md-40px'
-// toolbarButtonIconSizeClass = 'svg-icon-1'
+  toolbarButtonHeightClass = 'w-30px h-30px w-md-40px h-md-40px',
+  toolbarUserAvatarHeightClass = 'symbol-30px symbol-md-40px',
+  toolbarButtonIconSizeClass = 'svg-icon-1'
 
 const Topbar: FC = () => {
   const {config} = useLayout()
   const {user} = useContext(AuthContext)
   const [imageLoaded, setImageLoaded] = useState(false)
+  const blankImg = toAbsoluteUrl('/media/svg/avatars/blank.svg')
 
   const handleImageLoad = () => {
     setImageLoaded(true)
@@ -37,6 +33,28 @@ const Topbar: FC = () => {
         <Search />
       </div> */}
 
+      {/* Notifications */}
+      {/* <div className={clsx('d-flex align-items-center', toolbarButtonMarginClass)}> */}
+      {/* begin::Menu- wrapper */}
+      {/* <div
+          className={clsx(
+            'btn btn-icon btn-active-light-primary btn-custom',
+            toolbarButtonHeightClass
+          )}
+          data-kt-menu-trigger='click'
+          data-kt-menu-attach='parent'
+          data-kt-menu-placement='bottom-end'
+          data-kt-menu-flip='bottom'
+        >
+          <KTSVG
+            path='/media/icons/duotune/general/gen022.svg'
+            className={toolbarButtonIconSizeClass}
+          />
+        </div> */}
+      {/* <HeaderNotificationsMenu /> */}
+      {/* end::Menu wrapper */}
+      {/* </div> */}
+
       {/* begin::User */}
       <div
         className={clsx('d-flex align-items-center', toolbarButtonMarginClass)}
@@ -50,12 +68,12 @@ const Topbar: FC = () => {
           data-kt-menu-placement='bottom-end'
           data-kt-menu-flip='bottom'
         >
-          {!imageLoaded && <img alt='haloo' src={userImage} />}
+          {!imageLoaded && <img alt='haloo' src={blankImg} />}
           <img
             style={imageStyles}
             onLoad={handleImageLoad}
             src={
-              user?.profileImage ? process.env.REACT_APP_SERVER_URL + user.profileImage : userImage
+              user?.profileImage ? process.env.REACT_APP_SERVER_URL + user.profileImage : blankImg
             }
             alt='haloo'
           />

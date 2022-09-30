@@ -1,12 +1,11 @@
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, {FC} from 'react'
+import {FC} from 'react'
 import {Link} from 'react-router-dom'
 import clsx from 'clsx'
 import {useLayout} from '../../core'
-import {KTSVG, toAbsoluteUrl} from '../../../helpers'
+import {toAbsoluteUrl} from '../../../helpers'
 import {AsideMenu} from './AsideMenu'
-import logo from '../../../../assets/logo.png'
 
 const AsideDefault: FC = () => {
   const {config, classes} = useLayout()
@@ -32,8 +31,7 @@ const AsideDefault: FC = () => {
             <img
               alt='Logo'
               className='h-80px w-200px logo'
-              // src={toAbsoluteUrl('/media/logos/logo-1-dark.svg')}
-              src={logo}
+              src={toAbsoluteUrl('/media/logos/logo-1-dark.svg')}
             />
           </Link>
         )}
@@ -42,8 +40,7 @@ const AsideDefault: FC = () => {
             <img
               alt='Logo'
               className='h-25px logo'
-              // src={toAbsoluteUrl('/media/logos/logo-1.svg')}
-              src={logo}
+              src={toAbsoluteUrl('/media/logos/logo-1.svg')}
             />
           </Link>
         )}

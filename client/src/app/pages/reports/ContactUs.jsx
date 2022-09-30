@@ -1,25 +1,27 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import {useEffect, useMemo, useState} from 'react'
 import {useIntl} from 'react-intl'
-import {Edit, Delete} from '@mui/icons-material'
+import {CSVLink} from 'react-csv'
 import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
 import {ApiGet, ApiDelete} from '../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
 import ClearIcon from '@mui/icons-material/Clear'
-import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
-import {Box, CircularProgress, TextField} from '@material-ui/core'
+import {Box, CircularProgress} from '@material-ui/core'
+import {KTSVG} from '../../../_metronic/helpers/components/KTSVG'
 import '../../App.css'
+import {Loader} from '../../components/Loader'
 
 const ContactUs = () => {
   const intl = useIntl()
   const [contactUs, setContactUs] = useState([])
   const [loading, setLoading] = useState(false)
+  const [loader, setLoader] = useState(false)
   const [show, setShow] = useState(false)
   const [rowId, setRowId] = useState('')
-  //   const [filterText, setFilterText] = useState('')
-  //   const [resetPaginationToggle, setResetPaginationToggle] = useState(false)
+  const [filterText, setFilterText] = useState('')
+  const [resetPaginationToggle, setResetPaginationToggle] = useState(false)
 
   const handleClose = () => {
     setShow(false)
@@ -30,16 +32,16 @@ const ContactUs = () => {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const getContactUs = async () => {
-    setLoading(true)
+    setLoader(true)
     try {
       const response = await ApiGet(`serviceinfo/state`)
       if (response.status === 200) {
         setContactUs(response.data.data)
       }
-      setLoading(false)
+      setLoader(false)
     } catch (err) {
       toast.error(err.message)
-      setLoading(false)
+      setLoader(false)
     }
   }
 
@@ -91,14 +93,15 @@ const ContactUs = () => {
       cell: (row) => {
         return (
           <>
-            <Delete
-              className='icon'
-              color='error'
+            <span
+              className='btn btn-icon btn-bg-light btn-active-color-primary btn-sm'
               onClick={() => {
                 setShow(true)
                 setRowId(row.id)
               }}
-            />
+            >
+              <KTSVG path='/media/icons/duotune/general/gen027.svg' className='svg-icon-3' />
+            </span>
           </>
         )
       },
@@ -127,71 +130,119 @@ const ContactUs = () => {
     },
   ]
 
-  //   const filteredItems = data.filter(
-  //     (item) =>
-  //       (item.stateName && item.stateName.toLowerCase().includes(filterText.toLowerCase())) ||
-  //       (item.status && item.status.toLowerCase().includes(filterText.toLowerCase()))
-  //   )
+  const filteredItems = data.filter(
+    (item) =>
+      item.name.toLowerCase().includes(filterText.toLowerCase()) ||
+      item.phone.toLowerCase().includes(filterText.toLowerCase()) ||
+      item.comment.toLowerCase().includes(filterText.toLowerCase()) ||
+      item.topic.toLowerCase().includes(filterText.toLowerCase()) ||
+      item.date.toLowerCase().includes(filterText.toLowerCase())
+  )
 
-  //   const subHeaderComponentMemo = useMemo(() => {
-  //     const handleClear = () => {
-  //       if (filterText) {
-  //         setResetPaginationToggle(!resetPaginationToggle)
-  //         setFilterText('')
-  //       }
-  //     }
-  //     return (
-  //       <Box
-  //         sx={{
-  //           display: 'flex',
-  //           position: 'relative',
-  //           lineHeight: '1.5',
-  //           justifyContent: 'flex-end',
-  //           alignItems: 'center',
-  //         }}
-  //       >
-  //         <TextField
-  //           className='input-search'
-  //           placeholder='Search'
-  //           variant='outlined'
-  //           margin='dense'
-  //           onChange={(e) => setFilterText(e.target.value)}
-  //           value={filterText}
-  //         />
-  //         <ClearIcon className='input-clear-button' onClick={handleClear} />
-  //       </Box>
-  //     )
-  //   }, [filterText, resetPaginationToggle])
+  const headers = [
+    {label: 'Name', key: 'name'},
+    {label: 'Phone Number', key: 'phone'},
+    {label: 'Comment', key: 'comment'},
+    {label: 'Topic', key: 'topic'},
+    {label: 'Date', key: 'date'},
+  ]
 
-  if (loading) {
+  const csvReport = {
+    data: filteredItems,
+    headers: headers,
+    filename: 'Contact_Us_Report.csv',
+  }
+
+  const subHeaderComponentMemo = useMemo(() => {
+    const handleClear = () => {
+      if (filterText) {
+        setResetPaginationToggle(!resetPaginationToggle)
+        setFilterText('')
+      }
+    }
     return (
-      <Box className='loader'>
-        <CircularProgress />
+      <Box className='header-wrapper'>
+        <Box className='search-wrapper'>
+          <span className='search-icon'>
+            <KTSVG path='/media/icons/duotune/general/gen021.svg' className='svg-icon-1' />
+          </span>
+
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0 px-12'
+            placeholder='Search'
+            onChange={(e) => setFilterText(e.target.value)}
+            value={filterText}
+          />
+          <ClearIcon className='input-clear-button' onClick={handleClear} />
+        </Box>
+
+        <button className='btn btn-md btn-light-primary'>
+          <KTSVG path='/media/icons/duotune/arrows/arr078.svg' className='svg-icon-2' />
+          <CSVLink className='export-csv' {...csvReport}>
+            Export to CSV
+          </CSVLink>
+        </button>
       </Box>
     )
+  }, [filterText, resetPaginationToggle, csvReport])
+
+  // if (Loader) {
+  //   return (
+  //     <Box className='loader'>
+  //       <CircularProgress color='secondary' />
+  //     </Box>
+  //   )
+  // }
+
+  const customStyles = {
+    headCells: {
+      style: {
+        paddingLeft: '8px',
+        paddingRight: '8px',
+      },
+    },
+  }
+
+  const ContactUsReportBreadCrumbs = [
+    {
+      title: 'Reports',
+      path: '/reports/login-report',
+      isSeparator: false,
+      isActive: false,
+    },
+    {
+      title: '',
+      path: '',
+      isSeparator: true,
+      isActive: false,
+    },
+  ]
+
+  const click = () => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
   }
 
   return (
     <>
-      <PageTitle breadcrumbs={[]}>{intl.formatMessage({id: 'MENU.REPORTS.CONTACT_US'})}</PageTitle>
-      <Box className='add-button-wrapper'>
-        <Button className='add-button' variant='success' onClick={() => console.log('Demo')}>
-          Export CSV
-        </Button>
-      </Box>
+      <PageTitle breadcrumbs={ContactUsReportBreadCrumbs}>
+        {intl.formatMessage({id: 'MENU.REPORTS.CONTACT_US'})}
+      </PageTitle>
       <DataTable
+        customStyles={customStyles}
         columns={columns}
-        data={data}
+        data={filteredItems}
         fixedHeader
-        fixedHeaderScrollHeight='58vh'
+        fixedHeaderScrollHeight='57vh'
         pagination
-        // paginationResetDefaultPage={resetPaginationToggle}
-        // subHeader
-        // subHeaderComponent={subHeaderComponentMemo}
-        // persistTableHead
-        highlightOnHover
+        paginationResetDefaultPage={resetPaginationToggle}
+        subHeader
+        subHeaderComponent={subHeaderComponentMemo}
+        persistTableHead
         responsive
-        striped
       />
       <Modal show={show} onHide={handleClose}>
         <>
@@ -200,17 +251,24 @@ const ContactUs = () => {
           </Modal.Header>
           <Modal.Body>Are you sure you want to delete this row</Modal.Body>
           <Modal.Footer>
-            <Button variant='secondary' onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button
-              variant='danger'
+            <button className='btn btn-white btn-active-light-danger me-2' onClick={handleClose}>
+              Discard
+            </button>
+            <button
+              className='btn btn-danger'
               onClick={() => {
                 handleDelete()
+                click()
               }}
             >
-              Delete
-            </Button>
+              {!loading && 'Delete'}
+              {loading && (
+                <span className='indicator-progress' style={{display: 'block'}}>
+                  Please wait...{' '}
+                  <span className='spinner-border spinner-border-sm align-middle ms-2'></span>
+                </span>
+              )}
+            </button>
           </Modal.Footer>
         </>
       </Modal>

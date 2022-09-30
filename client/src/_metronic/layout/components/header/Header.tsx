@@ -1,4 +1,5 @@
 import {FC} from 'react'
+import {toAbsoluteUrl} from '../../../helpers'
 import {MenuInner} from './MenuInner'
 
 const Header: FC = () => {
@@ -16,6 +17,26 @@ const Header: FC = () => {
       data-kt-swapper-mode='prepend'
       data-kt-swapper-parent="{default: '#kt_body', lg: '#kt_header_nav'}"
     >
+      <a
+        href='/dashboard'
+        style={{
+          padding: '6px 0',
+          display: 'flex',
+          alignItems: 'center',
+          marginRight: '10px',
+        }}
+      >
+        <img
+          src={toAbsoluteUrl('/media/logos/download_dark.svg')}
+          className='h-70px w-70px'
+          alt='logo'
+        />
+        <img
+          src={toAbsoluteUrl('/media/logos/HALOO_dark.svg')}
+          className='h-30px w-100px'
+          alt='logo'
+        />
+      </a>
       <div
         className='menu menu-lg-rounded menu-column menu-lg-row menu-state-bg menu-title-gray-700 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-400 fw-bold my-5 my-lg-0 align-items-stretch'
         id='#kt_header_menu'

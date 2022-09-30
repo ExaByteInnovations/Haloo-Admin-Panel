@@ -2,7 +2,8 @@ import {Box, CircularProgress} from '@material-ui/core'
 import {useEffect, useState} from 'react'
 import {toast} from 'react-toastify'
 import {ApiGet} from '../../../helpers/API/ApiData'
-import MuiCard from './MuiCard'
+import {StatisticsWidget5} from '../../../_metronic/partials/widgets/statistics/StatisticsWidget5'
+import {MixedWidget3} from '../../../_metronic/partials/widgets'
 
 export function CustomDashboardWidget() {
   const [loading, setLoading] = useState(false)
@@ -29,23 +30,39 @@ export function CustomDashboardWidget() {
   if (loading) {
     return (
       <Box className='loader'>
-        <CircularProgress />
+        <CircularProgress color='secondary' />
       </Box>
     )
   }
 
-  const cardColor = ['#0096c7', '#00b4d8', '#48cae4', '#90e0ef']
+  const cardColor = ['danger', 'success', 'primary', 'info']
 
   return (
-    <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 35}}>
-      {dashboardDetails?.map((item, index) => (
-        <MuiCard
-          key={item.title}
-          title={item.title}
-          count={item.total}
-          color={cardColor[index % cardColor.length]}
-        />
-      ))}
-    </Box>
+    <div
+      style={{
+        width: '100%',
+        padding: '10px 30px',
+      }}
+    >
+      <div className='row g-5 g-xl-8 mt-2'>
+        {dashboardDetails?.map((item, index) => (
+          <div key={item.title + index} className='col-xl-3'>
+            <StatisticsWidget5
+              className='card-xl-stretch mb-xl-8'
+              svgIcon={`media/haloo-icons/${item?.title?.replace(/\s/g, '')?.toLowerCase()}.svg`}
+              color={cardColor[index % cardColor.length]}
+              iconColor='white'
+              title={item.title}
+              description={item.total}
+            />
+          </div>
+        ))}
+      </div>
+      {/* <div className='row g-5 g-xl-8 mt-2'>
+        <div className='col-xl-3'>
+          <MixedWidget3 className='card-xl-stretch mb-xl-8' chartColor='info' chartHeight='250px' />
+        </div>
+      </div> */}
+    </div>
   )
 }

@@ -4,11 +4,13 @@ import {AuthContext} from '../../../../app/auth/authContext'
 import {ApiPost} from '../../../../helpers/API/ApiData'
 import {toast} from 'react-toastify'
 import * as authUtil from '../../../../utils/auth.util'
-import userImage from '../../../../assets/user.png'
+import {toAbsoluteUrl} from '../../../helpers'
+import {Link} from 'react-router-dom'
 
 const HeaderUserMenu = () => {
   const {user, dispatch} = useContext(AuthContext)
   const [imageLoaded, setImageLoaded] = useState(false)
+  const blankImg = toAbsoluteUrl('/media/svg/avatars/blank.svg')
   const logout = async () => {
     try {
       const response = await ApiPost('auth/admin/logout', {email: user?.email})
@@ -38,15 +40,13 @@ const HeaderUserMenu = () => {
       <div className='menu-item px-3'>
         <div className='menu-content d-flex align-items-center px-3'>
           <div className='symbol symbol-50px me-5'>
-            {!imageLoaded && <img alt='logo' src={userImage} />}
+            {!imageLoaded && <img alt='logo' src={blankImg} />}
             <img
               alt='Logo'
               style={imageStyles}
               onLoad={handleImageLoad}
               src={
-                user?.profileImage
-                  ? process.env.REACT_APP_SERVER_URL + user.profileImage
-                  : userImage
+                user?.profileImage ? process.env.REACT_APP_SERVER_URL + user.profileImage : blankImg
               }
             />
           </div>
@@ -65,6 +65,18 @@ const HeaderUserMenu = () => {
       </div>
 
       <div className='separator my-2'></div>
+
+      <div className='menu-item px-5 my-1'>
+        <Link to='/settings/edit-profile' className='menu-link px-5'>
+          Edit Profile
+        </Link>
+      </div>
+
+      <div className='menu-item px-5 my-1'>
+        <Link to='/settings/change-password' className='menu-link px-5'>
+          Change Password
+        </Link>
+      </div>
 
       <div className='menu-item px-5'>
         <a onClick={logout} className='menu-link px-5'>

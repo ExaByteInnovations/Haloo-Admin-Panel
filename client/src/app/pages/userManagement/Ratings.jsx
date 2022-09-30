@@ -19,6 +19,7 @@ import '../../App.css'
 const Ratings = () => {
   const intl = useIntl()
   const [ratings, setRatings] = useState([])
+  console.log(ratings, 'ratings')
   const [open, setOpen] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})

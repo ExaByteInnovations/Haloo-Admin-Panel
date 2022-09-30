@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useMemo, useState} from 'react'
+import {useContext, useEffect, useMemo, useState} from 'react'
 import {useIntl} from 'react-intl'
 import {PageTitle} from '../../../_metronic/layout/core'
 import DataTable from 'react-data-table-component'
@@ -13,9 +13,12 @@ import ClearIcon from '@mui/icons-material/Clear'
 import {KTSVG} from '../../../_metronic/helpers/components/KTSVG'
 import {Box, CircularProgress, DialogContent, DialogTitle} from '@material-ui/core'
 import '../../App.css'
+import {toAbsoluteUrl} from '../../../_metronic/helpers'
+import {MasterContext} from '../../context/masterContext'
 // import {Image} from 'react-bootstrap-v5'
 
 const Category = () => {
+  const {imgExtensions} = useContext(MasterContext)
   const intl = useIntl()
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(false)
@@ -26,6 +29,8 @@ const Category = () => {
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
   const [errors, setErrors] = useState({})
+  const [previewImage, setPreviewImage] = useState('')
+  const [categoryImage, setCategoryImage] = useState(null)
 
   const [filterText, setFilterText] = useState('')
   const [resetPaginationToggle, setResetPaginationToggle] = useState(false)
@@ -38,6 +43,16 @@ const Category = () => {
     setErrors({})
     setInputValue({})
   }
+
+  useEffect(() => {
+    if (!categoryImage) {
+      setPreviewImage(null)
+      return
+    }
+    const objectUrl = URL.createObjectURL(categoryImage)
+    setPreviewImage(objectUrl)
+    return () => URL.revokeObjectURL(objectUrl)
+  }, [categoryImage])
 
   useEffect(() => {
     getCategories()
@@ -77,14 +92,13 @@ const Category = () => {
 
   const handleUpdate = async () => {
     if (validateForm()) {
-      // const imageData = new FormData()
-      // imageData.append('image', inputValue.image)
-      // imageData.append('hoverImage', inputValue.hoverImage)
-      // imageData.append('categoryName', inputValue.categoryName)
-      // imageData.append('sequenceNumber', inputValue.sequenceNumber)
-      // imageData.append('status', inputValue.status)
+      const imageData = new FormData()
+      imageData.append('categoryImage', categoryImage || '')
+      imageData.append('categoryName', inputValue.categoryName || '')
+      imageData.append('sequenceNumber', inputValue.sequenceNumber || '')
+      imageData.append('status', inputValue.status.toLowerCase() || '')
       try {
-        const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, inputValue)
+        const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, imageData)
         if (response.status === 200) {
           toast.success('Updated Successfully')
           setInputValue({})
@@ -92,7 +106,7 @@ const Category = () => {
           handleClose()
         }
       } catch (err) {
-        toast.error(err.error || err.message)
+        toast.error(err.message || err.error)
         setErrors({[err.field]: err.error})
       }
     }
@@ -133,6 +147,12 @@ const Category = () => {
     //   formIsValid = false
     //   errors['hoverImage'] = '*Please Select Hover Image!'
     // }
+
+    if (inputValue && !inputValue?.categoryImage && !categoryImage && addOpen) {
+      formIsValid = false
+      errors['categoryImage'] = '*Please Select categoryImage!'
+    }
+
     if (inputValue && !inputValue.status) {
       formIsValid = false
       errors['status'] = '*Please Select Status!'
@@ -143,15 +163,13 @@ const Category = () => {
 
   const handleAdd = async () => {
     if (validateForm()) {
-      // const imageData = new FormData()
-      // imageData.append('image', inputValue.image)
-      // imageData.append('hoverImage', inputValue.hoverImage)
-      // imageData.append('categoryName', inputValue.categoryName)
-      // imageData.append('sequenceNumber', inputValue.sequenceNumber)
-      // imageData.append('status', inputValue.status)
+      const imageData = new FormData()
+      imageData.append('categoryImage', categoryImage || '')
+      imageData.append('categoryName', inputValue.categoryName || '')
+      imageData.append('status', inputValue.status.toLowerCase() || '')
 
       try {
-        const response = await ApiPost(`serviceinfo/category`, inputValue)
+        const response = await ApiPost(`serviceinfo/category`, imageData)
         if (response.status === 200) {
           toast.success('Added Successfully')
           setInputValue({})
@@ -159,7 +177,7 @@ const Category = () => {
           handleClose()
         }
       } catch (err) {
-        toast.error(err[0] || err.message)
+        toast.error(err.message || err[0])
         setErrors({[err[1]]: err[0]})
       }
     }
@@ -239,7 +257,7 @@ const Category = () => {
     return {
       id: category?._id,
       categoryName: category?.categoryName,
-      // image: category?.image,
+      categoryImage: category?.categoryImage,
       // hoverImage: category?.hoverImage,
       sequenceNumber: category?.sequenceNumber,
       status:
@@ -335,6 +353,13 @@ const Category = () => {
     )
   }
 
+  const blankImg = toAbsoluteUrl('/media/svg/avatars/blank.svg')
+  const categoryImg = previewImage
+    ? previewImage
+    : inputValue.categoryImage
+    ? `${process.env.REACT_APP_SERVER_URL}${inputValue.categoryImage}`
+    : blankImg
+
   return (
     <>
       <PageTitle breadcrumbs={CategoryBreadCrumbs}>
@@ -396,6 +421,62 @@ const Category = () => {
           </Box>
         </DialogTitle>
         <DialogContent>
+          <div className='fv-row mb-7'>
+            <label className='d-block fw-bold fs-6 mb-5'>Category Image</label>
+            <div
+              className='image-input image-input-outline'
+              data-kt-image-input='true'
+              style={{backgroundImage: `url('${blankImg}')`}}
+            >
+              <div
+                className='image-input-wrapper w-125px h-125px'
+                style={{backgroundImage: `url('${categoryImg}')`}}
+              ></div>
+              <label
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='change'
+                data-bs-toggle='tooltip'
+                title='Change category image'
+              >
+                <i className='bi bi-pencil-fill fs-7'></i>
+
+                <input
+                  type='file'
+                  name='categoryImage'
+                  accept={imgExtensions.join(', ')}
+                  onChange={(e) => {
+                    setCategoryImage(e.target.files[0])
+                  }}
+                />
+                <input type='hidden' name='remove category image' />
+              </label>
+
+              {/* <span
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='cancel'
+                data-bs-toggle='tooltip'
+                title='Cancel profile image'
+              >
+                <i className='bi bi-x fs-2'></i>
+              </span> */}
+
+              <span
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='remove'
+                data-bs-toggle='tooltip'
+                title='Remove category image'
+                onClick={() => {
+                  setPreviewImage('')
+                  setCategoryImage(null)
+                }}
+              >
+                <i className='bi bi-x fs-2'></i>
+              </span>
+            </div>
+            <div className='form-text'>{`Allowed file types: ${imgExtensions.join(', ')}`}</div>
+            <span className='error-msg'>{errors['categoryImage']}</span>
+          </div>
+
           <label className='col-lg-4 col-form-label required fw-bold fs-6'>Category Name</label>
           <input
             type='text'
@@ -519,6 +600,62 @@ const Category = () => {
         </DialogTitle>
 
         <DialogContent>
+          <div className='fv-row mb-7'>
+            <label className='d-block fw-bold fs-6 mb-5'>Category Image</label>
+            <div
+              className='image-input image-input-outline'
+              data-kt-image-input='true'
+              style={{backgroundImage: `url('${blankImg}')`}}
+            >
+              <div
+                className='image-input-wrapper w-125px h-125px'
+                style={{backgroundImage: `url('${categoryImg}')`}}
+              ></div>
+              <label
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='change'
+                data-bs-toggle='tooltip'
+                title='Change category image'
+              >
+                <i className='bi bi-pencil-fill fs-7'></i>
+
+                <input
+                  type='file'
+                  name='categoryImage'
+                  accept={imgExtensions.join(', ')}
+                  onChange={(e) => {
+                    setCategoryImage(e.target.files[0])
+                  }}
+                />
+                <input type='hidden' name='remove category image' />
+              </label>
+
+              {/* <span
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='cancel'
+                data-bs-toggle='tooltip'
+                title='Cancel profile image'
+              >
+                <i className='bi bi-x fs-2'></i>
+              </span> */}
+
+              <span
+                className='btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow'
+                data-kt-image-input-action='remove'
+                data-bs-toggle='tooltip'
+                title='Remove profile image'
+                onClick={() => {
+                  setPreviewImage('')
+                  setCategoryImage(null)
+                }}
+              >
+                <i className='bi bi-x fs-2'></i>
+              </span>
+            </div>
+            <div className='form-text'>{`Allowed file types: ${imgExtensions.join(', ')}`}</div>
+            <span className='error-msg'>{errors['profileImage']}</span>
+          </div>
+
           <label className='col-lg-4 col-form-label required fw-bold fs-6'>Category Name</label>
           <input
             type='text'
