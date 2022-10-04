@@ -160,13 +160,13 @@ const LoginReport = () => {
 
   const filteredItems = data?.filter(
     (item) =>
-      item.adminUser.toLowerCase().includes(filterText.toLowerCase()) ||
-      item.ipAddress.toLowerCase().includes(filterText.toLowerCase()) ||
-      item.adminEmail.toLowerCase().includes(filterText.toLowerCase()) ||
-      item.adminRole.toLowerCase().includes(filterText.toLowerCase()) ||
-      item.os.toLowerCase().includes(filterText.toLowerCase()) ||
-      item.browser.toLowerCase().includes(filterText.toLowerCase()) ||
-      item.platform.toLowerCase().includes(filterText.toLowerCase())
+      item?.adminUser?.toLowerCase()?.includes(filterText?.toLowerCase()) ||
+      item?.ipAddress?.toLowerCase()?.includes(filterText?.toLowerCase()) ||
+      item?.adminEmail?.toLowerCase()?.includes(filterText?.toLowerCase()) ||
+      item?.adminRole?.toLowerCase()?.includes(filterText?.toLowerCase()) ||
+      item?.os?.toLowerCase()?.includes(filterText?.toLowerCase()) ||
+      item?.browser?.toLowerCase()?.includes(filterText?.toLowerCase()) ||
+      item?.platform?.toLowerCase()?.includes(filterText?.toLowerCase())
   )
 
   useMemo(() => {

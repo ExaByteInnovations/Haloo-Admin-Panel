@@ -157,14 +157,14 @@ const MegaMenu: FC = () => (
             <span className='menu-title'>Login Report</span>
           </a>
         </div>
-        <div className='menu-item'>
+        {/* <div className='menu-item'>
           <a href='/reports/contact-us' className='menu-link'>
             <span className='menu-bullet'>
               <span className='bullet bullet-dot'></span>
             </span>
             <span className='menu-title'>Contact Us Report</span>
           </a>
-        </div>
+        </div> */}
         <div className='menu-item'>
           <a href='/offers-and-banners' className='menu-link'>
             <span className='menu-bullet'>

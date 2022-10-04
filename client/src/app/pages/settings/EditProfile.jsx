@@ -49,7 +49,7 @@ const EditProfile = () => {
   const getEditProfile = async () => {
     try {
       setLoader(true)
-      const response = await ApiGet(`usermanagement/admin?_id=${user?._id}`)
+      const response = await ApiGet(`admin?_id=${user?._id}`)
       if (response.status === 200) {
         setInputValue(...response.data.data)
         setInitialValues(...response.data.data)
@@ -192,7 +192,7 @@ const EditProfile = () => {
   const userProfileImg = previewImage
     ? previewImage
     : inputValue.profileImage
-    ? `${process.env.REACT_APP_SERVER_URL}${inputValue.profileImage}`
+    ? `${inputValue.profileImage}`
     : blankImg
 
   return (

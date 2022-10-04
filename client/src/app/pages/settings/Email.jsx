@@ -132,11 +132,11 @@ const Email = () => {
             <div className='col-lg-8 fv-row'>
               <input
                 type='email'
-                name='administerEmailAddress'
+                name='administratorEmailAddress'
                 className='form-control form-control-lg form-control-solid'
                 placeholder='Enter Administrator Email Address'
                 onChange={(e) => handleChange(e)}
-                value={inputValue?.administerEmailAddress || ''}
+                value={inputValue?.administratorEmailAddress || ''}
               />
             </div>
           </div>

@@ -4,7 +4,7 @@
 // import Loader from "../../components/Loader/Loader"
 // import Auth from "../Auth";
 import * as authUtil from '../../utils/auth.util'
-export const BaseURL = process.env.REACT_APP_API_END_POINT
+export const BaseURL = 'https://halooadmin.herokuapp.com/api/'
 
 const axios = require('axios').default
 

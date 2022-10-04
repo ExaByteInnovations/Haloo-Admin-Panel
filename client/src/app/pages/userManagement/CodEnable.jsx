@@ -32,7 +32,7 @@ const CodEnable = () => {
   const getCod = async () => {
     setLoader(true)
     try {
-      const response = await ApiGet(`usermanagement/codrequest`)
+      const response = await ApiGet(`codrequest`)
       if (response.status === 200) {
         setCod(response.data.data)
       }
@@ -46,7 +46,7 @@ const CodEnable = () => {
   const handleUpdate = async () => {
     setLoading(true)
     try {
-      const response = await ApiPut(`usermanagement/codrequest?_id=${rowId}`, {
+      const response = await ApiPut(`codrequest?_id=${rowId}`, {
         status: codStatus,
       })
       if (response.status === 200) {

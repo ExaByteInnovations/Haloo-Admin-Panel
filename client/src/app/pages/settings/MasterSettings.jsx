@@ -159,11 +159,11 @@ const MasterSettings = () => {
             <div className='col-lg-8 fv-row'>
               <input
                 type='text'
-                name='copyRightText'
+                name='copyrightText'
                 className='form-control form-control-lg form-control-solid'
                 placeholder='Copy Right Text'
                 onChange={(e) => handleChange(e)}
-                value={inputValue?.copyRightText || ''}
+                value={inputValue?.copyrightText || ''}
               />
             </div>
           </div>

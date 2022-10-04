@@ -72,9 +72,7 @@ const Topbar: FC = () => {
           <img
             style={imageStyles}
             onLoad={handleImageLoad}
-            src={
-              user?.profileImage ? process.env.REACT_APP_SERVER_URL + user.profileImage : blankImg
-            }
+            src={user?.profileImage ? user.profileImage : blankImg}
             alt='haloo'
           />
         </div>

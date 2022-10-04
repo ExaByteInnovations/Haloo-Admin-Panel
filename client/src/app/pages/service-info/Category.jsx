@@ -93,9 +93,9 @@ const Category = () => {
   const handleUpdate = async () => {
     if (validateForm()) {
       const imageData = new FormData()
-      imageData.append('categoryImage', categoryImage || '')
+      categoryImage && imageData.append('categoryImage', categoryImage)
       imageData.append('categoryName', inputValue.categoryName || '')
-      imageData.append('sequenceNumber', inputValue.sequenceNumber || '')
+      // imageData.append('sequenceNumber', inputValue.sequenceNumber || '')
       imageData.append('status', inputValue.status.toLowerCase() || '')
       try {
         const response = await ApiPut(`serviceinfo/category?_id=${rowId}`, imageData)
@@ -357,7 +357,7 @@ const Category = () => {
   const categoryImg = previewImage
     ? previewImage
     : inputValue.categoryImage
-    ? `${process.env.REACT_APP_SERVER_URL}${inputValue.categoryImage}`
+    ? `${inputValue.categoryImage}`
     : blankImg
 
   return (
@@ -422,7 +422,7 @@ const Category = () => {
         </DialogTitle>
         <DialogContent>
           <div className='fv-row mb-7'>
-            <label className='d-block fw-bold fs-6 mb-5'>Category Image</label>
+            <label className='d-block fw-bold fs-6 mb-5 required'>Category Image</label>
             <div
               className='image-input image-input-outline'
               data-kt-image-input='true'
@@ -601,7 +601,7 @@ const Category = () => {
 
         <DialogContent>
           <div className='fv-row mb-7'>
-            <label className='d-block fw-bold fs-6 mb-5'>Category Image</label>
+            <label className='d-block fw-bold fs-6 mb-5 required'>Category Image</label>
             <div
               className='image-input image-input-outline'
               data-kt-image-input='true'
@@ -653,7 +653,7 @@ const Category = () => {
               </span>
             </div>
             <div className='form-text'>{`Allowed file types: ${imgExtensions.join(', ')}`}</div>
-            <span className='error-msg'>{errors['profileImage']}</span>
+            <span className='error-msg'>{errors['categoryImage']}</span>
           </div>
 
           <label className='col-lg-4 col-form-label required fw-bold fs-6'>Category Name</label>

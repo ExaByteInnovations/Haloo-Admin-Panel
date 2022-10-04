@@ -45,9 +45,7 @@ const HeaderUserMenu = () => {
               alt='Logo'
               style={imageStyles}
               onLoad={handleImageLoad}
-              src={
-                user?.profileImage ? process.env.REACT_APP_SERVER_URL + user.profileImage : blankImg
-              }
+              src={user?.profileImage ? user.profileImage : blankImg}
             />
           </div>
 

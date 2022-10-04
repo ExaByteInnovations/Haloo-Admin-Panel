@@ -96,7 +96,10 @@ const State = () => {
   const handleUpdate = async () => {
     if (validateForm()) {
       try {
-        const response = await ApiPut(`serviceinfo/state?_id=${rowId}`, inputValue)
+        const response = await ApiPut(`serviceinfo/state?_id=${rowId}`, {
+          ...inputValue,
+          status: inputValue.status.toLowerCase(),
+        })
         if (response.status === 200) {
           toast.success('Updated Successfully')
           setInputValue({})
@@ -113,7 +116,10 @@ const State = () => {
   const handleAdd = async () => {
     if (validateForm()) {
       try {
-        const response = await ApiPost(`serviceinfo/state`, inputValue)
+        const response = await ApiPost(`serviceinfo/state`, {
+          ...inputValue,
+          status: inputValue.status.toLowerCase(),
+        })
         if (response.status === 200) {
           toast.success('Added Successfully')
           setInputValue({})

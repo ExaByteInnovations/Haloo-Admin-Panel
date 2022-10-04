@@ -146,11 +146,11 @@ const SocialMedia = () => {
             <div className='col-lg-8 fv-row'>
               <input
                 type='url'
-                name='linkedinUrl'
+                name='linkedInUrl'
                 className='form-control form-control-lg form-control-solid'
                 placeholder='Enter LinkedIn Url'
                 onChange={(e) => handleChange(e)}
-                value={inputValue?.linkedinUrl || ''}
+                value={inputValue?.linkedInUrl || ''}
               />
             </div>
           </div>
@@ -161,11 +161,11 @@ const SocialMedia = () => {
             <div className='col-lg-8 fv-row'>
               <input
                 type='url'
-                name='instagramUrl'
+                name='InstagramUrl'
                 className='form-control form-control-lg form-control-solid'
                 placeholder='Enter Instagram Url'
                 onChange={(e) => handleChange(e)}
-                value={inputValue?.instagramUrl || ''}
+                value={inputValue?.InstagramUrl || ''}
               />
             </div>
           </div>
@@ -206,16 +206,16 @@ const SocialMedia = () => {
             <div className='col-lg-8 fv-row'>
               <input
                 type='text'
-                name='fbSecretId'
+                name='fbSecretKey'
                 className='form-control form-control-lg form-control-solid'
                 placeholder='Enter Facebook Secret Id'
                 onChange={(e) => handleChange(e)}
-                value={inputValue?.fbSecretId || ''}
+                value={inputValue?.fbSecretKey || ''}
               />
             </div>
           </div>
 
-          <div className='row mb-6'>
+          {/* <div className='row mb-6'>
             <label className='col-lg-4 col-form-label fw-bold fs-6'>Google Application Id</label>
 
             <div className='col-lg-8 fv-row'>
@@ -228,7 +228,7 @@ const SocialMedia = () => {
                 value={inputValue?.googleApplicationId || ''}
               />
             </div>
-          </div>
+          </div> */}
 
           <div className='row mb-6'>
             <label className='col-lg-4 col-form-label fw-bold fs-6'>Google Secret Key</label>

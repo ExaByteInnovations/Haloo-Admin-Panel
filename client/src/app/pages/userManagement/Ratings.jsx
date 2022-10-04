@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import {useEffect, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useIntl} from 'react-intl'
 import moment from 'moment'
 import {Edit, Delete} from '@mui/icons-material'
@@ -15,21 +15,25 @@ import {Button} from 'react-bootstrap'
 import {Modal} from 'react-bootstrap'
 import {Box, CircularProgress, DialogContent, MenuItem, TextField} from '@material-ui/core'
 import '../../App.css'
+import {KTSVG} from '../../../_metronic/helpers'
+import ClearIcon from '@mui/icons-material/Clear'
 
 const Ratings = () => {
   const intl = useIntl()
   const [ratings, setRatings] = useState([])
-  console.log(ratings, 'ratings')
   const [open, setOpen] = useState(false)
   const [rowId, setRowId] = useState('')
   const [inputValue, setInputValue] = useState({})
   const [loading, setLoading] = useState(false)
   const [show, setShow] = useState(false)
+  const [filterText, setFilterText] = useState('')
+  const [resetPaginationToggle, setResetPaginationToggle] = useState(false)
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => {
     setOpen(false)
     setShow(false)
+    setInputValue({})
   }
 
   useEffect(() => {
@@ -89,28 +93,10 @@ const Ratings = () => {
 
   const columns = [
     {
-      name: 'Rating By',
-      selector: (row) => row.ratingBy,
+      name: 'Review For',
+      selector: (row) => row.reviewFor,
       sortable: true,
-      width: '200px',
-    },
-    {
-      name: 'Rating For',
-      selector: (row) => row.ratingFor,
-      sortable: true,
-      width: '200px',
-    },
-    {
-      name: 'Who Rated',
-      selector: (row) => row.whoRated,
-      sortable: true,
-      width: '150px',
-    },
-    {
-      name: 'Job Number',
-      selector: (row) => row.jobNumber,
-      sortable: true,
-      width: '150px',
+      // width: '200px',
     },
     {
       name: 'Rating',
@@ -127,59 +113,120 @@ const Ratings = () => {
         </>
       ),
       sortable: true,
-      width: '150px',
+      // width: '150px',
     },
     {
       name: 'Comment',
       selector: (row) => row.comment,
       sortable: true,
-      width: '150px',
+      // width: '150px',
     },
     {
       name: 'Posted On',
       selector: (row) => row.postedOn,
       sortable: true,
-      width: '200px',
+      // width: '200px',
     },
-    {
-      name: 'Action',
-      cell: (row) => {
-        return (
-          <>
-            <Edit
-              className='icon'
-              onClick={() => {
-                handleOpen()
-                setRowId(row.id)
-                setInputValue(row)
-              }}
-            />
-            <Delete
-              className='icon'
-              color='error'
-              onClick={() => {
-                setShow(true)
-                setRowId(row.id)
-              }}
-            />
-          </>
-        )
-      },
-    },
+    // {
+    //   name: 'Action',
+    //   cell: (row) => {
+    //     return (
+    //       <>
+    //         <Edit
+    //           className='icon'
+    //           onClick={() => {
+    //             handleOpen()
+    //             setRowId(row.id)
+    //             setInputValue(row)
+    //           }}
+    //         />
+    //         <Delete
+    //           className='icon'
+    //           color='error'
+    //           onClick={() => {
+    //             setShow(true)
+    //             setRowId(row.id)
+    //           }}
+    //         />
+    //       </>
+    //     )
+    //   },
+    // },
   ]
 
   const data = ratings?.map((rating) => {
     return {
       id: rating._id,
-      ratingBy: rating.ratingBy,
-      ratingFor: rating.ratingFor,
-      whoRated: rating.whoRated,
-      jobNumber: rating.jobNumber,
       rating: rating.rating,
+      reviewFor: rating.reviewFor,
       comment: rating.comment,
       postedOn: moment(rating.createdAt).format('DD MMM YY hh:mmA'),
     }
   })
+
+  const filteredItems = data.filter(
+    (item) =>
+      (item.reviewFor && item.reviewFor.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.comment && item.comment.toLowerCase().includes(filterText.toLowerCase()))
+  )
+
+  const subHeaderComponentMemo = useMemo(() => {
+    const handleClear = () => {
+      if (filterText) {
+        setResetPaginationToggle(!resetPaginationToggle)
+        setFilterText('')
+      }
+    }
+    return (
+      <Box className='header-wrapper'>
+        <Box className='search-wrapper'>
+          <span className='search-icon'>
+            <KTSVG path='/media/icons/duotune/general/gen021.svg' className='svg-icon-1' />
+          </span>
+
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0 px-12'
+            placeholder='Search'
+            onChange={(e) => setFilterText(e.target.value)}
+            value={filterText}
+          />
+          <ClearIcon className='input-clear-button' onClick={handleClear} />
+        </Box>
+      </Box>
+    )
+  }, [filterText, resetPaginationToggle])
+
+  const customStyles = {
+    headCells: {
+      style: {
+        paddingLeft: '8px',
+        paddingRight: '8px',
+      },
+    },
+  }
+
+  const click = () => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 1000)
+  }
+
+  const RatingsBreadCrumbs = [
+    {
+      title: 'User Management',
+      path: '/user-management/reviews-and-ratings',
+      isSeparator: false,
+      isActive: false,
+    },
+    {
+      title: '',
+      path: '',
+      isSeparator: true,
+      isActive: false,
+    },
+  ]
 
   if (loading) {
     return (
@@ -191,18 +238,21 @@ const Ratings = () => {
 
   return (
     <>
-      <PageTitle breadcrumbs={[]}>
+      <PageTitle breadcrumbs={RatingsBreadCrumbs}>
         {intl.formatMessage({id: 'MENU.USER_MANAGEMENT.RATING'})}
       </PageTitle>
       <DataTable
+        customStyles={customStyles}
         columns={columns}
-        data={data}
+        data={filteredItems}
         fixedHeader
-        fixedHeaderScrollHeight='58vh'
+        fixedHeaderScrollHeight='57vh'
         pagination
-        highlightOnHover
+        paginationResetDefaultPage={resetPaginationToggle}
+        subHeader
+        subHeaderComponent={subHeaderComponentMemo}
+        persistTableHead
         responsive
-        striped
       />
 
       <Modal show={show} onHide={handleClose}>
@@ -219,6 +269,7 @@ const Ratings = () => {
               variant='danger'
               onClick={() => {
                 handleDelete()
+                click()
               }}
             >
               Delete
@@ -311,6 +362,7 @@ const Ratings = () => {
           onClick={() => {
             handleUpdate(rowId)
             handleClose()
+            click()
           }}
         >
           Save

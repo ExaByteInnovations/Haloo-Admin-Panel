@@ -54,19 +54,19 @@ export function MenuInner() {
         <MenuItem to='/settings/Change-password' title='Change Password' hasBullet={true} />
         <MenuItem to='/settings/master-settings' title='Master Settings' hasBullet={true} />
         <MenuItem to='/settings/email' title='Email Configuration' hasBullet={true} />
-        <MenuItem to='/settings/sms' title='SMS Configuration' hasBullet={true} />
+        {/* <MenuItem to='/settings/sms' title='SMS Configuration' hasBullet={true} /> */}
         <MenuItem to='/settings/social-media' title='Social Media Management' hasBullet={true} />
         <MenuItem to='/settings/static-pages' title='Static Pages Management' hasBullet={true} />
       </MenuInnerWithSub>
-      <MenuInnerWithSub
+      {/* <MenuInnerWithSub
         title='Reports'
         to='/reports'
         menuPlacement='bottom-start'
         menuTrigger='click'
-      >
-        <MenuItem to='/reports/login-report' title='Login Report' hasBullet={true} />
-        <MenuItem to='/reports/contact-us' title='Contact Us' hasBullet={true} />
-      </MenuInnerWithSub>
+      > */}
+      <MenuItem to='/reports/login-report' title='Login Report' />
+      {/* <MenuItem to='/reports/contact-us' title='Contact Us' hasBullet={true} />
+      </MenuInnerWithSub> */}
       <MenuItem to='/offers-and-banners' title='Offers And Banner' />
       {/* <MenuInnerWithSub
         title='Communications'

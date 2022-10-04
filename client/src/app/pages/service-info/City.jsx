@@ -122,7 +122,10 @@ const City = () => {
   const handleUpdate = async () => {
     if (validateForm()) {
       try {
-        const response = await ApiPut(`serviceinfo/city?_id=${rowId}`, inputValue)
+        const response = await ApiPut(`serviceinfo/city?_id=${rowId}`, {
+          ...inputValue,
+          status: inputValue.status.toLowerCase(),
+        })
         if (response.status === 200) {
           toast.success('Updated Successfully')
           setInputValue({})
@@ -139,7 +142,10 @@ const City = () => {
   const handleAdd = async () => {
     if (validateForm()) {
       try {
-        const response = await ApiPost(`serviceinfo/city`, inputValue)
+        const response = await ApiPost(`serviceinfo/city`, {
+          ...inputValue,
+          status: inputValue.status.toLowerCase(),
+        })
         if (response.status === 200) {
           toast.success('Added Successfully')
           setInputValue({})

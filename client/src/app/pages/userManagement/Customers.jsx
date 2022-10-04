@@ -87,7 +87,7 @@ const Customers = () => {
   const getCustomers = async () => {
     try {
       setLoader(true)
-      const response = await ApiGet(`usermanagement/customer?type=customer`)
+      const response = await ApiGet(`customer?type=customer`)
       if (response.status === 200) {
         setCustomers(response.data.data)
       }
@@ -100,7 +100,7 @@ const Customers = () => {
 
   const getStates = async () => {
     try {
-      const response = await ApiGet(`serviceinfo/state?status=Active`)
+      const response = await ApiGet(`serviceinfo/state?status=active`)
       if (response.status === 200) {
         setStates(
           response?.data?.data?.map((state) => {
@@ -115,7 +115,7 @@ const Customers = () => {
 
   const getCities = async (stateId) => {
     try {
-      const response = await ApiGet(`serviceinfo/city?status=Active&stateId=${stateId}`)
+      const response = await ApiGet(`serviceinfo/city?status=active&stateId=${stateId}`)
       if (response.status === 200) {
         const cityList = response?.data?.data?.map((city) => {
           return {name: city?.cityName, id: city?._id}
@@ -132,7 +132,7 @@ const Customers = () => {
   const handleDelete = async () => {
     try {
       setLoading(true)
-      const response = await ApiDelete(`usermanagement/customer?_id=${rowId}`)
+      const response = await ApiDelete(`customer?_id=${rowId}`)
 
       if (response.status === 200) {
         getCustomers()
@@ -151,12 +151,19 @@ const Customers = () => {
     let formIsValid = true
     let errors = {}
 
-    if (inputValue && !inputValue?.customerName) {
+    if (inputValue && !inputValue?.firstName) {
       formIsValid = false
-      errors['customerName'] = '*Please Enter Customer Name!'
-    } else if (inputValue && !inputValue?.customerName?.match(/^\S[a-zA-Z ]+$/)) {
+      errors['firstName'] = '*Please Enter First Name!'
+    } else if (inputValue && !inputValue?.firstName?.match(/^\S[a-zA-Z ]+$/)) {
       formIsValid = false
-      errors['customerName'] = '*Please Enter Valid Customer Name Only!'
+      errors['firstName'] = '*Please Enter Valid First Name Only!'
+    }
+    if (inputValue && !inputValue?.lastName) {
+      formIsValid = false
+      errors['lastName'] = '*Please Enter Last Name!'
+    } else if (inputValue && !inputValue?.lastName?.match(/^\S[a-zA-Z ]+$/)) {
+      formIsValid = false
+      errors['lastName'] = '*Please Enter Valid Last Name Only!'
     }
 
     if (inputValue && !inputValue?.phone) {
@@ -185,10 +192,10 @@ const Customers = () => {
       formIsValid = false
       errors['pincode'] = '*Please Enter Valid Postal Code!'
     }
-    if (inputValue && !inputValue?.address) {
-      formIsValid = false
-      errors['address'] = '*Please Enter Address!'
-    }
+    // if (inputValue && !inputValue?.address) {
+    //   formIsValid = false
+    //   errors['address'] = '*Please Enter Address!'
+    // }
     //  else if (inputValue && !inputValue?.address?.match(/^\S[a-zA-Z0-9\s,.'-/]+$/)) {
     //   formIsValid = false
     //   errors['address'] = '*Please Enter Valid Address!'
@@ -200,7 +207,7 @@ const Customers = () => {
   const blockCustomer = async (customerId) => {
     try {
       setLoading(true)
-      const response = await ApiPut(`usermanagement/customer/block?_id=${customerId}`, {
+      const response = await ApiPut(`customer/block?_id=${customerId}`, {
         blockReason: blockReason,
       })
       if (response.status === 200) {
@@ -219,7 +226,7 @@ const Customers = () => {
   const unblockCustomer = async (customerId) => {
     try {
       setLoading(true)
-      const response = await ApiPut(`usermanagement/customer/unblock?_id=${customerId}`)
+      const response = await ApiPut(`customer/unblock?_id=${customerId}`)
       if (response.status === 200) {
         toast.success('Customer Unblocked Successfully')
         getCustomers()
@@ -237,16 +244,17 @@ const Customers = () => {
     if (validateForm()) {
       const imageData = new FormData()
       imageData.append('profileImage', profileImage || '')
-      imageData.append('customerName', inputValue.customerName)
+      imageData.append('firstName', inputValue.firstName)
+      imageData.append('lastName', inputValue.lastName)
       imageData.append('cityId', inputValue.cityId || '')
       imageData.append('phone', inputValue.phone)
       imageData.append('stateId', inputValue.stateId || '')
-      imageData.append('address', inputValue.address || '')
+      // imageData.append('address', inputValue.address || '')
       imageData.append('pincode', inputValue.pincode || '')
       // imageData.append('status', inputValue.status)
       // imageData.append('codStatus', inputValue.codStatus)
       try {
-        const response = await ApiPut(`usermanagement/customer?_id=${rowId}`, imageData)
+        const response = await ApiPut(`customer?_id=${rowId}`, imageData)
         if (response.status === 200) {
           toast.success('Updated Successfully')
           setInputValue({})
@@ -264,18 +272,19 @@ const Customers = () => {
     if (validateForm()) {
       const imageData = new FormData()
       imageData.append('profileImage', profileImage || '')
-      imageData.append('customerName', inputValue?.customerName)
+      imageData.append('firstName', inputValue?.firstName)
+      imageData.append('lastName', inputValue?.lastName)
       imageData.append('cityId', inputValue?.cityId || '')
       imageData.append('phone', inputValue?.phone)
       imageData.append('stateId', inputValue?.stateId || '')
-      imageData.append('address', inputValue?.address || '')
+      // imageData.append('address', inputValue?.address || '')
       imageData.append('pincode', inputValue?.pincode || '')
       imageData.append('type', 'customer')
       // imageData.append('status', inputValue?.status)
       // imageData.append('codStatus', inputValue?.codStatus)
 
       try {
-        const response = await ApiPost(`usermanagement/customer?type=customer`, imageData)
+        const response = await ApiPost(`customer`, imageData)
         if (response.status === 200) {
           toast.success('Added Successfully')
           getCustomers()
@@ -308,7 +317,7 @@ const Customers = () => {
   const userProfileImg = previewImage
     ? previewImage
     : inputValue.profileImage
-    ? `${process.env.REACT_APP_SERVER_URL}${inputValue.profileImage}`
+    ? `${inputValue.profileImage}`
     : blankImg
 
   // inputValue?.profileImage
@@ -344,7 +353,7 @@ const Customers = () => {
     // },
     {
       name: 'Customer',
-      selector: (row) => row.customerName,
+      selector: (row) => row.firstName,
       cell: (row) => {
         const userState = _.sample(state)
         return (
@@ -366,11 +375,7 @@ const Customers = () => {
                         setShowImage(true)
                         setInputValue({...inputValue, profileImage: row.profileImage})
                       }}
-                      src={
-                        row.profileImage
-                          ? process.env.REACT_APP_SERVER_URL + row.profileImage
-                          : userImage
-                      }
+                      src={row.profileImage ? row.profileImage : userImage}
                       alt='Customer Profile pic'
                     />
                   </div>
@@ -382,15 +387,13 @@ const Customers = () => {
                       `text-${userState}`
                     )}
                   >
-                    {row.customerName?.charAt(0).toUpperCase()}
+                    {row.firstName?.charAt(0).toUpperCase()}
                   </div>
                 )}
               </div>
 
               <div className='d-flex justify-content-start flex-column'>
-                <span className='text-dark fw-bolder text-hover-primary fs-6'>
-                  {row.customerName}
-                </span>
+                <span className='text-dark fw-bolder text-hover-primary fs-6'>{`${row.firstName} ${row.lastName}`}</span>
               </div>
             </div>
           </>
@@ -405,6 +408,12 @@ const Customers = () => {
       sortable: true,
       width: '150px',
     },
+    // {
+    //   name: 'Company Name',
+    //   selector: (row) => row.companyName,
+    //   sortable: true,
+    //   width: '150px',
+    // },
     {
       name: 'Postal Code',
       selector: (row) => row.pincode,
@@ -423,15 +432,15 @@ const Customers = () => {
       sortable: true,
       width: '150px',
     },
-    {
-      name: 'Address',
-      selector: (row) => row.address,
-      cell: (row) => {
-        return <Box>{row.address}</Box>
-      },
-      sortable: true,
-      width: '200px',
-    },
+    // {
+    //   name: 'Address',
+    //   selector: (row) => row.address,
+    //   cell: (row) => {
+    //     return <Box>{row.address}</Box>
+    //   },
+    //   sortable: true,
+    //   width: '200px',
+    // },
     {
       name: 'No. of Jobs',
       selector: (row) => row.noOfJobs,
@@ -458,6 +467,7 @@ const Customers = () => {
                 getStates()
                 row.stateId && getCities(row.stateId)
               }}
+              title={'edit'}
             >
               <KTSVG path='/media/icons/duotune/art/art005.svg' className='svg-icon-3' />
             </span>
@@ -467,6 +477,7 @@ const Customers = () => {
                 setShow(true)
                 setRowId(row.id)
               }}
+              title={'Delete'}
             >
               <KTSVG path='/media/icons/duotune/general/gen027.svg' className='svg-icon-3' />
             </span>
@@ -502,17 +513,19 @@ const Customers = () => {
     return {
       id: customer?._id,
       profileImage: customer?.profileImage,
-      customerName: customer?.customerName,
+      firstName: customer?.firstName,
+      lastName: customer?.lastName,
       phone: customer?.phone,
       city: customer?.cityDetails[0]?.cityName,
       cityId: customer?.cityId,
       state: customer?.stateDetails[0]?.stateName,
       stateId: customer?.stateId,
       pincode: customer?.pincode,
-      address: customer?.address,
+      // address: customer?.address,
       noOfJobs: customer?.noOfJobs,
       memberSince: moment(customer?.createdAt).format('DD MMM YY hh:mmA'),
       block: customer?.block,
+      // companyName: customer?.companyName,
       // codStatus:
       //   customer?.codStatus?.charAt(0)?.toUpperCase() +
       //   customer?.codStatus?.substr(1)?.toLowerCase(),
@@ -523,15 +536,21 @@ const Customers = () => {
 
   const filteredItems = data.filter(
     (item) =>
-      (item.phone && item.phone.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.customerName && item.customerName.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.pincode && item.pincode.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.city && item.city.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.state && item.state.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.address && item.address.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.noOfJobs &&
-        item.noOfJobs.toString().toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.memberSince && item.memberSince.toLowerCase().includes(filterText.toLowerCase()))
+      (item?.phone?.toString() &&
+        item?.phone?.toString()?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.firstName && item?.firstName?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.lastName && item?.lastName?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.pincode?.toString() &&
+        item?.pincode?.toString()?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.city && item?.city?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.state && item?.state?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      // (item?.address?.toString() &&
+      //   item?.address?.toString()?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.noOfJobs?.toString() &&
+        item?.noOfJobs?.toString()?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.memberSince &&
+        item?.memberSince?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.companyName && item?.companyName?.toLowerCase()?.includes(filterText?.toLowerCase()))
   )
 
   const subHeaderComponentMemo = useMemo(() => {
@@ -745,11 +764,7 @@ const Customers = () => {
           <Modal.Body>
             <Image
               className='model-image'
-              src={
-                inputValue?.profileImage
-                  ? process.env.REACT_APP_SERVER_URL + inputValue?.profileImage
-                  : userImage
-              }
+              src={inputValue?.profileImage ? inputValue?.profileImage : userImage}
             />
           </Modal.Body>
         </>
@@ -826,17 +841,29 @@ const Customers = () => {
             <span className='error-msg'>{errors['profileImage']}</span>
           </div>
 
-          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Customer Name</label>
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>First Name</label>
           <input
             type='text'
             className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
-            placeholder='Customer Name'
+            placeholder='First Name'
             onChange={(e) => handleChange(e)}
-            name='customerName'
-            value={inputValue?.customerName || ''}
+            name='firstName'
+            value={inputValue?.firstName || ''}
             required
           />
-          <span className='error-msg'>{errors['customerName']}</span>
+          <span className='error-msg'>{errors['firstName']}</span>
+
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Last Name</label>
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+            placeholder='Last Name'
+            onChange={(e) => handleChange(e)}
+            name='lastName'
+            value={inputValue?.lastName || ''}
+            required
+          />
+          <span className='error-msg'>{errors['lastName']}</span>
           <label className='col-lg-4 col-form-label required fw-bold fs-6'>Phone</label>
           <input
             type='tel'
@@ -894,8 +921,8 @@ const Customers = () => {
             ))}
           </select>
           <span className='error-msg'>{errors['city']}</span>
-          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Address</label>
-          <input
+          {/* <label className='col-lg-4 col-form-label required fw-bold fs-6'>Address</label> */}
+          {/* <input
             type='text'
             className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
             placeholder='Address'
@@ -903,8 +930,8 @@ const Customers = () => {
             name='address'
             value={inputValue?.address || ''}
             required
-          />
-          <span className='error-msg'>{errors['address']}</span>
+          /> */}
+          {/* <span className='error-msg'>{errors['address']}</span> */}
           {/* <TextField
               label='Cod Status'
               onChange={(e) => handleChange(e)}
@@ -1039,17 +1066,28 @@ const Customers = () => {
             <span className='error-msg'>{errors['profileImage']}</span>
           </div>
 
-          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Customer Name</label>
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>First Name</label>
           <input
             type='text'
             className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
-            placeholder='Customer Name'
+            placeholder='First Name'
             onChange={(e) => handleChange(e)}
-            name='customerName'
-            value={inputValue?.customerName || ''}
+            name='firstName'
+            value={inputValue?.firstName || ''}
             required
           />
-          <span className='error-msg'>{errors['customerName']}</span>
+          <span className='error-msg'>{errors['firstName']}</span>
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Last Name</label>
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+            placeholder='Last Name'
+            onChange={(e) => handleChange(e)}
+            name='lastName'
+            value={inputValue?.lastName || ''}
+            required
+          />
+          <span className='error-msg'>{errors['lastName']}</span>
           <label className='col-lg-4 col-form-label required fw-bold fs-6'>Phone</label>
           <input
             type='tel'
@@ -1107,8 +1145,8 @@ const Customers = () => {
             ))}
           </select>
           <span className='error-msg'>{errors['city']}</span>
-          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Address</label>
-          <input
+          {/* <label className='col-lg-4 col-form-label required fw-bold fs-6'>Address</label> */}
+          {/* <input
             type='text'
             className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
             placeholder='Address'
@@ -1116,8 +1154,8 @@ const Customers = () => {
             name='address'
             value={inputValue?.address || ''}
             required
-          />
-          <span className='error-msg'>{errors['address']}</span>
+          /> */}
+          {/* <span className='error-msg'>{errors['address']}</span> */}
           {/* <Image
             className='image'
             src={

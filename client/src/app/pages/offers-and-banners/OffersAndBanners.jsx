@@ -194,11 +194,7 @@ const OffersAndBanners = () => {
     }
   }
 
-  const userProfileImg = previewImage
-    ? previewImage
-    : inputValue.image
-    ? `${process.env.REACT_APP_SERVER_URL}${inputValue.image}`
-    : ''
+  const userProfileImg = previewImage ? previewImage : inputValue.image ? `${inputValue.image}` : ''
 
   const columns = [
     {
@@ -222,6 +218,8 @@ const OffersAndBanners = () => {
                     : {
                         width: '250px',
                         height: '131px',
+                        objectFit: 'cotain',
+                        objectPosition: 'center',
                       }
                 }
               >
@@ -229,7 +227,7 @@ const OffersAndBanners = () => {
                   <div
                     className='image-input-wrapper'
                     style={{
-                      backgroundImage: `url('${process.env.REACT_APP_SERVER_URL + row.image}')`,
+                      backgroundImage: `url('${row.image}')`,
                       width: '250px',
                       height: '131px',
                     }}

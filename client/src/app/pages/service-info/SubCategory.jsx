@@ -84,7 +84,7 @@ const SubCategory = () => {
   const getCategories = async () => {
     // setLoading(true)
     try {
-      const response = await ApiGet(`serviceinfo/category?status=Active`)
+      const response = await ApiGet(`serviceinfo/category?status=active`)
       if (response.status === 200) {
         setCategories(
           response?.data?.data?.map((category) => {
@@ -120,10 +120,10 @@ const SubCategory = () => {
     //   formIsValid = false
     //   errors['image'] = '*Please Select Image!'
     // }
-    // if (inputValue && !inputValue.sequenceNumber) {
-    //   formIsValid = false
-    //   errors['sequenceNumber'] = '*Please Enter Sequence Number!'
-    // }
+    if (inputValue && !inputValue.price) {
+      formIsValid = false
+      errors['price'] = '*Please Enter Price!'
+    }
     if (inputValue && !inputValue.status) {
       formIsValid = false
       errors['status'] = '*Please Select Status!'
@@ -152,9 +152,10 @@ const SubCategory = () => {
   const handleUpdate = async () => {
     if (validateForm()) {
       const imageData = new FormData()
-      imageData.append('subCategoryImage', subCategoryImage || '')
-      imageData.append('category', inputValue.subCategory || '')
-      imageData.append('sequenceNumber', inputValue.sequenceNumber || '')
+      subCategoryImage && imageData.append('subCategoryImage', subCategoryImage)
+      imageData.append('subCategoryName', inputValue.subCategory || '')
+      imageData.append('category', getCategoryName(inputValue.parentCategoryId) || '')
+      imageData.append('price', inputValue.price || '')
       imageData.append('parentCategoryId', inputValue.parentCategoryId || '')
       imageData.append('status', inputValue.status.toLowerCase() || '')
       try {
@@ -171,18 +172,22 @@ const SubCategory = () => {
       }
     }
   }
+  const getCategoryName = (id) => {
+    return categories.find((category) => category.id === id)?.name
+  }
 
   const handleAdd = async () => {
     if (validateForm()) {
       const imageData = new FormData()
       imageData.append('subCategoryImage', subCategoryImage || '')
-      imageData.append('category', inputValue.subCategory || '')
-      // imageData.append('sequenceNumber', inputValue.sequenceNumber)
+      imageData.append('subCategoryName', inputValue.subCategory || '')
+      imageData.append('category', getCategoryName(inputValue.parentCategoryId) || '')
+      imageData.append('price', inputValue.price || '')
       imageData.append('parentCategoryId', inputValue.parentCategoryId || '')
       imageData.append('status', inputValue.status.toLowerCase() || '')
 
       try {
-        const response = await ApiPost(`serviceinfo/subcategory`, inputValue)
+        const response = await ApiPost(`serviceinfo/subcategory`, imageData)
         if (response.status === 200) {
           toast.success('Added Successfully')
           setInputValue({})
@@ -236,11 +241,11 @@ const SubCategory = () => {
     //   },
     // },
 
-    // {
-    //   name: 'Added On',
-    //   selector: (row) => row.addedOn,
-    //   sortable: true,
-    // },
+    {
+      name: 'Price',
+      selector: (row) => row.price,
+      sortable: true,
+    },
     {
       name: 'Status',
       selector: (row) => row.status,
@@ -291,11 +296,12 @@ const SubCategory = () => {
   const data = subCategories?.map((subCategory) => {
     return {
       id: subCategory?._id,
-      subCategory: subCategory?.category,
+      subCategory: subCategory?.subCategoryName,
       subCategoryImage: subCategory?.subCategoryImage,
       category: subCategory?.parentCategoryDetails[0]?.categoryName,
       parentCategoryId: subCategory?.parentCategoryId,
       sequenceNumber: subCategory?.sequenceNumber,
+      price: subCategory?.price,
       status:
         subCategory?.status?.charAt(0)?.toUpperCase() +
         subCategory?.status?.substr(1)?.toLowerCase(),
@@ -308,7 +314,8 @@ const SubCategory = () => {
       (item.category && item.category.toLowerCase().includes(filterText.toLowerCase())) ||
       (item.sequenceNumber &&
         item.sequenceNumber.toString().toLowerCase().includes(filterText.toLowerCase())) ||
-      (item.status && item.status.toLowerCase().includes(filterText.toLowerCase()))
+      (item.status && item.status.toLowerCase().includes(filterText.toLowerCase())) ||
+      (item.price && item.price.toString().toLowerCase().includes(filterText.toLowerCase()))
   )
 
   const subHeaderComponentMemo = useMemo(() => {
@@ -396,7 +403,7 @@ const SubCategory = () => {
   const subCategoryImg = previewImage
     ? previewImage
     : inputValue.subCategoryImage
-    ? `${process.env.REACT_APP_SERVER_URL}${inputValue.subCategoryImage}`
+    ? `${inputValue.subCategoryImage}`
     : blankImg
 
   return (
@@ -563,6 +570,17 @@ const SubCategory = () => {
           >
             {errors['image']}
           </span> */}
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Price</label>
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+            placeholder='Price'
+            onChange={(e) => handleChange(e)}
+            name='price'
+            value={inputValue?.price || ''}
+            required
+          />
+          <span className='error-msg'>{errors['price']}</span>
           <label className='col-lg-4 col-form-label required fw-bold fs-6'>Status</label>
           <select
             className='form-select form-select-solid form-select-lg fw-bold'
@@ -719,6 +737,17 @@ const SubCategory = () => {
           >
             {errors['image']}
           </span> */}
+          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Price</label>
+          <input
+            type='text'
+            className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
+            placeholder='Price'
+            onChange={(e) => handleChange(e)}
+            name='price'
+            value={inputValue?.price || ''}
+            required
+          />
+          <span className='error-msg'>{errors['price']}</span>
           <label className='col-lg-4 col-form-label required fw-bold fs-6'>Status</label>
           <select
             className='form-select form-select-solid form-select-lg fw-bold'
