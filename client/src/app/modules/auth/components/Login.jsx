@@ -24,8 +24,8 @@ const loginSchema = Yup.object().shape({
 })
 
 const initialValues = {
-  email: 'test@gmail.com',
-  password: 'test',
+  email: '',
+  password: '',
 }
 
 /*
@@ -88,7 +88,7 @@ export function Login() {
         <div className='mb-lg-15 alert alert-danger'>
           <div className='alert-text font-weight-bold'>{formik.status}</div>
         </div>
-      ) : null }
+      ) : null}
       {/* (
         <div className='mb-10 bg-light-info p-8 rounded'>
           <div className='text-info'>

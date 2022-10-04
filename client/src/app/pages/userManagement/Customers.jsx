@@ -864,7 +864,7 @@ const Customers = () => {
             required
           />
           <span className='error-msg'>{errors['lastName']}</span>
-          <label className='col-lg-4 col-form-label required fw-bold fs-6'>Phone</label>
+          {/* <label className='col-lg-4 col-form-label required fw-bold fs-6'>Phone</label>
           <input
             type='tel'
             className='form-control form-control-lg form-control-solid mb-3 mb-lg-0'
@@ -874,7 +874,7 @@ const Customers = () => {
             value={inputValue?.phone || ''}
             required
           />
-          <span className='error-msg'>{errors['phone']}</span>
+          <span className='error-msg'>{errors['phone']}</span> */}
           <label className='col-lg-4 col-form-label required fw-bold fs-6'>Postal Code</label>
           <input
             type='text'

@@ -42,6 +42,7 @@ const Category = () => {
     setAddOpen(false)
     setErrors({})
     setInputValue({})
+    setCategoryImage(null)
   }
 
   useEffect(() => {

@@ -98,20 +98,20 @@ const EditProfile = () => {
     return formIsValid
   }
 
-  const logout = async () => {
-    try {
-      const response = await ApiPost('auth/admin/logout', {email: user?.email})
-      if (response.status === 200) {
-        dispatch({
-          type: 'LOGOUT',
-        })
-        authUtil.logout()
-        // toast.success(response.data)
-      }
-    } catch (error) {
-      toast.error(error.message)
-    }
-  }
+  // const logout = async () => {
+  //   try {
+  //     const response = await ApiPost('auth/admin/logout', {email: user?.email})
+  //     if (response.status === 200) {
+  //       dispatch({
+  //         type: 'LOGOUT',
+  //       })
+  //       authUtil.logout()
+  //       // toast.success(response.data)
+  //     }
+  //   } catch (error) {
+  //     toast.error(error.message)
+  //   }
+  // }
 
   const handleUpdate = async () => {
     if (validateForm()) {
@@ -123,7 +123,7 @@ const EditProfile = () => {
       imageData.append('status', inputValue.status)
 
       try {
-        const response = await ApiPut(`usermanagement/admin?_id=${user?._id}`, imageData)
+        const response = await ApiPut(`admin?_id=${user?._id}`, imageData)
         if (response.status === 200) {
           toast.success('Updated Successfully')
           getEditProfile()
@@ -131,7 +131,7 @@ const EditProfile = () => {
             type: 'UPDATE_SUCCESS',
             payload: response?.data,
           })
-          logout()
+          // logout()
           handleClose()
         }
       } catch (err) {

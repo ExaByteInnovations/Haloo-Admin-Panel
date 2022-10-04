@@ -118,7 +118,7 @@ const Support = () => {
   const data = support?.map((sup) => {
     return {
       id: sup?._id,
-      customerName: sup?.customerDetails[0]?.customerName,
+      customerName: `${sup?.customerDetails[0]?.firstName} ${sup?.customerDetails[0]?.lastName}`,
       query: sup?.query,
       phoneNumber: sup?.customerDetails[0]?.phone,
       // emailAddress: sup?.customerDetails[0]?.emailAddress,

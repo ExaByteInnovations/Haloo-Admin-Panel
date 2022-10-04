@@ -99,7 +99,7 @@ const CodEnable = () => {
   const data = cod?.map((item) => {
     return {
       id: item?._id,
-      userName: item?.customerDetails[0]?.customerName,
+      userName: `${item?.customerDetails[0]?.firstName} ${item?.customerDetails[0]?.lastName}`,
       status: item?.status?.charAt(0)?.toUpperCase() + item?.status?.substr(1)?.toLowerCase(),
     }
   })

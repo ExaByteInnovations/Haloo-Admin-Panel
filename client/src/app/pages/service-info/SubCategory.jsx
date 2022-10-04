@@ -41,6 +41,7 @@ const SubCategory = () => {
     setAddOpen(false)
     setErrors({})
     setInputValue({})
+    setSubCategoryImage(null)
   }
   const compare = (a, b) => {
     if (a.name < b.name) {
@@ -469,7 +470,7 @@ const SubCategory = () => {
 
         <DialogContent>
           <div className='fv-row mb-7'>
-            <label className='d-block fw-bold fs-6 mb-5'>Sub Category Image</label>
+            <label className='d-block fw-bold fs-6 mb-5 required'>Sub Category Image</label>
             <div
               className='image-input image-input-outline'
               data-kt-image-input='true'
@@ -636,7 +637,7 @@ const SubCategory = () => {
 
         <DialogContent>
           <div className='fv-row mb-7'>
-            <label className='d-block fw-bold fs-6 mb-5'>Sub Category Image</label>
+            <label className='d-block fw-bold fs-6 mb-5 required'>Sub Category Image</label>
             <div
               className='image-input image-input-outline'
               data-kt-image-input='true'
