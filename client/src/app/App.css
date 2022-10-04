@@ -157,6 +157,7 @@
   /* justify-content: flex-end; */
   align-items: center;
   margin-right: 10px !important;
+  width: 300px !important;
 }
 .date-picker {
   width: 100% !important;
