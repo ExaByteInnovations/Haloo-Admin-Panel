@@ -144,6 +144,7 @@ export function Login() {
         </div>
         <div className='password-field-wrapper'>
           <input
+            placeholder='Password'
             type={showPassword ? 'text' : 'password'}
             autoComplete='off'
             {...formik.getFieldProps('password')}
