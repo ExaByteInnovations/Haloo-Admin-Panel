@@ -129,11 +129,14 @@ const Support = () => {
 
   const filteredItems = data.filter(
     (item) =>
-      (item?.phoneNumber && item?.phoneNumber.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item?.customerName && item?.customerName.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item?.emailAddress && item?.emailAddress.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item?.query && item?.query.toLowerCase().includes(filterText.toLowerCase())) ||
-      (item?.status && item?.status.toLowerCase().includes(filterText.toLowerCase()))
+      (item?.phoneNumber &&
+        item?.phoneNumber?.toString()?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.customerName &&
+        item?.customerName?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.emailAddress &&
+        item?.emailAddress?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.query && item?.query?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.status && item?.status?.toLowerCase()?.includes(filterText?.toLowerCase()))
   )
   const subHeaderComponentMemo = useMemo(() => {
     const handleClear = () => {
