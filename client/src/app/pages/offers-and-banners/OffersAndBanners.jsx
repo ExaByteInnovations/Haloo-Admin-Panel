@@ -256,32 +256,32 @@ const OffersAndBanners = () => {
     },
     {
       name: 'Title',
-      selector: (row) => row.title,
+      selector: (row) => (row.title ? row.title : '-'),
       sortable: true,
     },
     {
       name: 'Description',
-      selector: (row) => row.description,
+      selector: (row) => (row.description ? row.description : '-'),
       sortable: true,
     },
     {
       name: 'Offer Code',
-      selector: (row) => row.code,
+      selector: (row) => (row.code ? row.code : '-'),
       sortable: true,
     },
     {
       name: 'Discount',
-      selector: (row) => row.discount,
+      selector: (row) => (row.discount ? row.discount : '-'),
       sortable: true,
     },
     {
       name: 'Start Date',
-      selector: (row) => moment(row.startDate).format('DD MMM YY'),
+      selector: (row) => (row.startDate ? moment(row.startDate).format('DD MMM YY') : '-'),
       sortable: true,
     },
     {
       name: 'End Date',
-      selector: (row) => moment(row.endDate).format('DD MMM YY'),
+      selector: (row) => (row.endDate ? moment(row.endDate).format('DD MMM YY') : '-'),
       sortable: true,
     },
     {

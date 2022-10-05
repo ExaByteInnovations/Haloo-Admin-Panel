@@ -187,12 +187,12 @@ const Category = () => {
   const columns = [
     {
       name: 'Sequence Number',
-      selector: (row) => row.sequenceNumber,
+      selector: (row) => (row.sequenceNumber ? row.sequenceNumber : '-'),
       sortable: true,
     },
     {
       name: 'Category Name',
-      selector: (row) => row.categoryName,
+      selector: (row) => (row.categoryName ? row.categoryName : '-'),
       sortable: true,
       // width: '200px',
     },

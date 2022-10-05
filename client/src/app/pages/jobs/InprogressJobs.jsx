@@ -101,7 +101,7 @@ const InprogressJobs = () => {
   const columns = [
     {
       name: 'Job',
-      selector: (row) => row.jobTitle,
+      selector: (row) => (row.jobTitle ? row.jobTitle : '-'),
       sortable: true,
       width: '200px',
     },
@@ -113,19 +113,24 @@ const InprogressJobs = () => {
     // },
     {
       name: 'City',
-      selector: (row) => row.city,
+      selector: (row) => (row.city ? row.city : '-'),
       sortable: true,
       width: '150px',
     },
     {
       name: 'Job Total',
-      selector: (row) => row.jobTotal,
+      selector: (row) => (row.jobTotal ? row.jobTotal : '-'),
       sortable: true,
       width: '150px',
     },
     {
       name: 'Customer',
-      selector: (row) => row.customer,
+      selector: (row) =>
+        row.customer &&
+        row.customer.toLowerCase() !== 'undefined undefined' &&
+        row.customer.toLowerCase() !== 'undefined'
+          ? row.customer
+          : '- -',
       sortable: true,
       width: '150px',
     },
@@ -143,13 +148,18 @@ const InprogressJobs = () => {
     // },
     {
       name: 'Vendor',
-      selector: (row) => row.vendor,
+      selector: (row) =>
+        row.vendor &&
+        row.vendor.toLowerCase() !== 'undefined undefined' &&
+        row.vendor.toLowerCase() !== 'undefined'
+          ? row.vendor
+          : '- -',
       sortable: true,
       width: '150px',
     },
     {
       name: 'Posted Date',
-      selector: (row) => row.postedDate,
+      selector: (row) => (row.postedDate ? row.postedDate : '-'),
       sortable: true,
       width: '200px',
     },
@@ -209,10 +219,10 @@ const InprogressJobs = () => {
       // quote: job?.quote,
       city: job?.city,
       jobTotal: job?.jobTotal,
-      customer: job?.customerDetails[0]?.customerName,
+      customer: `${job?.customerDetails[0]?.firstName} ${job?.customerDetails[0]?.lastName}`,
       // propertyName: job?.propertyName,
       // categorySubcategory: job?.category || job?.subCategory,
-      vendor: job?.vendorDetails[0]?.customerName,
+      vendor: `${job?.vendorDetails[0]?.firstName} ${job?.vendorDetails[0]?.lastName}`,
       postedDate: moment(job?.createdAt).format('DD MMM YY hh:mmA'),
       status: job?.status?.toLowerCase(),
     }

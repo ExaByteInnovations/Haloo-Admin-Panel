@@ -13,7 +13,7 @@ import CloseIcon from '@material-ui/icons/Close'
 import {Modal} from 'react-bootstrap'
 import ClearIcon from '@mui/icons-material/Clear'
 import userImage from '../../../assets/user.png'
-import _ from 'lodash'
+import _, {isEmpty} from 'lodash'
 import {KTSVG} from '../../../_metronic/helpers/components/KTSVG'
 import {toAbsoluteUrl} from '../../../_metronic/helpers/AssetHelpers'
 import {
@@ -442,7 +442,9 @@ const Vendors = () => {
               </div>
 
               <div className='d-flex justify-content-start flex-column'>
-                <span className='text-dark fw-bolder text-hover-primary fs-6'>{`${row.firstName} ${row.lastName}`}</span>
+                <span className='text-dark fw-bolder text-hover-primary fs-6'>{`${
+                  row.firstName ? row.firstName : '-'
+                } ${row.lastName ? row.lastName : '-'}`}</span>
               </div>
             </div>
           </>
@@ -453,25 +455,25 @@ const Vendors = () => {
     },
     {
       name: 'Phone Number',
-      selector: (row) => row.phone,
+      selector: (row) => (row.phone ? row.phone : '-'),
       sortable: true,
       width: '150px',
     },
     {
       name: 'Postal Code',
-      selector: (row) => row.pincode,
+      selector: (row) => (row.pincode ? row.pincode : '-'),
       sortable: true,
       width: '150px',
     },
     {
       name: 'City',
-      selector: (row) => row.city,
+      selector: (row) => (row.city ? row.city : '-'),
       sortable: true,
       width: '150px',
     },
     {
       name: 'State',
-      selector: (row) => row.state,
+      selector: (row) => (row.state ? row.state : '-'),
       sortable: true,
       width: '150px',
     },
@@ -484,29 +486,32 @@ const Vendors = () => {
     // },
     {
       name: 'No. of Jobs',
-      selector: (row) => row.noOfJobs,
+      selector: (row) => (row.noOfJobs ? row.noOfJobs : '-'),
       sortable: true,
       width: '150px',
     },
     {
       name: 'Job Skills',
       selector: (row) => row.jobSkills,
-      cell: (row) => (
-        <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1}}>
-          {row?.jobSkills?.map((skill) => (
-            <span className='badge badge-light-danger me-1' key={skill}>
-              {skill.trim().charAt(0).toUpperCase() + skill.trim().substr(1).toLowerCase()}
-            </span>
-          ))}
-        </Box>
-      ),
+      cell: (row) =>
+        !isEmpty(row.jobSkills) ? (
+          <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 1}}>
+            {row?.jobSkills?.map((skill) => (
+              <span className='badge badge-light-danger me-1' key={skill}>
+                {skill.trim().charAt(0).toUpperCase() + skill.trim().substr(1).toLowerCase()}
+              </span>
+            ))}
+          </Box>
+        ) : (
+          '-'
+        ),
       sortable: true,
       width: '200px',
     },
 
     {
       name: 'Member Since',
-      selector: (row) => row.memberSince,
+      selector: (row) => (row.memberSince ? row.memberSince : '-'),
       sortable: true,
       width: '200px',
     },
@@ -581,6 +586,7 @@ const Vendors = () => {
       profileImage: vendor?.profileImage,
       firstName: vendor?.firstName,
       lastName: vendor?.lastName,
+      customerName: `${vendor?.firstName} ${vendor?.lastName}`,
       phone: vendor?.phone,
       // address: vendor?.address,
       city: vendor?.cityDetails[0]?.cityName,
@@ -602,8 +608,9 @@ const Vendors = () => {
     (item) =>
       (item?.phone &&
         item?.phone?.toString()?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
-      (item?.firstName && item?.firstName?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
-      (item?.lastName && item?.lastName?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.customerName &&
+        item?.customerName?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      // (item?.lastName && item?.lastName?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
       (item?.pincode &&
         item?.pincode?.toString()?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
       (item?.city && item?.city?.toLowerCase()?.includes(filterText?.toLowerCase())) ||

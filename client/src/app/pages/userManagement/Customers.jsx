@@ -393,7 +393,9 @@ const Customers = () => {
               </div>
 
               <div className='d-flex justify-content-start flex-column'>
-                <span className='text-dark fw-bolder text-hover-primary fs-6'>{`${row.firstName} ${row.lastName}`}</span>
+                <span className='text-dark fw-bolder text-hover-primary fs-6'>{`${
+                  row.firstName ? row.firstName : '-'
+                } ${row.lastName ? row.lastName : '-'}`}</span>
               </div>
             </div>
           </>
@@ -404,7 +406,7 @@ const Customers = () => {
     },
     {
       name: 'Phone',
-      selector: (row) => row.phone,
+      selector: (row) => (row.phone ? row.phone : '-'),
       sortable: true,
       width: '150px',
     },
@@ -416,19 +418,19 @@ const Customers = () => {
     // },
     {
       name: 'Postal Code',
-      selector: (row) => row.pincode,
+      selector: (row) => (row.pincode ? row.pincode : '-'),
       sortable: true,
       width: '150px',
     },
     {
       name: 'City',
-      selector: (row) => row.city,
+      selector: (row) => (row.city ? row.city : '-'),
       sortable: true,
       width: '150px',
     },
     {
       name: 'State',
-      selector: (row) => row.state,
+      selector: (row) => (row.state ? row.state : '-'),
       sortable: true,
       width: '150px',
     },
@@ -443,13 +445,13 @@ const Customers = () => {
     // },
     {
       name: 'No. of Jobs',
-      selector: (row) => row.noOfJobs,
+      selector: (row) => (row.noOfJobs ? row.noOfJobs : '-'),
       sortable: true,
       width: '150px',
     },
     {
       name: 'Member Since',
-      selector: (row) => row.memberSince,
+      selector: (row) => (row.memberSince ? row.memberSince : '-'),
       sortable: true,
       width: '150px',
     },
@@ -515,6 +517,7 @@ const Customers = () => {
       profileImage: customer?.profileImage,
       firstName: customer?.firstName,
       lastName: customer?.lastName,
+      customerName: `${customer?.firstName} ${customer?.lastName}`,
       phone: customer?.phone,
       city: customer?.cityDetails[0]?.cityName,
       cityId: customer?.cityId,
@@ -538,8 +541,9 @@ const Customers = () => {
     (item) =>
       (item?.phone?.toString() &&
         item?.phone?.toString()?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
-      (item?.firstName && item?.firstName?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
-      (item?.lastName && item?.lastName?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      (item?.customerName &&
+        item?.customerName?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
+      // (item?.lastName && item?.lastName?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
       (item?.pincode?.toString() &&
         item?.pincode?.toString()?.toLowerCase()?.includes(filterText?.toLowerCase())) ||
       (item?.city && item?.city?.toLowerCase()?.includes(filterText?.toLowerCase())) ||

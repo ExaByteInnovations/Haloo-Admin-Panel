@@ -168,12 +168,12 @@ const City = () => {
   const columns = [
     {
       name: 'City Name',
-      selector: (row) => row.cityName,
+      selector: (row) => (row.cityName ? row.cityName : '-'),
       sortable: true,
     },
     {
       name: 'State Name',
-      selector: (row) => row.stateName,
+      selector: (row) => (row.stateName ? row.stateName : '-'),
       sortable: true,
     },
     {

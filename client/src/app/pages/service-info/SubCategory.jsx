@@ -220,18 +220,18 @@ const SubCategory = () => {
   const columns = [
     {
       name: 'Sequence Number',
-      selector: (row) => row.sequenceNumber,
+      selector: (row) => (row.sequenceNumber ? row.sequenceNumber : '-'),
       sortable: true,
     },
     {
       name: 'Sub Category',
-      selector: (row) => row.subCategory,
+      selector: (row) => (row.subCategory ? row.subCategory : '-'),
       sortable: true,
       width: '200px',
     },
     {
       name: 'Category',
-      selector: (row) => row.category,
+      selector: (row) => (row.category ? row.category : '-'),
       sortable: true,
       width: '200px',
     },
@@ -244,7 +244,7 @@ const SubCategory = () => {
 
     {
       name: 'Price',
-      selector: (row) => row.price,
+      selector: (row) => (row.price ? row.price : '-'),
       sortable: true,
     },
     {

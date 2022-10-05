@@ -142,7 +142,7 @@ const State = () => {
   const columns = [
     {
       name: 'State Name',
-      selector: (row) => row.stateName,
+      selector: (row) => (row.stateName ? row.stateName : '-'),
       sortable: true,
     },
     // {

@@ -94,13 +94,13 @@ const Ratings = () => {
   const columns = [
     {
       name: 'Review For',
-      selector: (row) => row.reviewFor,
+      selector: (row) => (row.reviewFor ? row.reviewFor : '-'),
       sortable: true,
       // width: '200px',
     },
     {
       name: 'Rating',
-      selector: (row) => row.rating,
+      selector: (row) => (row.rating ? row.rating : '-'),
       cell: (row) => (
         <>
           {[...Array(row.rating)].map(() => (
@@ -117,13 +117,13 @@ const Ratings = () => {
     },
     {
       name: 'Comment',
-      selector: (row) => row.comment,
+      selector: (row) => (row.comment ? row.comment : '-'),
       sortable: true,
       // width: '150px',
     },
     {
       name: 'Posted On',
-      selector: (row) => row.postedOn,
+      selector: (row) => (row.postedOn ? row.postedOn : '-'),
       sortable: true,
       // width: '200px',
     },

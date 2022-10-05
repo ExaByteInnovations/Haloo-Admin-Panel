@@ -73,7 +73,7 @@ const Support = () => {
     },
     {
       name: 'Phone Number',
-      selector: (row) => row.phoneNumber,
+      selector: (row) => (row.phoneNumber ? row.phoneNumber : '-'),
       sortable: true,
     },
     // {
@@ -83,12 +83,12 @@ const Support = () => {
     // },
     {
       name: 'Query',
-      selector: (row) => row.query,
+      selector: (row) => (row.query ? row.query : '-'),
       sortable: true,
     },
     {
       name: 'Posted Date',
-      selector: (row) => row.postedDate,
+      selector: (row) => (row.postedDate ? row.postedDate : '-'),
       sortable: true,
     },
     {
@@ -118,7 +118,9 @@ const Support = () => {
   const data = support?.map((sup) => {
     return {
       id: sup?._id,
-      customerName: `${sup?.customerDetails[0]?.firstName} ${sup?.customerDetails[0]?.lastName}`,
+      customerName: `${
+        sup?.customerDetails[0]?.firstName ? sup?.customerDetails[0]?.firstName : '-'
+      } ${sup?.customerDetails[0]?.lastName ? sup?.customerDetails[0]?.lastName : '-'}`,
       query: sup?.query,
       phoneNumber: sup?.customerDetails[0]?.phone,
       // emailAddress: sup?.customerDetails[0]?.emailAddress,
