@@ -4,7 +4,8 @@
 // import Loader from "../../components/Loader/Loader"
 // import Auth from "../Auth";
 import * as authUtil from '../../utils/auth.util'
-export const BaseURL = 'https://halooadmin.herokuapp.com/api/'
+export const BaseURL = 'https://haloo.onrender.com/api/'
+// https://halooadmin.herokuapp.com/api/
 
 const axios = require('axios').default
 
