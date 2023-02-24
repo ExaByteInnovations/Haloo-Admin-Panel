@@ -1,24 +1,24 @@
 var mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema({
-    ratingBy: {
-      type: String,
+    customerId :{
+      type: mongoose.Schema.Types.ObjectId, ref: 'customer',
     },
-    ratingFor: {
-      type: String,
+    vendorId :{
+      type: mongoose.Schema.Types.ObjectId, ref: 'customer',
     },
-    whoRated: {
-      type: String,
-    },
-    jobNumber: {
-      type: Number, required: true,
+    jobId :{
+      type: mongoose.Schema.Types.ObjectId, ref: 'job',
     },
     rating: {
         type: Number,
     },
     comment: {
       type: String,
-    }, 
+    },
+    reviewFor:{
+      type: String,
+    }
   },
     {
       timestamps: true

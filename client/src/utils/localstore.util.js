@@ -1,25 +1,25 @@
-const localStoreUtil = {
+const sessionStoreUtil = {
   store_data: (key, data) => {
-    localStorage.setItem(key, JSON.stringify(data));
-    return true;
+    sessionStorage.setItem(key, JSON.stringify(data))
+    return true
   },
 
   get_data: (key) => {
-    const item = localStorage.getItem(key);
+    const item = sessionStorage.getItem(key)
 
-    if (!item) return;
-    return JSON.parse(item);
+    if (!item) return
+    return JSON.parse(item)
   },
 
   remove_data: (key) => {
-    localStorage.removeItem(key);
-    return true;
+    sessionStorage.removeItem(key)
+    return true
   },
 
   remove_all: () => {
-    localStorage.clear();
-    return true;
+    sessionStorage.clear()
+    return true
   },
-};
+}
 
-export default localStoreUtil;
+export default sessionStoreUtil

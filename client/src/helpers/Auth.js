@@ -1,6 +1,5 @@
-import { AppSettings, STORAGEKEY } from "../config/APP/app.config";
-import localstorageUtil from "../utils/localstore.util.js";
-
+import {AppSettings, STORAGEKEY} from '../config/APP/app.config'
+import sessionStorageUtil from '../utils/localstore.util.js'
 
 class Auth {
   /**
@@ -9,7 +8,7 @@ class Auth {
    * @param {string} token
    */
   static setAuthToken(token) {
-    sessionStorage.setItem(STORAGEKEY.token, token);
+    sessionStorage.setItem(STORAGEKEY.token, token)
   }
 
   /**
@@ -18,23 +17,26 @@ class Auth {
    * @returns {boolean}
    */
   static isUserAuthenticated() {
-    return sessionStorage.getItem(STORAGEKEY.token) !== null;
+    return sessionStorage.getItem(STORAGEKEY.token) !== null
   }
   static isUserAuthenticat() {
-    return (localstorageUtil.get_data("token") !== (null || undefined)) || (localstorageUtil.get_data("Admintoken") !== (null || undefined));
+    return (
+      sessionStorageUtil.get_data('token') !== (null || undefined) ||
+      sessionStorageUtil.get_data('Admintoken') !== (null || undefined)
+    )
   }
   /**
    * Deauthenticate a user. Remove a token from Local Storage.
    *
    */
   static deauthenticateUser() {
-    sessionStorage.removeItem(STORAGEKEY.token);
-    sessionStorage.removeItem(STORAGEKEY.authData);
-    sessionStorage.removeItem(STORAGEKEY.userData);
-    sessionStorage.removeItem(STORAGEKEY.layoutData);
+    sessionStorage.removeItem(STORAGEKEY.token)
+    sessionStorage.removeItem(STORAGEKEY.authData)
+    sessionStorage.removeItem(STORAGEKEY.userData)
+    sessionStorage.removeItem(STORAGEKEY.layoutData)
   }
-  static deauthenticateLocalUser(){
-    localstorageUtil.remove_all();
+  static deauthenticateLocalUser() {
+    sessionStorageUtil.remove_all()
   }
 
   /**
@@ -44,46 +46,42 @@ class Auth {
    */
   static getToken() {
     // return sessionStorage.getItem(STORAGEKEY.token);
-    return localstorageUtil.get_data('token');
+    return sessionStorageUtil.get_data('token')
   }
   static getAdminDetail() {
     // return sessionStorage.getItem(STORAGEKEY.token);\
-    const localdata=localstorageUtil.get_data("Admininfo");
+    const localdata = sessionStorageUtil.get_data('Admininfo')
     // console.log("Localdata ",localdata)
-    if(localdata === (null || undefined))
-      return "";
-    return localdata;
+    if (localdata === (null || undefined)) return ''
+    return localdata
   }
   static getUserDetail() {
     // return sessionStorage.getItem(STORAGEKEY.token);\
-    const localdata=localstorageUtil.get_data("userinfo");
+    const localdata = sessionStorageUtil.get_data('userinfo')
     // console.log("Localdata ",localdata)
-    if(localdata === (null || undefined))
-      return "";
-    return localdata;
+    if (localdata === (null || undefined)) return ''
+    return localdata
   }
   static getWorkshopDetail() {
     // return sessionStorage.getItem(STORAGEKEY.token);\
-    const localdata=localstorageUtil.get_data("workshopinfo");
+    const localdata = sessionStorageUtil.get_data('workshopinfo')
     // console.log("Localdata ",localdata)
-    if(localdata === (null || undefined))
-      return "";
-    return localdata;
+    if (localdata === (null || undefined)) return ''
+    return localdata
   }
   static getVendorDetail() {
     // return sessionStorage.getItem(STORAGEKEY.token);\
-    const localdata=localstorageUtil.get_data("vendorinfo");
+    const localdata = sessionStorageUtil.get_data('vendorinfo')
     // console.log("Localdata ",localdata)
-    if(localdata === (null || undefined))
-      return "";
-    return localdata;
+    if (localdata === (null || undefined)) return ''
+    return localdata
   }
 
   /*
    * Sets userData to sessionStorage
    * */
   static setAuthData(data) {
-    sessionStorage.setItem(STORAGEKEY.authData, JSON.stringify(data));
+    sessionStorage.setItem(STORAGEKEY.authData, JSON.stringify(data))
   }
 
   /*
@@ -92,9 +90,9 @@ class Auth {
    * */
   static getAuthData() {
     try {
-      return JSON.parse(sessionStorage.getItem(STORAGEKEY.authData));
+      return JSON.parse(sessionStorage.getItem(STORAGEKEY.authData))
     } catch (e) {
-      return {};
+      return {}
     }
   }
 
@@ -102,7 +100,7 @@ class Auth {
    * Sets userData to sessionStorage
    * */
   static setUserData(data) {
-    sessionStorage.setItem(STORAGEKEY.userData, JSON.stringify(data));
+    sessionStorage.setItem(STORAGEKEY.userData, JSON.stringify(data))
   }
 
   /*
@@ -110,9 +108,9 @@ class Auth {
    * */
   static getUserData() {
     try {
-      return JSON.parse(sessionStorage.getItem(STORAGEKEY.userData));
+      return JSON.parse(sessionStorage.getItem(STORAGEKEY.userData))
     } catch (e) {
-      return {};
+      return {}
     }
   }
 
@@ -122,13 +120,13 @@ class Auth {
    * @returns {string}
    */
   static getUsername() {
-    let userData = this.getUserData();
+    let userData = this.getUserData()
     if (userData) {
-      let firstname = userData.firstname || "";
-      let lastname = userData.lastname || "";
-      return firstname.trim() + " " + lastname.trim();
+      let firstname = userData.firstname || ''
+      let lastname = userData.lastname || ''
+      return firstname.trim() + ' ' + lastname.trim()
     } else {
-      return "";
+      return ''
     }
   }
 
@@ -138,8 +136,8 @@ class Auth {
    * @returns {string}
    */
   static getEmail() {
-    let email = this.getUserData().email || "";
-    return email;
+    let email = this.getUserData().email || ''
+    return email
   }
 
   /**
@@ -149,12 +147,12 @@ class Auth {
    */
   static getUserRole() {
     /* @TODO No role attrib. Double check with api */
-    let userdata = this.getUserData();
-    let role = "Administrator";
+    let userdata = this.getUserData()
+    let role = 'Administrator'
     if (userdata) {
-      role = userdata.role;
+      role = userdata.role
     }
-    return role;
+    return role
   }
 
   /**
@@ -163,42 +161,42 @@ class Auth {
    * @returns {string}
    */
   static getUserCompanyId() {
-    let company = this.getUserCompany();
-    let companyId = null;
+    let company = this.getUserCompany()
+    let companyId = null
     if (company) {
-      if (company.hasOwnProperty("id")) {
-        companyId = company.id;
+      if (company.hasOwnProperty('id')) {
+        companyId = company.id
       }
     }
-    return companyId;
+    return companyId
   }
 
   /*
    * Get All Companies
    * */
   static getUserCompanies() {
-    let userData = this.getUserData();
-    let companies = [];
+    let userData = this.getUserData()
+    let companies = []
     if (
       userData &&
-      userData.hasOwnProperty("companies") &&
+      userData.hasOwnProperty('companies') &&
       userData.companies &&
       userData.companies?.length
     ) {
-      companies = userData.companies;
+      companies = userData.companies
     }
-    return companies;
+    return companies
   }
 
   /**
    * Get user company
    */
   static getUserCompany() {
-    let companies = this.getUserCompanies();
+    let companies = this.getUserCompanies()
     if (companies && companies?.length) {
-      return companies[0];
+      return companies[0]
     } else {
-      return null;
+      return null
     }
   }
 
@@ -206,11 +204,11 @@ class Auth {
    * Get user company
    */
   static getUserCompanyName() {
-    let company = this.getUserCompany();
+    let company = this.getUserCompany()
     if (company) {
-      return company.name;
+      return company.name
     } else {
-      return null;
+      return null
     }
   }
 
@@ -218,16 +216,11 @@ class Auth {
    * get User Roles
    * */
   static getUserRoles() {
-    let userData = this.getUserData();
-    if (
-      userData &&
-      userData.hasOwnProperty("roles") &&
-      userData.roles &&
-      userData.roles?.length
-    ) {
-      return userData.roles;
+    let userData = this.getUserData()
+    if (userData && userData.hasOwnProperty('roles') && userData.roles && userData.roles?.length) {
+      return userData.roles
     } else {
-      return [];
+      return []
     }
   }
 
@@ -235,16 +228,16 @@ class Auth {
    * get navigation menus Role wise
    * */
   static getUserNavigation() {
-    let userData = this.getUserData();
+    let userData = this.getUserData()
     if (
       userData &&
-      userData.hasOwnProperty("navigations") &&
+      userData.hasOwnProperty('navigations') &&
       userData.navigations &&
       userData.navigations?.length
     ) {
-      return userData.navigations;
+      return userData.navigations
     } else {
-      return [];
+      return []
     }
   }
 
@@ -252,20 +245,20 @@ class Auth {
    * get default navigation route
    * */
   static getDefaultNavigationRoute() {
-    let navigations = this.getUserNavigation();
-    let defaultNavigation = AppSettings.defaultNavigation;
+    let navigations = this.getUserNavigation()
+    let defaultNavigation = AppSettings.defaultNavigation
     if (navigations && navigations?.length) {
       for (let i = 0; i < navigations?.length; i++) {
         if (
-          navigations[i].hasOwnProperty("defaultNavigation") &&
+          navigations[i].hasOwnProperty('defaultNavigation') &&
           navigations[i].defaultNavigation
         ) {
-          defaultNavigation = navigations[i].defaultNavigation;
+          defaultNavigation = navigations[i].defaultNavigation
         }
       }
     }
-    return defaultNavigation;
+    return defaultNavigation
   }
 }
 
-export default Auth;
+export default Auth

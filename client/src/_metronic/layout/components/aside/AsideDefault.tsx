@@ -1,10 +1,10 @@
 /* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, {FC} from 'react'
+import {FC} from 'react'
 import {Link} from 'react-router-dom'
 import clsx from 'clsx'
 import {useLayout} from '../../core'
-import {KTSVG, toAbsoluteUrl} from '../../../helpers'
+import {toAbsoluteUrl} from '../../../helpers'
 import {AsideMenu} from './AsideMenu'
 
 const AsideDefault: FC = () => {
@@ -30,7 +30,7 @@ const AsideDefault: FC = () => {
           <Link to='/dashboard'>
             <img
               alt='Logo'
-              className='h-25px logo'
+              className='h-80px w-200px logo'
               src={toAbsoluteUrl('/media/logos/logo-1-dark.svg')}
             />
           </Link>
@@ -47,7 +47,7 @@ const AsideDefault: FC = () => {
         {/* end::Logo */}
 
         {/* begin::Aside toggler */}
-        {aside.minimize && (
+        {/* {aside.minimize && (
           <div
             id='kt_aside_toggle'
             className='btn btn-icon w-auto px-0 btn-active-color-primary aside-toggle'
@@ -61,7 +61,7 @@ const AsideDefault: FC = () => {
               className={'svg-icon-1 rotate-180'}
             />
           </div>
-        )}
+        )} */}
         {/* end::Aside toggler */}
       </div>
       {/* end::Brand */}

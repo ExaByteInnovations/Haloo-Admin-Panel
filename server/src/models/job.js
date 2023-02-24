@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 
+
 const jobSchema = new mongoose.Schema({
     quote: {
       type: Number, 
@@ -7,27 +8,37 @@ const jobSchema = new mongoose.Schema({
     city: {
         type: String,
     },
+    state: {
+      type: String,
+    },
     jobTitle: {
       type: String,
     },
-    customer: {
-        type: String,
+    customerId: {
+        type: mongoose.Schema.Types.ObjectId, ref: 'customer',
     },
-    propertyName: {
-        type: String,
+    // propertyName: {
+    //     type: String,
+    // },
+    categoryId:{
+      type: mongoose.Schema.Types.ObjectId, ref: 'categories ',
     },
-    category:{
-        type: String,
-    },
-    subCategory:{
-        type: String,
+    subCategoryId:{
+      type: mongoose.Schema.Types.ObjectId, ref: 'subcategories ',
     },
     status:{
         type: String,
+        default: 'pending',
     },
-    jobCategory:{
-        type: String, required: true,
-    }
+    vendorId:{
+      type: mongoose.Schema.Types.ObjectId, ref: 'customer',
+    },
+    jobTotal:{
+      type: Number,
+    },
+    otp:{
+      type: String,
+    },
   },
     {
       timestamps: true

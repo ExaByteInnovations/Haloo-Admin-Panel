@@ -1,19 +1,42 @@
+.password-wrapper {
+  display: flex;
+  position: relative;
+}
+
+.eye-icon {
+  cursor: pointer;
+  position: absolute;
+  right: 9px;
+  top: 30%;
+}
+
 .icon {
   cursor: pointer;
+  font-size: 24px !important;
 }
 .icon:hover {
   transform: scale(1.1, 1.1) !important;
 }
-
-.model {
-  align-self: center;
-  margin: 10px auto;
+.header-wrapper {
   display: flex;
-  justify-content: center;
+  position: relative;
+  line-height: 1.5;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  width: 100%;
+}
+.error-msg {
+  color: #f1416c;
+  font-weight: bold;
+  display: block;
+  top: 5px;
+  font-size: 12px;
 }
 
 .button {
   margin-top: 10px;
+  width: 100%;
   border-radius: 0 !important;
 }
 
@@ -22,4 +45,247 @@
   justify-content: center;
   align-items: center;
   height: 60vh;
+}
+
+.image {
+  /* width: 100px;
+  height: 100px;
+  object-fit: contain; */
+  cursor: pointer;
+}
+
+.file {
+  margin-bottom: 5px;
+}
+
+.add-button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.add-button {
+  font-weight: bold !important;
+}
+
+.status-btn {
+  padding: 5px 10px !important;
+}
+
+.settings-form {
+  display: flex !important;
+  flex: 2;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.settings-field {
+  margin-bottom: 20px !important;
+  width: 50% !important;
+}
+
+.settings-btn-wrapper {
+  display: flex !important;
+}
+.settings-btn-save {
+  margin-right: 10px !important;
+  border-radius: 5px !important;
+}
+.admin-wrapper {
+  display: flex !important;
+  flex-direction: row !important;
+}
+
+.admin-profile-image-wrapper {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+.admin-profile-image {
+  width: 250px;
+  height: 250px;
+  object-fit: contain;
+  border-radius: 50%;
+  /* border: 1px solid black; */
+  box-shadow: 0 0 13px gray;
+}
+
+.admin-field {
+  margin-bottom: 20px !important;
+  width: 70% !important;
+}
+
+.editor {
+  height: 100% !important;
+}
+.search-wrapper {
+  display: flex;
+  position: relative;
+  line-height: 1.5;
+  justify-content: space-between;
+  align-items: center;
+}
+.input-search {
+  margin-right: 2px !important;
+  /* width: 180px !important; */
+}
+.input-clear-button {
+  position: absolute;
+  right: 9px;
+  cursor: pointer;
+}
+.search-icon {
+  position: absolute;
+  left: 10px;
+}
+.input-clear-button:hover {
+  /* transform: scale(1.1, 1.1) !important; */
+  color: #f1416c !important;
+}
+
+.model-image {
+  width: 100%;
+}
+.date-picker-wrapper {
+  display: flex;
+  position: relative;
+  line-height: 1.5;
+  /* justify-content: flex-end; */
+  align-items: center;
+  margin-right: 10px !important;
+  width: 300px !important;
+}
+.date-picker {
+  width: 100% !important;
+  /* height: 42.95px !important;
+  border-radius: 7px !important;
+  border: 0.5px solid rgb(206, 202, 202) !important;
+  padding: 10.5px 14px !important;
+  margin-right: 2px !important; */
+}
+/* .date-picker:focus {
+  border: 2px solid #5014d0 !important;
+  outline: none !important;
+} */
+.date-picker-popper {
+  z-index: 999 !important;
+}
+/* .react-datepicker-wrapper {
+  align-self: center !important;
+} */
+
+.export-csv {
+  color: inherit !important;
+}
+
+.export-csv:hover {
+  color: white !important;
+}
+
+.password-field-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.show-password-btn {
+  position: absolute !important;
+  right: 0 !important;
+  top: 1.5 !important;
+  cursor: pointer !important;
+  margin-right: 10px;
+}
+
+.otp-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.otp-counter {
+  margin: 10px auto !important;
+  color: #da1e37;
+}
+.otp {
+  display: inline-block;
+  width: 35px !important;
+  font-weight: bold;
+  margin: 0 4px;
+}
+
+.chip {
+  /* font-weight: 400 !important; */
+  color: #5e6278 !important;
+  font-size: 13px !important;
+  font-family: Poppins, Helvetica, 'sans-serif' !important;
+}
+
+/* React Data Table */
+.rdt_TableRow {
+  border-bottom: 1px dashed rgb(233, 236, 239) !important;
+}
+
+.rdt_TableHeadRow {
+  border-bottom: 1px dashed rgb(233, 236, 239) !important;
+  font-weight: 900;
+  color: #adb5bd;
+  text-transform: uppercase;
+}
+
+.rdt_TableRow {
+  font-weight: 500 !important;
+  color: #7e8299 !important;
+}
+
+.rdt_Table {
+  padding: 4px 16px 4px 24px !important;
+  min-height: 57vh !important;
+  min-width: 100% !important;
+}
+
+.rdt_TableCell {
+  padding: 20px 8px !important;
+  text-transform: capitalize !important;
+}
+
+/* Material CSS override */
+
+/* .MuiAutocomplete-inputRoot {
+  padding: 0px !important;
+} */
+
+.MuiInputBase-input {
+  padding: 0 !important;
+}
+
+.MuiInputBase-input:focus {
+  background-color: #f5f8fa !important;
+}
+
+.MuiInputBase-root {
+  padding: 3.725px 28px 3.725px 19.5px !important;
+}
+
+.MuiInputBase-root:active {
+  background-color: #f5f8fa !important;
+}
+
+#mui-1 {
+  font-size: 13px !important;
+  font-weight: bold !important;
+}
+
+/* ckeditor CSS override */
+
+.ck-editor__editable_inline {
+  min-height: 57vh !important;
+  max-height: 57vh !important;
 }
