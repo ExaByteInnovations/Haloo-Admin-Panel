@@ -170,7 +170,7 @@ const MegaMenu: FC = () => (
             <span className='menu-bullet'>
               <span className='bullet bullet-dot'></span>
             </span>
-            <span className='menu-title'>Offers And Banners</span>
+            <span className='menu-title'>Offers & Banners</span>
           </a>
         </div>
       </div>
