@@ -67,7 +67,7 @@ export function MenuInner() {
       <MenuItem to='/reports/login-report' title='Login Report' />
       {/* <MenuItem to='/reports/contact-us' title='Contact Us' hasBullet={true} />
       </MenuInnerWithSub> */}
-      <MenuItem to='/offers-and-banners' title='Offers And Banner' />
+      <MenuItem to='/offers-and-banners' title='Offers & Banner' />
       {/* <MenuInnerWithSub
         title='Communications'
         to='/communications'
