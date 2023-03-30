@@ -202,6 +202,7 @@ const Ratings = () => {
       style: {
         paddingLeft: '8px',
         paddingRight: '8px',
+        color: '#6c757d',
       },
     },
   }
